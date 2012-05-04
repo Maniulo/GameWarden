@@ -45,8 +45,23 @@
     </CodeAnalysisDependentAssemblyPaths>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="GameStateTests.cs" />
+    <Compile Include="NotationTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="BoardTests.cs" />
+    <Compile Include="FirstTests.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Chess Warden\Chess Warden.csproj">
+      <Project>{A26E1193-09C1-413B-B246-98B6DB9854D2}</Project>
+      <Name>Chess Warden</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Game Warden\Game Warden.csproj">
+      <Project>{16B5E47F-42D8-485C-9CB8-E914E84267BE}</Project>
+      <Name>Game Warden</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Shadow Include="Test References\Game Warden.accessor" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
