@@ -5,7 +5,6 @@ using System.Text;
 using GameWarden;
 using System.Text.RegularExpressions;
 using GameWarden.Chess.Notations;
-
 namespace GameWarden.Chess
 {
     public class ChessState : GameState, IEnumerable<IPiece>
@@ -24,7 +23,7 @@ namespace GameWarden.Chess
 
         public override string ToString()
         {
-            return new FEN().Generate(this);
+            return new FENParser().Generate(this);
         }
         
         public IEnumerator<IPiece> GetEnumerator()
@@ -40,18 +39,18 @@ namespace GameWarden.Chess
         }
     }
 
-    public class ChessGame : Game<ChessState>
+    public class ChessGame : Game<ChessState, ChessMove>
     {
         public ChessGame(Meta metainfo)
             : base(2)
         {
             Info = metainfo;
-            States.Add(new FEN().Parse(metainfo["FEN"] ?? FEN.DefaultFEN, this.Players));
+            States.Add(new FENParser().Parse(metainfo["FEN"] ?? FENParser.DefaultFEN, this.Players));
         }
 
         public override string ToString()
         {
-            return new FEN().Generate(this.CurrentState);
+            return new FENParser().Generate(this.CurrentState);
         }
     }
 
@@ -84,6 +83,9 @@ namespace GameWarden.Chess
                     p.AddPossibleMove(new DiagonalMove());
                     break;
                 case PieceTypes.King:
+                    p.AddPossibleMove(new HorizontalMove(1));
+                    p.AddPossibleMove(new VerticalMove(1));
+                    p.AddPossibleMove(new DiagonalMove(1));
                     p.AddPossibleMove(new Kingside());
                     p.AddPossibleMove(new Queenside());
                     break;
@@ -96,6 +98,9 @@ namespace GameWarden.Chess
     public class ChessPiece : Piece
     {
         public PieceTypes Type;
+
+        public ChessPiece(bool isEmpty = false)
+            : base(isEmpty) { }
     }
 
     public enum PieceTypes
@@ -107,5 +112,4 @@ namespace GameWarden.Chess
         Queen,
         King
     }
-
 }

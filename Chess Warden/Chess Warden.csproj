@@ -36,6 +36,8 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Microsoft.Windows.Shell, Version=3.5.41019.1, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL" />
+    <Reference Include="RibbonControlsLibrary, Version=4.0.0.11019, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL" />
     <Reference Include="System" />
     <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
@@ -59,11 +61,20 @@
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Window.xaml.cs">
+      <DependentUpon>Window.xaml</DependentUpon>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Moves\Knight.cs" />
+    <Compile Include="Moves\Castling.cs" />
     <Compile Include="ChessWarden.cs" />
-    <Compile Include="Moves.cs" />
-    <Compile Include="Notations.cs" />
+    <Compile Include="Notations\PiecePresentations.cs" />
+    <Compile Include="Notations\FENParser.cs" />
+    <Compile Include="Moves\Unsolved.cs" />
+    <Compile Include="Notations\MoveNotations.cs" />
+    <Compile Include="Notations\PGNParser.cs" />
+    <Compile Include="Moves\Pawn.cs" />
     <Compile Include="Properties\AssemblyInfo.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -92,6 +103,12 @@
       <Project>{16B5E47F-42D8-485C-9CB8-E914E84267BE}</Project>
       <Name>Game Warden</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Page Include="Window.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
