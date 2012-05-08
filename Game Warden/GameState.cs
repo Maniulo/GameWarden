@@ -20,7 +20,7 @@ namespace GameWarden
 
             for (int i = 0; i < dimX; ++i)
                 for (int j = 0; j < dimY; ++j)
-                    Board[i,j] = new Piece(true);
+                    Board[i,j] = new Piece(true) { Pos = new Position(i+1, j+1)};
         }
 
         protected IPiece this[int file, int rank]
@@ -72,14 +72,14 @@ namespace GameWarden
         public void RemovePiece(Position pos)
         {
             this[pos].Pos = null;
-            this[pos] = new Piece(true);
+            this[pos] = new Piece(true) { Pos = pos };
         }
 
         public void MovePiece(Position from, Position to)
         {
             this[to] = this[from];
             this[to].Pos = to;
-            this[from] = new Piece(true);
+            this[from] = new Piece(true) { Pos = from };
         }
     }
 }

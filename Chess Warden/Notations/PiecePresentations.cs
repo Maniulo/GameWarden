@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 
 namespace GameWarden.Chess.Notations
 {
@@ -129,6 +129,86 @@ namespace GameWarden.Chess.Notations
         public override string ToString()
         {
             return "NBRQKPnbrqkp";
+        }
+    }
+
+    public class FigurinePresentation : IPiecePresentation
+    {
+        Char GetWhitePieceSymbol(ChessPiece p)
+        {
+            switch (p.Type)
+            {
+                case PieceTypes.Pawn:
+                    return '♙';
+                case PieceTypes.Knight:
+                    return '♘';
+                case PieceTypes.Bishop:
+                    return '♗';
+                case PieceTypes.Rook:
+                    return '♖';
+                case PieceTypes.Queen:
+                    return '♕';
+                case PieceTypes.King:
+                    return '♔';
+                default:
+                    throw new Exception();
+            }
+        }
+
+        Char GetBlackPieceSymbol(ChessPiece p)
+        {
+            switch (p.Type)
+            {
+                case PieceTypes.Pawn:
+                    return '♟';
+                case PieceTypes.Knight:
+                    return '♞';
+                case PieceTypes.Bishop:
+                    return '♝';
+                case PieceTypes.Rook:
+                    return '♜';
+                case PieceTypes.Queen:
+                    return '♛';
+                case PieceTypes.King:
+                    return '♚';
+                default:
+                    throw new Exception();
+            }
+        }
+
+        virtual public ChessPiece GetPiece(Char? o)
+        {
+            return new ChessPiece();
+            /*
+            switch (o)
+            {
+                case '♙': return new Pawn(PieceColour.White);
+                case '♘': return new Knight(PieceColour.White);
+                case '♗': return new Bishop(PieceColour.White);
+                case '♖': return new Rook(PieceColour.White);
+                case '♕': return new Queen(PieceColour.White);
+                case '♔': return new King(PieceColour.White);
+                case '♟': return new Pawn(PieceColour.Black);
+                case '♞': return new Knight(PieceColour.Black);
+                case '♝': return new Bishop(PieceColour.Black);
+                case '♜': return new Rook(PieceColour.Black);
+                case '♛': return new Queen(PieceColour.Black);
+                case '♚': return new King(PieceColour.Black);
+                default: return new NullPiece();
+            }*/
+        }
+
+        virtual public Char? GetPresentation(ChessPiece p)
+        {
+            if (p.IsEmpty)
+                return null;
+
+            return p.Player.Order == 1 ? GetWhitePieceSymbol(p) : GetBlackPieceSymbol(p);
+        }
+
+        public PieceTypes GetType(char? c)
+        {
+            throw new NotImplementedException();
         }
     }
 }

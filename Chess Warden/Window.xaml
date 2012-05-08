@@ -3,22 +3,39 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:ribbon="clr-namespace:Microsoft.Windows.Controls.Ribbon;assembly=RibbonControlsLibrary"
         Title="Chess Warden" 
-        x:Name="MainWindow"
-        Width="640" Height="480">
-    <Grid x:Name="LayoutRoot">
+        Width="596" Height="584" Icon="/Chess%20Warden;component/icon.ico">
+    <Grid x:Name="LayoutRoot" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
 
          <ribbon:Ribbon x:Name="Ribbon">
+            <ribbon:Ribbon.ApplicationMenu>
+                <ribbon:RibbonApplicationMenu SmallImageSource="file.png">
+                    <ribbon:RibbonApplicationMenuItem Header="Hello _Ribbon"
+                                                      x:Name="MenuItem1"
+                                                      />
+                </ribbon:RibbonApplicationMenu>
+            </ribbon:Ribbon.ApplicationMenu>
             <ribbon:RibbonTab x:Name="HomeTab" 
                               Header="Home">
+                <ribbon:RibbonButton></ribbon:RibbonButton>
                 <ribbon:RibbonGroup x:Name="Group1" 
                                     Header="Group1">
-                     
+                    <ScrollBar HorizontalAlignment="Left" Name="movesScrollBar" VerticalAlignment="Top" Height="18" Width ="150" Orientation="Horizontal" ValueChanged="movesScrollBar_ValueChanged" />
                 </ribbon:RibbonGroup>
-                
+                <ribbon:RibbonGroup x:Name="Group3" 
+                                    Header="Info">
+                    <Label Content="Event:" Height="28" Name="eventCaption" HorizontalAlignment="Left" VerticalAlignment="Top" />
+                    <Label Content="Site:" Height="28" Name="siteCaption" HorizontalAlignment="Left" VerticalAlignment="Top" />
+                    <Label Content="Date:" Height="28" Name="dateCaption" HorizontalAlignment="Left" VerticalAlignment="Top" />
+                    <Label Content="Round:" Height="28" Name="roundCaption" HorizontalAlignment="Left" VerticalAlignment="Top" />
+                    <Label Content="White player:" Height="28" Name="whiteCaption" HorizontalAlignment="Left" VerticalAlignment="Top" />
+                    <Label Content="Black player:" Height="28" Name="blackCaption" HorizontalAlignment="Left" VerticalAlignment="Top" />
+                    <Label Content="Result:" Height="28" Name="resultCaption" HorizontalAlignment="Left" VerticalAlignment="Top" />
+                </ribbon:RibbonGroup>
+
             </ribbon:RibbonTab>
             <ribbon:RibbonTab x:Name="SearchTab" 
                               Header="Search">
@@ -27,6 +44,6 @@
                 </ribbon:RibbonGroup>
 
             </ribbon:RibbonTab>
-        </ribbon:Ribbon> 
+        </ribbon:Ribbon>
     </Grid>
 </ribbon:RibbonWindow>

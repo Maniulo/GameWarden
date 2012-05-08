@@ -41,18 +41,15 @@ namespace GameWarden
         private const int FileCharACode = 'a';
         private const int FileCharZCode = 'z';
 
-        protected Char FileLetter
+        protected static Char GetFileLetter(int file)
         {
-            get
+            if (file + FileCharACode - 1 <= FileCharZCode)
             {
-                if (File + FileCharACode - 1 <= FileCharZCode)
-                {
-                    return (Char)(File + FileCharACode - 1);
-                }
-                else
-                {
-                    throw new ArgumentException();
-                }
+                return (Char)(file + FileCharACode - 1);
+            }
+            else
+            {
+                throw new ArgumentException();
             }
         }
 
@@ -122,7 +119,12 @@ namespace GameWarden
 
         public override string ToString()
         {
-            return String.Format("{0}{1}", FileLetter, Rank);
+            return String.Format("{0}{1}", GetFileLetter(File), Rank);
+        }
+
+        public static string ToString(int file, int rank)
+        {
+            return String.Format("{0}{1}", GetFileLetter(file), rank);
         }
 
         public override bool Equals(Object obj)
