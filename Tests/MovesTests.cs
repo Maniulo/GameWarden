@@ -9,7 +9,7 @@ using GameWarden.Chess.Notations;
 namespace GameWarden.Tests
 {
     [TestClass]
-    public class GameStateTests
+    public class MovesTests
     {
         [TestMethod]
         public void MakeMoveTest()
@@ -39,12 +39,25 @@ namespace GameWarden.Tests
         }
 
         [TestMethod]
+        public void BlackPawnTest()
+        {
+            String[] pgn = new String[3];
+            pgn[0] = "[FEN \"8/p7/8/8/8/8/8/8 w KQkq - 0 1\"]";
+            pgn[1] = "";
+            pgn[2] = "1... a6";
+
+            ChessGame game = new PGNParser().Parse(pgn, new AlgebraicNotation());
+            game.MakeMove();
+            Assert.AreEqual("8/8/p7/8/8/8/8/8 w KQkq - 0 1", game.CurrentState.ToString());
+        }
+
+        [TestMethod]
         public void EnPassantCaptureTest()
         {
             String[] pgn = new String[3];
             pgn[0] = "[FEN \"8/8/8/4Pp2/8/8/8/8 w KQkq f6 0 1\"]";
             pgn[1] = "";
-            pgn[2] = "2. e5xf6e.p.";
+            pgn[2] = "2. e5xf6";
 
             ChessGame game = new PGNParser().Parse(pgn, new AlgebraicNotation());
             game.MakeMove();
@@ -183,20 +196,44 @@ namespace GameWarden.Tests
             game.MakeMove();
             Assert.AreEqual("8/8/8/8/8/8/8/5RK1 w KQkq - 0 1", game.CurrentState.ToString());
         }
-        /*
+
         [TestMethod]
-        [ExpectedException(typeof(NullReferenceException))]
-        public void WhiteCastlingKingsideUnderAttackTest()
+        [ExpectedException(typeof(Exception))]
+        public void CheckmateMoveTest()
         {
             String[] pgn = new String[3];
-            pgn[0] = "[FEN \"8/8/8/8/8/8/8/4K1PR w KQkq - 0 1\"]";
+            pgn[0] = "[FEN \"q7/8/8/8/8/8/R7/K7 w KQkq - 0 1\"]";
+            pgn[1] = "";
+            pgn[2] = "1. Rb2";
+
+            ChessGame game = new PGNParser().Parse(pgn, new AlgebraicNotation());
+            game.MakeMove();
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(Exception))]
+        public void CastlingUnderAttackTest()
+        {
+            String[] pgn = new String[3];
+            pgn[0] = "[FEN \"5q2/8/8/8/8/8/8/4K2R w KQkq - 0 1\"]";
             pgn[1] = "";
             pgn[2] = "1. O-O";
 
-            ChessGame game = new PGN().Parse(pgn, new AlgebraicNotation());
+            ChessGame game = new PGNParser().Parse(pgn, new AlgebraicNotation());
             game.MakeMove();
-            Assert.AreEqual("8/8/8/8/8/8/8/5RK1 w KQkq - 0 1", game.CurrentState.ToString());
         }
-         */
+
+        [TestMethod]
+        [ExpectedException(typeof(Exception))]
+        public void CastlingPieceMovedTest()
+        {
+            String[] pgn = new String[3];
+            pgn[0] = "[FEN \"5q2/8/8/8/8/8/8/4K2R w KQkq - 0 1\"]";
+            pgn[1] = "";
+            pgn[2] = "1. Rh7 Qb8 2. Rh1 Qa8 3. O-O";
+
+            ChessGame game = new PGNParser().Parse(pgn, new AlgebraicNotation());
+            while (game.MakeMove());
+        }
     }
 }

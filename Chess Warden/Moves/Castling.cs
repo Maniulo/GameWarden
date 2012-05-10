@@ -1,50 +1,47 @@
+using System;
+
 namespace GameWarden.Chess
 {
     public abstract class Castling : HorizontalMove
     {
-        protected void RefreshRanks(Position From, Position To, IGameState state)
+        protected void RefreshRanks(Position from, Position to, IGameState state)
         {
-            if (state[From].Player.Order == 1)
-            {
-                To.Rank = 1;
-            }
-            else if (state[From].Player.Order == 2)
-            {
-                To.Rank = 8;
-            }
-
-            rookFrom.Rank = From.Rank;
-            rookTo.Rank = To.Rank;
+            rookFrom.Rank = from.Rank;
+            rookTo.Rank = to.Rank;
         }
 
         protected Position rookFrom;
         protected Position rookTo;
 
-        public Castling()
-            : base(null, false)
+        protected Castling()
+            : base(null, false, true)
         {
 
         }
 
-        public override void Apply(Position From, Position To, IGameState state)
+        public override void Apply(Position from, Position to, IGameState state)
         {
-            RefreshRanks(From, To, state);
-            state.MovePiece(From, To);
-            state.MovePiece(rookFrom, rookTo);
+            RefreshRanks(from, to, state);
+            state.MovePiece(from, to);
+            state.MovePiece(rookFrom, new Position(rookTo));
         }
 
-        public override bool CanApply(Position @from, Position to, IGameState state)
+        public override bool CanApply(Position from, Position to, IGameState state)
         {
-            RefreshRanks(@from, to, state);
-            
-            if (@from.File == 5 && state[@from].Player.Order == 1 ? @from.Rank == 1 : @from.Rank == 8)
-            {
-                return base.CanApply(@from, to, state);
-            }
-            else
-            {
-                return false;
-            }
+            RefreshRanks(from, to, state);
+            if (((ChessPiece)state[rookFrom]).Type == PieceTypes.Rook)
+                if (((ChessPiece)state[from]).Path.Count == 1 && ((ChessPiece)state[rookFrom]).Path.Count == 1)
+                    if (base.CanApply(from, to, state))
+                    {
+                        Boolean result = true;
+                        for (int kingPathFile = from.File; kingPathFile <= to.File; ++kingPathFile)
+                            result &= !((ChessState) state).IsUnderAttack(new Position(kingPathFile, from.Rank),
+                                                                         state[from].Player);
+
+                        return result;
+                    }
+
+            return false;
         }
     }
 

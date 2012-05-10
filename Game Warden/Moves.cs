@@ -7,8 +7,9 @@ namespace GameWarden
 {
     public abstract class TemplateMove
     {
+        public abstract Boolean IsCapture { get; }
         public Player Player { get; set; }
-        public abstract void Apply(Position from, Position to, IGameState state);
+        public abstract void Apply(Position @from, Position to, IGameState state);
         public abstract bool CanApply(Position @from, Position to, IGameState state);
     }
      
@@ -35,6 +36,11 @@ namespace GameWarden
         protected bool? Capture;
         protected int? MaxLength;
         protected Boolean PathCheck;
+
+        public override Boolean IsCapture
+        {
+            get { return Capture.HasValue ? Capture.Value : true; }
+        }
 
         protected List<Position> Path;
 
@@ -72,10 +78,12 @@ namespace GameWarden
 
         public override bool CanApply(Position from, Position to, IGameState state)
         {
-            return
+            Boolean result =
                 CheckBarriers(state) &&
                 CheckCapture(to, state) &&
                 CheckLength();
+            Path.Clear();
+            return result;
         }
     }
 }

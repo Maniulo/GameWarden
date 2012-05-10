@@ -16,6 +16,8 @@
                     <ribbon:RibbonApplicationMenuItem Header="Hello _Ribbon"
                                                       x:Name="MenuItem1"
                                                       />
+                    <ribbon:RibbonApplicationMenuItem Header="Open..."
+                                                      x:Name="OpenPGNBtn" Click="OpenPGNBtn_Click" />
                 </ribbon:RibbonApplicationMenu>
             </ribbon:Ribbon.ApplicationMenu>
             <ribbon:RibbonTab x:Name="HomeTab" 

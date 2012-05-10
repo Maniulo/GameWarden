@@ -12,13 +12,13 @@ namespace GameWarden.Chess
             switch (state[@from].Player.Order)
             {
                 case 1:
-                    if (to.Rank - @from.Rank <= 2)
+                    if (to.Rank - @from.Rank == 1 || to.Rank - @from.Rank == 2 && from.Rank == 2)
                     {
                         return base.CanApply(@from, to, state);
                     }
                     else return false;
                 case 2:
-                    if (to.Rank - @from.Rank >= -2)
+                    if (from.Rank - to.Rank == 1 || from.Rank - to.Rank == 2 && from.Rank == 7)
                     {
                         return base.CanApply(@from, to, state);
                     }
@@ -61,15 +61,30 @@ namespace GameWarden.Chess
             return new Position(state.EnPassant.File, state.EnPassant.Rank - 1);
         }
 
-        public override void Apply(Position From, Position To, IGameState state)
+        public override void Apply(Position @from, Position to, IGameState state)
         {
             state.RemovePiece(EnemyPawn((ChessState)state)); // !!!
-            state.MovePiece(From, To);
+            state.MovePiece(@from, to);
         }
 
-        public override bool CanApply(Position @from, Position to, IGameState state)
+        public override bool CanApply(Position from, Position to, IGameState state)
         {
-            return to.Equals(((ChessState)state).EnPassant);
+            if (to.Equals(((ChessState)state).EnPassant))
+                if (Position.FileDistance(to, from) == 1)
+                    switch (state[from].Player.Order)
+                    {
+                        case 1:
+                            return to.Rank - from.Rank == 1;
+                        case 2:
+                            return from.Rank - to.Rank == 1;
+                    }
+
+            return false;
+        }
+
+        public override bool IsCapture
+        {
+            get { return true; }
         }
     }
 }

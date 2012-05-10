@@ -13,9 +13,7 @@ namespace GameWarden.Chess
                 return base.CanApply(@from, to, state);
             }
             else
-            {
                 return false;
-            }
         }
     }
 }

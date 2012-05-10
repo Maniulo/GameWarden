@@ -26,7 +26,7 @@ namespace GameWarden.Chess.Notations
                             "(?<FromFile>[a-h])?" + "(?<FromRank>[1-8])?" +
                             "(?<Capture>x)?" +
                             "(?<ToFile>[a-h])(?<ToRank>[1-8])" +
-                            "(?<Promotion>[{0}])?" +
+                            "(?<Promotion>=?[{0}])?" +
                             "(?<EnPassant>e.p.)?" +
                         ")" +
                     "|" + "(?<Kingside>O-O)" +
@@ -58,14 +58,8 @@ namespace GameWarden.Chess.Notations
                 if (castlingKingside || castlingQueenside)
                 {
                     m.PieceType = PieceTypes.King;
-
-                    m.From = new Position(5, null);
-
-                    if (castlingKingside)
-                        m.To = new Position(7, null);
-
-                    if (castlingQueenside)
-                        m.To = new Position(3, null);
+                    m.CastlingKingside = castlingKingside;
+                    m.CastlingQueenside = castlingQueenside;
                 }
                 else
                 {

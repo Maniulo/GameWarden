@@ -4,7 +4,7 @@ using System.Text;
 
 namespace GameWarden
 {
-    public class Meta
+    public class Meta : IEnumerable<KeyValuePair<String,String>>
     {
         private readonly Dictionary<String, String> Info;
 
@@ -30,6 +30,15 @@ namespace GameWarden
                     Info.Add(key, value);
                 }
             }
+        }
+
+        public IEnumerator<KeyValuePair<string, string>> GetEnumerator()
+        {
+            return Info.GetEnumerator();
+        }
+        System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()
+        {
+            return Info.GetEnumerator();
         }
     }
 

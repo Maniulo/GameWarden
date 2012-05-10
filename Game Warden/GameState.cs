@@ -7,7 +7,7 @@ namespace GameWarden
         void PlacePiece(Position pos, IPiece p);
         void RemovePiece(Position pos);
         void MovePiece(Position from, Position to);
-        IPiece this[Position index] { get; set; }
+        IPiece this[Position index] { get; }
     }
 
     public abstract class GameState : IGameState
@@ -18,9 +18,9 @@ namespace GameWarden
         {
             Board = new IPiece[dimX, dimY];
 
-            for (int i = 0; i < dimX; ++i)
-                for (int j = 0; j < dimY; ++j)
-                    Board[i,j] = new Piece(true) { Pos = new Position(i+1, j+1)};
+            for (int file = 0; file < dimX; ++file)
+                for (int rank = 0; rank < dimY; ++rank)
+                    Board[file, rank] = CreateEmptyPiece(new Position(file + 1, rank + 1));
         }
 
         protected IPiece this[int file, int rank]
@@ -50,7 +50,7 @@ namespace GameWarden
                 }
             }
 
-            set
+            private set
             {
                 try
                 {
@@ -63,23 +63,25 @@ namespace GameWarden
             }
         }
 
+        public abstract IPiece CreateEmptyPiece(Position pos);
+
         public void PlacePiece(Position pos, IPiece p)
         {
             this[pos] = p;
-            p.Pos = pos;
+            p.Move(pos);
         }
 
         public void RemovePiece(Position pos)
         {
-            this[pos].Pos = null;
-            this[pos] = new Piece(true) { Pos = pos };
+            // this[pos].Pos = null;
+            this[pos] = CreateEmptyPiece(pos);
         }
 
         public void MovePiece(Position from, Position to)
         {
             this[to] = this[from];
-            this[to].Pos = to;
-            this[from] = new Piece(true) { Pos = from };
+            this[to].Move(to);
+            this[from] = CreateEmptyPiece(from);
         }
     }
 }

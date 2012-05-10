@@ -57,7 +57,7 @@ namespace GameWarden.Chess.Notations
                         piece.Player = players[piece.Player.Order - 1];
                     }
                     else
-                        p = new ChessPiece(true);
+                        p = new ChessPiece { IsEmpty = true };
 
                     gs.PlacePiece(new Position(file, rank), p);
 

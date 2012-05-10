@@ -6,9 +6,24 @@ namespace GameWarden.Chess
     {
         public PieceTypes PieceType;
         public String Desc;
+
+        public Boolean CastlingKingside;
+        public Boolean CastlingQueenside;
         
         protected virtual TemplateMove Solve(ChessState state)
         {
+            if (CastlingKingside)
+            {
+                From = new Position(5, Player.Order == 1 ? 1 : 8);
+                To = new Position(7, Player.Order == 1 ? 1 : 8);
+            }
+
+            if (CastlingQueenside)
+            {
+                From = new Position(5, Player.Order == 1 ? 1 : 8);
+                To = new Position(3, Player.Order == 1 ? 1 : 8);
+            }
+
             foreach (ChessPiece p in state)
                 if (!p.IsEmpty)
                     if (p.Type == PieceType &&
@@ -16,8 +31,14 @@ namespace GameWarden.Chess
                         From.Equals(p.Pos) &&
                         p.CanMove(To, state))
                     {
-                        From = p.Pos;
-                        return p.GetPossibleMove(To, state);
+                        ChessState cpState = new ChessState(state);
+                        TemplateMove mv = p.GetPossibleMove(To, state);
+                        mv.Apply(p.Pos, To, cpState);
+                        if (!cpState.IsKingOpen(Player))
+                        {
+                            From = p.Pos;
+                            return mv;
+                        }
                     }
 
             return null;

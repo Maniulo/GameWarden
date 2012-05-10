@@ -117,6 +117,12 @@ namespace GameWarden
             }
         }
 
+        public Position(Position copy)
+        {
+            _File = copy._File;
+            _Rank = copy._Rank;
+        }
+
         public override string ToString()
         {
             return String.Format("{0}{1}", GetFileLetter(File), Rank);
@@ -138,7 +144,7 @@ namespace GameWarden
         {
             if (ReferenceEquals(null, other)) return false;
             if (ReferenceEquals(this, other)) return true;
-            return (_File == other._File || other._File == null || _File == null) && (_File == other._File || other._File == null || _File == null); ;
+            return (_File == other._File || other._File == null || _File == null) && (_Rank == other._Rank || other._Rank == null || _Rank == null); ;
         }
         public override int GetHashCode()
         {
