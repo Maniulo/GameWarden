@@ -109,9 +109,7 @@ namespace GameWarden.Chess.Notations
 
         public List<String> Generate(ChessGame game)
         {
-            var result = new List<String>();
-            foreach (KeyValuePair<String, String> tag in game.Info)
-               result.Add("[" + tag.Key + " \"" + tag.Value + "\"]");
+            var result = game.Info.Select(tag => "[" + tag.Key + " \"" + tag.Value + "\"]").ToList();
 
             result.Add("");
 
@@ -123,7 +121,7 @@ namespace GameWarden.Chess.Notations
             while (mover.MoveNext())
             {
                 movetext.Append((i++) + ". ");
-                movetext.Append(mover.Current);
+                movetext.Append(mover.Current + " ");
                 if (mover.MoveNext())
                     movetext.Append(mover.Current + " ");
             }

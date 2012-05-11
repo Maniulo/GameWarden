@@ -7,6 +7,11 @@ namespace GameWarden
         void PlacePiece(Position pos, IPiece p);
         void RemovePiece(Position pos);
         void MovePiece(Position from, Position to);
+
+        void PlacePieceN(Position pos);
+        void RemovePieceN(Position pos, IPiece p);
+        void MovePieceN(Position from, Position to);
+
         IPiece this[Position index] { get; }
     }
 
@@ -73,7 +78,6 @@ namespace GameWarden
 
         public void RemovePiece(Position pos)
         {
-            // this[pos].Pos = null;
             this[pos] = CreateEmptyPiece(pos);
         }
 
@@ -82,6 +86,26 @@ namespace GameWarden
             this[to] = this[from];
             this[to].Move(to);
             this[from] = CreateEmptyPiece(from);
+        }
+
+        public void PlacePieceN(Position pos)
+        {
+            this[pos] = CreateEmptyPiece(pos);
+            // p.Move(pos);
+        }
+
+        public void RemovePieceN(Position pos, IPiece p)
+        {
+            this[pos] = p;
+            // p.Pos = pos; //CreateEmptyPiece(pos);
+        }
+
+        public void MovePieceN(Position from, Position to)
+        {
+            this[from] = this[to];
+            this[from].Unmove();
+            //this[to].Move(to);
+            this[to] = CreateEmptyPiece(to);
         }
     }
 }

@@ -19,11 +19,19 @@ namespace GameWarden.Chess
 
         }
 
+        public override void Rollback(Position from, Position to, IGameState state)
+        {
+            RefreshRanks(from, to, state);
+            state.MovePieceN(from, to);
+            state.MovePieceN(rookFrom, rookTo);
+            // base.Rollback(from, to, state);
+        }
+
         public override void Apply(Position from, Position to, IGameState state)
         {
             RefreshRanks(from, to, state);
             state.MovePiece(from, to);
-            state.MovePiece(rookFrom, new Position(rookTo));
+            state.MovePiece(rookFrom, rookTo);
         }
 
         public override bool CanApply(Position from, Position to, IGameState state)

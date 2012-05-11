@@ -43,7 +43,8 @@
     <Compile Include="BasicMoves.cs" />
     <Compile Include="Game.cs" />
     <Compile Include="GameState.cs" />
-    <Compile Include="GameWarden.cs" />
+    <Compile Include="Player.cs" />
+    <Compile Include="Meta.cs" />
     <Compile Include="Moves.cs" />
     <Compile Include="Piece.cs" />
     <Compile Include="Position.cs" />

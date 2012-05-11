@@ -44,6 +44,14 @@ namespace GameWarden.Tests
         }
 
         [TestMethod]
+        public void ImportCountFuncTest()
+        {
+            var f = new FileIO(Filepath);
+            //IEnumerable<ChessGame> gs = f.ImportPGN();
+            Assert.AreEqual(2, f.Count());
+        }
+
+        [TestMethod]
         public void ImportTest()
         {
             var f = new FileIO(Filepath);

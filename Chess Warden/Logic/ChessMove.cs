@@ -31,8 +31,8 @@ namespace GameWarden.Chess
                         From.Equals(p.Pos) &&
                         p.CanMove(To, state))
                     {
-                        ChessState cpState = new ChessState(state);
-                        TemplateMove mv = p.GetPossibleMove(To, state);
+                        var cpState = new ChessState(state);    // !!!
+                        var mv = p.GetPossibleMove(To, state);
                         mv.Apply(p.Pos, To, cpState);
                         if (!cpState.IsKingOpen(Player))
                         {

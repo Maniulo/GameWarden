@@ -1,16 +1,15 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
-using System.Text;
 
 namespace GameWarden
 {
-    public class Meta : IEnumerable<KeyValuePair<String,String>>
+    public class Meta : IEnumerable<KeyValuePair<string, string>>
     {
-        private readonly Dictionary<String, String> Info;
+        private readonly Dictionary<string, string> Info;
 
         public Meta()
         {
-            Info = new Dictionary<String, String>();
+            Info = new Dictionary<string, string>();
         }
 
         public String this[String key]
@@ -36,19 +35,10 @@ namespace GameWarden
         {
             return Info.GetEnumerator();
         }
+
         System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()
         {
             return Info.GetEnumerator();
-        }
-    }
-
-    public class Player
-    {
-        public int Order;
-
-        public Player(int order)
-        {
-            Order = order;
         }
     }
 }

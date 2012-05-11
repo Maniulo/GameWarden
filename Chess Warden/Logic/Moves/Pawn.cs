@@ -86,5 +86,10 @@ namespace GameWarden.Chess
         {
             get { return true; }
         }
+
+        public override void Rollback(Position from, Position to, IGameState state)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

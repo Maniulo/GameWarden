@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 
 namespace GameWarden
 {
@@ -9,8 +8,9 @@ namespace GameWarden
     {
         public abstract Boolean IsCapture { get; }
         public Player Player { get; set; }
-        public abstract void Apply(Position @from, Position to, IGameState state);
-        public abstract bool CanApply(Position @from, Position to, IGameState state);
+        public abstract bool CanApply(Position from, Position to, IGameState state);
+        public abstract void Apply(Position@from, Position to, IGameState state);
+        public abstract void Rollback(Position from, Position to, IGameState state);
     }
      
     public abstract class ConcreteMove
@@ -19,9 +19,21 @@ namespace GameWarden
         public Position From;
         public Position To;
         protected TemplateMove Move = null;
+        private IPiece capturedPiece;
+
+        public virtual void Rollback(IGameState state)
+        {
+            Move.Rollback(From, To, state);
+            
+            if (Move.IsCapture)
+                state.RemovePieceN(To, capturedPiece);
+        }
 
         public virtual void Apply(IGameState state)
         {
+            if (Move.IsCapture)
+                capturedPiece = state[To];
+
             Move.Apply(From, To, state);
         }
 
@@ -55,6 +67,11 @@ namespace GameWarden
         public override void Apply(Position from, Position to, IGameState state)
         {
             state.MovePiece(from, to);
+        }
+
+        public override void Rollback(Position from, Position to, IGameState state)
+        {
+            state.MovePieceN(from, to);
         }
 
         private bool CheckBarriers(IGameState state)

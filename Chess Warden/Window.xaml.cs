@@ -83,6 +83,16 @@ namespace GameWarden.Chess
             }
             return null;
         }
+
+        private void button1_Click(object sender, RoutedEventArgs e)
+        {
+            theBoard.UndoMove();
+        }
+
+        private void button2_Click(object sender, RoutedEventArgs e)
+        {
+            theBoard.MakeMove();
+        }
     }
 
     public class Board : Grid
@@ -93,6 +103,12 @@ namespace GameWarden.Chess
         public void MakeMove()
         {
             Game.MakeMove();
+            Refresh();
+        }
+
+        public void UndoMove()
+        {
+            Game.UndoMove();
             Refresh();
         }
 

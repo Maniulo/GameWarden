@@ -20,7 +20,7 @@ namespace GameWarden.Chess.Notations
 
             var rxMoveString = String.Format(
                 "^(?:" +
-                    "(?<Move>" +
+                    "(?<Move>(?:" +
                         "(?:" +
                             "(?<Piece>[{0}])?" +
                             "(?<FromFile>[a-h])?" + "(?<FromRank>[1-8])?" +
@@ -32,7 +32,7 @@ namespace GameWarden.Chess.Notations
                     "|" + "(?<Kingside>O-O)" +
                     "|" + "(?<Queenside>O-O-O)" +
                     ")" +
-                    "(?<Check>[+#])?" +
+                    "(?<Check>[+#])?)" +
                 ")$"
             , figureSymbols);
 
@@ -52,8 +52,8 @@ namespace GameWarden.Chess.Notations
                 var mv = RxMove.Match(anRecord);
                 var m = new ChessMove(mv.Groups["Move"].Value);
 
-                Boolean castlingKingside = mv.Groups["Kingside"].Success;
-                Boolean castlingQueenside = mv.Groups["Queenside"].Success;
+                var castlingKingside = mv.Groups["Kingside"].Success;
+                var castlingQueenside = mv.Groups["Queenside"].Success;
 
                 if (castlingKingside || castlingQueenside)
                 {
@@ -71,10 +71,8 @@ namespace GameWarden.Chess.Notations
                     m.To = new Position(mv.Groups["ToFile"].Value + mv.Groups["ToRank"].Value);
                     m.From = new Position();
 
-                    try { m.From.File = m.From.GetFile(mv.Groups["FromFile"].Value[0]); }
-                    catch { }
-                    try { m.From.Rank = m.From.GetRank(mv.Groups["FromRank"].Value[0]); }
-                    catch { }
+                    try { m.From.File = m.From.GetFile(mv.Groups["FromFile"].Value[0]); } catch { }
+                    try { m.From.Rank = m.From.GetRank(mv.Groups["FromRank"].Value[0]); } catch { }
                 }
 
                 return m;

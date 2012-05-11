@@ -64,21 +64,24 @@
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Logic\ChessPiece.cs" />
+    <Compile Include="Logic\ChessPieceFactory.cs" />
+    <Compile Include="Logic\ChessState.cs" />
     <Compile Include="FileIO.cs" />
     <Compile Include="Window.xaml.cs">
       <DependentUpon>Window.xaml</DependentUpon>
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Moves\Knight.cs" />
-    <Compile Include="Moves\Castling.cs" />
-    <Compile Include="ChessWarden.cs" />
+    <Compile Include="Logic\Moves\Knight.cs" />
+    <Compile Include="Logic\Moves\Castling.cs" />
+    <Compile Include="Logic\ChessGame.cs" />
     <Compile Include="Notations\PiecePresentations.cs" />
     <Compile Include="Notations\FENParser.cs" />
-    <Compile Include="Moves\Unsolved.cs" />
+    <Compile Include="Logic\ChessMove.cs" />
     <Compile Include="Notations\MoveNotations.cs" />
     <Compile Include="Notations\PGNParser.cs" />
-    <Compile Include="Moves\Pawn.cs" />
+    <Compile Include="Logic\Moves\Pawn.cs" />
     <Compile Include="Properties\AssemblyInfo.cs">
       <SubType>Code</SubType>
     </Compile>

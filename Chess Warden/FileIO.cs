@@ -15,29 +15,37 @@ namespace GameWarden.Chess
             Filepath = filepath;
         }
 
-        /*
-        public int CountGames()
+        private static void RemoveTrailingEmptyLines(List<String> lines)
         {
-            String[] lines = ReadLines();
-            return SeparateGames(lines).Count();
-        }*/
+            while (lines.Any() && lines[0].Equals(""))
+                lines.RemoveAt(0);
+        }
+
+        public int Count()
+        {
+            var emptyLines = 0;
+            var lines = ReadFile();
+
+            RemoveTrailingEmptyLines(lines);
+
+            for (var i = 0; i < lines.Count(); ++i)
+                if (lines[i].Equals(""))
+                    ++emptyLines;
+
+            // +1 for a case if there is no ending empty line
+            return (emptyLines + 1) / 2;
+        }
 
         public IEnumerable<ChessGame> ImportPGN()
         {
-            PGNParser parser = new PGNParser();
-            List<String> lines = ReadLines();
-            IEnumerable<List<String>> games = SeparateGames(lines);
-            ChessGame game;
+            var pgnParser = new PGNParser();
+            var lines = ReadFile();
+            var pgnGames = SeparateGames(lines);
 
-            foreach (List<String> ss in games)
-            {
-                    game = parser.Parse(ss, new AlgebraicNotation());
-                
-                yield return game;
-            }
+            return pgnGames.Select(pgnParser.Parse);
         }
 
-        private List<String> ReadLines()
+        private List<String> ReadFile()
         {
             var reader = new StreamReader(Filepath);
             var lines = new List<String>();
@@ -54,13 +62,10 @@ namespace GameWarden.Chess
         {
             var result = new List<String>();
             var emptyLines = 0;
-            int i;
 
-            //remove trailing empty lines
-            for (i = 0; i < lines.Count() && lines[i].Equals(""); )
-                lines.RemoveAt(i);
+            RemoveTrailingEmptyLines(lines);
 
-            for (; i < lines.Count(); ++i)
+            for (int i = 0; i < lines.Count(); ++i)
             {
                 result.Add(lines[i]);
             
@@ -72,7 +77,7 @@ namespace GameWarden.Chess
                     result.RemoveAt(result.Count-1);
                     yield return result;
                     emptyLines = 0;
-                    result.Clear();
+                    result = new List<String>();
                 }
             }
 

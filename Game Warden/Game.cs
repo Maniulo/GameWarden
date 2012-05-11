@@ -3,9 +3,9 @@ using System.Linq;
 
 namespace GameWarden
 {
-    public abstract class Game<T, TK> where T : GameState where TK: ConcreteMove
+    public abstract class Game<T, TK> : IEnumerable<T> where T : GameState where TK: ConcreteMove
     {
-        private IEnumerator<TK> Mover;
+        private int Mover = 0;
 
         public Meta Info;
 
@@ -35,15 +35,34 @@ namespace GameWarden
 
         public bool MakeMove()
         {
-            if (Mover == null)
-                Mover = Moves.GetEnumerator();
-
-            if (Mover.MoveNext())
+            if (Mover < Moves.Count)
             {
-                Mover.Current.Apply(CurrentState);
+                Moves[Mover++].Apply(CurrentState);
                 return true;
             }
+
             return false;
+        }
+
+        public bool UndoMove()
+        {
+            if (Mover > 0)
+            {
+                Moves[--Mover].Rollback(CurrentState);
+                return true;
+            }
+
+            return false;
+        }
+
+        public IEnumerator<T> GetEnumerator()
+        {
+            return States.GetEnumerator();
+        }
+
+        System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()
+        {
+            return States.GetEnumerator();
         }
     }
 }

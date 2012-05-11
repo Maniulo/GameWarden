@@ -111,7 +111,7 @@ namespace GameWarden.Tests
             pgn[1] = "";
             pgn[2] = "1. Rh1";
 
-            ChessGame game = new PGNParser().Parse(pgn, new AlgebraicNotation());
+            ChessGame game = new PGNParser().Parse(pgn);
             game.MakeMove();
             Assert.AreEqual("8/8/8/8/8/8/8/7R w KQkq - 0 1", game.CurrentState.ToString());
         }
@@ -124,7 +124,7 @@ namespace GameWarden.Tests
             pgn[1] = "";
             pgn[2] = "1. Qa8 Qa1";
 
-            ChessGame game = new PGNParser().Parse(pgn, new AlgebraicNotation());
+            ChessGame game = new PGNParser().Parse(pgn);
             game.MakeMove();
             game.MakeMove();
             Assert.AreEqual("Q7/8/8/8/8/8/8/q7 w KQkq - 0 1", game.CurrentState.ToString());
@@ -138,7 +138,7 @@ namespace GameWarden.Tests
             pgn[1] = "";
             pgn[2] = "1. Nxe6";
 
-            ChessGame game = new PGNParser().Parse(pgn, new AlgebraicNotation());
+            ChessGame game = new PGNParser().Parse(pgn);
             game.MakeMove();
             Assert.AreEqual("8/8/3pN3/3P4/8/8/8/8 w KQkq - 0 1", game.CurrentState.ToString());
         }
@@ -151,7 +151,7 @@ namespace GameWarden.Tests
             pgn[1] = "";
             pgn[2] = "1. Kb2";
 
-            ChessGame game = new PGNParser().Parse(pgn, new AlgebraicNotation());
+            ChessGame game = new PGNParser().Parse(pgn);
             game.MakeMove();
             Assert.AreEqual("8/8/8/8/8/8/1K6/8 w KQkq - 0 1", game.CurrentState.ToString());
         }
@@ -165,7 +165,7 @@ namespace GameWarden.Tests
             pgn[1] = "";
             pgn[2] = "1. Kc3";
 
-            ChessGame game = new PGNParser().Parse(pgn, new AlgebraicNotation());
+            ChessGame game = new PGNParser().Parse(pgn);
             game.MakeMove();
             Assert.AreEqual("8/8/8/8/8/2K5/8/8 w KQkq - 0 1", game.CurrentState.ToString());
         }
@@ -178,7 +178,7 @@ namespace GameWarden.Tests
             pgn[1] = "";
             pgn[2] = "1. O-O";
 
-            ChessGame game = new PGNParser().Parse(pgn, new AlgebraicNotation());
+            ChessGame game = new PGNParser().Parse(pgn);
             game.MakeMove();
             Assert.AreEqual("8/8/8/8/8/8/8/5RK1 w KQkq - 0 1", game.CurrentState.ToString());
         }
@@ -192,7 +192,7 @@ namespace GameWarden.Tests
             pgn[1] = "";
             pgn[2] = "1. O-O";
 
-            ChessGame game = new PGNParser().Parse(pgn, new AlgebraicNotation());
+            ChessGame game = new PGNParser().Parse(pgn);
             game.MakeMove();
             Assert.AreEqual("8/8/8/8/8/8/8/5RK1 w KQkq - 0 1", game.CurrentState.ToString());
         }
@@ -206,7 +206,7 @@ namespace GameWarden.Tests
             pgn[1] = "";
             pgn[2] = "1. Rb2";
 
-            ChessGame game = new PGNParser().Parse(pgn, new AlgebraicNotation());
+            ChessGame game = new PGNParser().Parse(pgn);
             game.MakeMove();
         }
 
@@ -219,7 +219,7 @@ namespace GameWarden.Tests
             pgn[1] = "";
             pgn[2] = "1. O-O";
 
-            ChessGame game = new PGNParser().Parse(pgn, new AlgebraicNotation());
+            ChessGame game = new PGNParser().Parse(pgn);
             game.MakeMove();
         }
 
@@ -235,5 +235,22 @@ namespace GameWarden.Tests
             ChessGame game = new PGNParser().Parse(pgn, new AlgebraicNotation());
             while (game.MakeMove());
         }
+
+        [TestMethod]
+        public void RollbackComplicatedTest()
+        {
+            String[] pgn = new String[3];
+            pgn[0] = "[FEN \"r7/8/8/8/8/8/8/B7 w KQkq - 0 1\"]";
+            pgn[1] = "";
+            pgn[2] = "1. Bb2 Rb8 2. Bc3 Rc8";
+
+            var game = new PGNParser().Parse(pgn, new AlgebraicNotation());
+            while (game.MakeMove()) ;
+            while (game.UndoMove()) ;
+
+            Assert.AreEqual("r7/8/8/8/8/8/8/B7 w KQkq - 0 1", game.CurrentState.ToString());
+        }
+
+        
     }
 }
