@@ -19,20 +19,20 @@ namespace GameWarden
         public Position From;
         public Position To;
         protected TemplateMove Move = null;
-        private IPiece capturedPiece;
+        private IPiece CapturedPiece;
 
         public virtual void Rollback(IGameState state)
         {
             Move.Rollback(From, To, state);
             
             if (Move.IsCapture)
-                state.RemovePieceN(To, capturedPiece);
+                state.RemovePieceN(To, CapturedPiece);
         }
 
         public virtual void Apply(IGameState state)
         {
             if (Move.IsCapture)
-                capturedPiece = state[To];
+                CapturedPiece = state[To];
 
             Move.Apply(From, To, state);
         }

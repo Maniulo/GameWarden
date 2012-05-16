@@ -51,7 +51,7 @@ namespace GameWarden
                 }
                 catch
                 {
-                    throw new ArgumentNullException();
+                    throw new Exception();
                 }
             }
 

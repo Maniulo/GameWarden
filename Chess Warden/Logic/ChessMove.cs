@@ -31,13 +31,19 @@ namespace GameWarden.Chess
                         From.Equals(p.Pos) &&
                         p.CanMove(To, state))
                     {
-                        var cpState = new ChessState(state);    // !!!
+                        //var cpState = new ChessState(state);    // !!!
+                        var pFrom = p.Pos;
                         var mv = p.GetPossibleMove(To, state);
-                        mv.Apply(p.Pos, To, cpState);
-                        if (!cpState.IsKingOpen(Player))
+                        mv.Apply(p.Pos, To, state);
+                        if (!state.IsKingOpen(Player))
                         {
+                            mv.Rollback(pFrom, To, state);
                             From = p.Pos;
                             return mv;
+                        }
+                        else
+                        {
+                            mv.Rollback(p.Pos, To, state);
                         }
                     }
 

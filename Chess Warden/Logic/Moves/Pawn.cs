@@ -56,6 +56,8 @@ namespace GameWarden.Chess
 
     public class EnPassant : TemplateMove
     {
+        private IPiece capturedPiece;
+
         Position EnemyPawn(ChessState state)
         {
             return new Position(state.EnPassant.File, state.EnPassant.Rank - 1);
@@ -63,7 +65,8 @@ namespace GameWarden.Chess
 
         public override void Apply(Position @from, Position to, IGameState state)
         {
-            state.RemovePiece(EnemyPawn((ChessState)state)); // !!!
+            capturedPiece = state[EnemyPawn((ChessState)state)];    // !!!
+            state.RemovePiece(capturedPiece.Pos);
             state.MovePiece(@from, to);
         }
 
@@ -89,7 +92,7 @@ namespace GameWarden.Chess
 
         public override void Rollback(Position from, Position to, IGameState state)
         {
-            throw new NotImplementedException();
+
         }
     }
 }

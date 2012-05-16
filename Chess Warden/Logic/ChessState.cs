@@ -5,7 +5,7 @@ using GameWarden.Chess.Notations;
 
 namespace GameWarden.Chess
 {
-    public class ChessState : GameState, IEnumerable<IPiece>
+    public class ChessState : GameState, IEnumerable<ChessPiece>
     {
         public String Player;
         public Boolean CastlingKingsideWhite;
@@ -27,7 +27,7 @@ namespace GameWarden.Chess
 
         protected ChessPiece GetKing(Player player)
         {
-            return this.Cast<ChessPiece>().FirstOrDefault(p => !p.IsEmpty && p.Type == PieceTypes.King && p.Player == player);
+            return this.FirstOrDefault(p => !p.IsEmpty && p.Type == PieceTypes.King && p.Player == player);
         }
 
         public Boolean IsUnderAttack(Position pos, Player defencePlayer)
@@ -54,13 +54,14 @@ namespace GameWarden.Chess
             return new FENParser().Generate(this);
         }
         
-        public IEnumerator<IPiece> GetEnumerator()
+        public IEnumerator<ChessPiece> GetEnumerator()
         {
             for (var rank = 8; rank >= 1; --rank)
                 for (var file = 1; file <= 8; ++file)
-                    yield return this[file, rank];
+                    yield return (ChessPiece)this[file, rank];
         }
 
+        /*
         public ChessState(ChessState copy)
             : this()
         {
@@ -76,7 +77,7 @@ namespace GameWarden.Chess
             for (int file = 0; file < 8; ++file)
                 for (int rank = 0; rank < 8; ++rank)
                     Board[file, rank] = new ChessPiece((ChessPiece)copy.Board[file, rank]);
-        }
+        }*/
 
         System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()
         {

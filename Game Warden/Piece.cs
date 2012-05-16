@@ -42,18 +42,7 @@ namespace GameWarden
             Pos = Path.Peek();
         }
 
-        private bool Empty;
-        public bool IsEmpty
-        {
-            get { return Empty; }
-            set
-            {
-                //if (value == true)
-                    Empty = value;
-                //else
-                //    throw new Exception("Square cannot be marked as not empty at runtime.");
-            }
-        }
+        public bool IsEmpty { get; set; }
 
         public Piece()
         {

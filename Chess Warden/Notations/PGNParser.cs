@@ -75,7 +75,8 @@ namespace GameWarden.Chess.Notations
             var movetext = ParseMovetext(lines);
 
             var game = new ChessGame(metainfo);
-            game.Moves = ParseMoves(movetext, moveNotation, game.Players).ToList();
+            foreach (ChessMove cm in ParseMoves(movetext, moveNotation, game.Players))
+                game.Moves.Add(cm);
             
             return game;
         }
