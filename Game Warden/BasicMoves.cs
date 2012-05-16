@@ -2,7 +2,7 @@ using System;
 
 namespace GameWarden
 {
-    public class VerticalMove : Move
+    public class VerticalMove : SimpleTemplateMove
     {
         public VerticalMove(int? maxLength = null, bool? capture = null, Boolean pathCheck = true)
             : base (maxLength, capture, pathCheck) { }
@@ -21,7 +21,7 @@ namespace GameWarden
         }
     }
 
-    public class HorizontalMove : Move
+    public class HorizontalMove : SimpleTemplateMove
     {
         public HorizontalMove(int? maxLength = null, bool? capture = null, Boolean pathCheck = true)
             : base(maxLength, capture, pathCheck) { }
@@ -40,7 +40,7 @@ namespace GameWarden
         }
     }
 
-    public class DiagonalMove : Move
+    public class DiagonalMove : SimpleTemplateMove
     {
         public DiagonalMove(int? maxLength = null, bool? capture = null, Boolean pathCheck = true)
             : base(maxLength, capture, pathCheck) { }

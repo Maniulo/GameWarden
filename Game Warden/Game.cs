@@ -9,7 +9,7 @@ namespace GameWarden
 
         public Meta Info;
 
-        public List<ConcreteMove> Moves = new List<ConcreteMove>();
+        public List<IConcreteMove> Moves = new List<IConcreteMove>();
 
         protected IGameState State;
 

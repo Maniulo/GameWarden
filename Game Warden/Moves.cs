@@ -4,74 +4,50 @@ using System.Linq;
 
 namespace GameWarden
 {
-    public abstract class TemplateMove
+    public interface ITemplateMove
     {
-        public abstract Boolean IsCapture { get; }
-        public Player Player { get; set; }
-        public abstract bool CanApply(Position from, Position to, IGameState state);
-        public abstract void Apply(Position@from, Position to, IGameState state);
-        public abstract void Rollback(Position from, Position to, IGameState state);
-    }
-     
-    public abstract class ConcreteMove
-    {
-        public Player Player;
-        public Position From;
-        public Position To;
-        protected TemplateMove Move = null;
-        private IPiece CapturedPiece;
-
-        public virtual void Rollback(IGameState state)
-        {
-            Move.Rollback(From, To, state);
-            
-            if (Move.IsCapture)
-                state.RemovePieceN(To, CapturedPiece);
-        }
-
-        public virtual void Apply(IGameState state)
-        {
-            if (Move.IsCapture)
-                CapturedPiece = state[To];
-
-            Move.Apply(From, To, state);
-        }
-
-        public virtual bool CanApply(IGameState state)
-        {
-            return Move.CanApply(From, To, state);
-        }
+        Boolean IsCapture { get; }
+        // Player Player { get; set; }
+        bool CanApply(Position from, Position to, IGameState state);
+        IConcreteMove Concretize(Position from, Position to);
     }
 
-    public abstract class Move : TemplateMove
+    public interface IConcreteMove
+    {
+        void Apply(IGameState state);
+        void Rollback(IGameState state);
+    }
+
+    public abstract class SimpleTemplateMove : ITemplateMove
     {
         protected bool? Capture;
         protected int? MaxLength;
         protected Boolean PathCheck;
-
-        public override Boolean IsCapture
+        
+        public Boolean IsCapture
         {
             get { return Capture.HasValue ? Capture.Value : true; }
         }
 
+        public Player Player { get; set; }
+
         protected List<Position> Path;
 
-        protected Move(int? maxLength = null, bool? capture = null, Boolean pathCheck = true)
+        protected SimpleTemplateMove(SimpleTemplateMove copy)
+        {
+            Capture = copy.Capture;
+            PathCheck = copy.PathCheck;
+            MaxLength = copy.MaxLength;
+
+            Path = new List<Position>(copy.Path);
+        }
+
+        protected SimpleTemplateMove(int? maxLength = null, bool? capture = null, Boolean pathCheck = true)
         {
             Path = new List<Position>();
             Capture = capture;
             PathCheck = pathCheck;
             MaxLength = maxLength;
-        }
-
-        public override void Apply(Position from, Position to, IGameState state)
-        {
-            state.MovePiece(from, to);
-        }
-
-        public override void Rollback(Position from, Position to, IGameState state)
-        {
-            state.MovePieceN(from, to);
         }
 
         private bool CheckBarriers(IGameState state)
@@ -93,7 +69,7 @@ namespace GameWarden
             return !MaxLength.HasValue || Path.Count + 1 <= MaxLength.Value;
         }
 
-        public override bool CanApply(Position from, Position to, IGameState state)
+        public virtual bool CanApply(Position from, Position to, IGameState state)
         {
             Boolean result =
                 CheckBarriers(state) &&
@@ -101,6 +77,33 @@ namespace GameWarden
                 CheckLength();
             Path.Clear();
             return result;
+        }
+
+        public virtual IConcreteMove Concretize(Position from, Position to)
+        {
+            return new SimpleConcreteMove(from, to);
+        }
+    }
+
+    public class SimpleConcreteMove : IConcreteMove
+    {
+        public Position From;
+        public Position To;
+
+        public SimpleConcreteMove(Position from, Position to)
+        {
+            From = from;
+            To = to;
+        }
+
+        public virtual void Rollback(IGameState state)
+        {
+            state.MovePieceN(From, To);
+        }
+
+        public virtual void Apply(IGameState state)
+        {
+            state.MovePiece(From, To);
         }
     }
 }

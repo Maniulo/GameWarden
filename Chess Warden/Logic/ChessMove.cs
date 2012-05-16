@@ -2,15 +2,21 @@
 
 namespace GameWarden.Chess
 {
-    public class ChessMove : ConcreteMove
+    public class ChessMove : IConcreteMove
     {
+        public Player Player;
+        public Position From;
+        public Position To;
+        protected IConcreteMove Move;
+        private IPiece CapturedPiece;
+
         public PieceTypes PieceType;
         public String Desc;
 
         public Boolean CastlingKingside;
         public Boolean CastlingQueenside;
-        
-        protected virtual TemplateMove Solve(ChessState state)
+
+        protected virtual IConcreteMove Solve(ChessState state)
         {
             if (CastlingKingside)
             {
@@ -31,19 +37,17 @@ namespace GameWarden.Chess
                         From.Equals(p.Pos) &&
                         p.CanMove(To, state))
                     {
-                        //var cpState = new ChessState(state);    // !!!
-                        var pFrom = p.Pos;
                         var mv = p.GetPossibleMove(To, state);
-                        mv.Apply(p.Pos, To, state);
+                        mv.Apply(state);
                         if (!state.IsKingOpen(Player))
                         {
-                            mv.Rollback(pFrom, To, state);
+                            mv.Rollback(state);
                             From = p.Pos;
                             return mv;
                         }
                         else
                         {
-                            mv.Rollback(p.Pos, To, state);
+                            mv.Rollback(state);
                         }
                     }
 
@@ -60,7 +64,7 @@ namespace GameWarden.Chess
             return Desc;
         }
 
-        public override void Apply(IGameState state)
+        public void Apply(IGameState state)
         {
             if (state is ChessState)    // ???
             {
@@ -72,7 +76,7 @@ namespace GameWarden.Chess
                 if (Move == null)
                     throw new Exception(String.Format("Move \"{0}\" cannot be solved.", Desc));
 
-                base.Apply(state);
+                Move.Apply(state);
             }
             else
             {
@@ -80,7 +84,12 @@ namespace GameWarden.Chess
             }
         }
 
-        public override bool CanApply(IGameState state)
+        public void Rollback(IGameState state)
+        {
+            Move.Rollback(state);
+        }
+        /*
+        public bool CanApply(IGameState state)
         {
             if (state is ChessState)    // ???
             {
@@ -92,12 +101,12 @@ namespace GameWarden.Chess
                 if (Move == null)
                     throw new Exception(String.Format("Move \"{0}\" cannot be solved.", Desc));
 
-                return base.CanApply(cs);
+                return Move.CanApply(From, To, cs);
             }
             else
             {
                 throw new ArgumentException();
             }
-        }
+        }*/
     }
 }

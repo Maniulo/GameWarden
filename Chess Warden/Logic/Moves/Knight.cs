@@ -1,6 +1,6 @@
 namespace GameWarden.Chess
 {
-    public class KnightMove : Move
+    public class KnightMove : SimpleTemplateMove
     {
         public KnightMove()
             : base(null, null, false) {}

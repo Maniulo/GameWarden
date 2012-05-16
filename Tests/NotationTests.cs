@@ -84,7 +84,7 @@ namespace GameWarden.Tests
         [TestMethod]
         public void ParseSANSingleMove()
         {
-            ConcreteMove move = new AlgebraicNotation().Parse("e2e4");
+            var move = new AlgebraicNotation().Parse("e2e4");
             Assert.AreEqual("e2e4", move.ToString());
         }
 

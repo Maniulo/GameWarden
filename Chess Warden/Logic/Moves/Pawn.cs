@@ -29,7 +29,7 @@ namespace GameWarden.Chess
         }
     }
 
-    public class PawnCapture : Move
+    public class PawnCapture : SimpleTemplateMove
     {
         public PawnCapture()
             : base(1, true)
@@ -54,23 +54,45 @@ namespace GameWarden.Chess
         }
     }
 
-    public class EnPassant : TemplateMove
+    public class EnPassantConcrete : IConcreteMove
     {
-        private IPiece capturedPiece;
+        private readonly Position From;
+        private readonly Position To;
+        private IPiece CapturedPiece;
 
-        Position EnemyPawn(ChessState state)
+        public EnPassantConcrete(Position from, Position to)
+        {
+            From = from;
+            To = to;
+        }
+
+        private Position EnemyPawn(ChessState state)
         {
             return new Position(state.EnPassant.File, state.EnPassant.Rank - 1);
         }
 
-        public override void Apply(Position @from, Position to, IGameState state)
+        public void Apply(IGameState state)
         {
-            capturedPiece = state[EnemyPawn((ChessState)state)];    // !!!
-            state.RemovePiece(capturedPiece.Pos);
-            state.MovePiece(@from, to);
+            CapturedPiece = state[EnemyPawn((ChessState)state)];    // !!!
+            state.RemovePiece(CapturedPiece.Pos);
+            state.MovePiece(From, To);
         }
 
-        public override bool CanApply(Position from, Position to, IGameState state)
+        public void Rollback(IGameState state)
+        {
+            state.MovePieceN(From, To);
+            state.RemovePieceN(CapturedPiece);
+        }
+    }
+
+    public class EnPassant : ITemplateMove
+    {
+        public bool IsCapture
+        {
+            get { return true; }
+        }
+
+        public bool CanApply(Position from, Position to, IGameState state)
         {
             if (to.Equals(((ChessState)state).EnPassant))
                 if (Position.FileDistance(to, from) == 1)
@@ -85,14 +107,9 @@ namespace GameWarden.Chess
             return false;
         }
 
-        public override bool IsCapture
+        public IConcreteMove Concretize(Position from, Position to)
         {
-            get { return true; }
-        }
-
-        public override void Rollback(Position from, Position to, IGameState state)
-        {
-
+            return new EnPassantConcrete(from, to);
         }
     }
 }

@@ -11,9 +11,9 @@ namespace GameWarden
         Position Pos { get; }
         void Move(Position pos);
         void Unmove();
-        void AddPossibleMove(TemplateMove move);
+        void AddPossibleMove(ITemplateMove move);
         Boolean CanMove(Position to, IGameState state);
-        TemplateMove GetPossibleMove(Position to, IGameState state);
+        IConcreteMove GetPossibleMove(Position to, IGameState state);
     }
 
     public class Piece : IPiece
@@ -23,9 +23,9 @@ namespace GameWarden
         public Player Player { get; set; }
         public Position Pos  { get; private set; }
 
-        public List<TemplateMove> PossibleMoves = new List<TemplateMove>();
+        public List<ITemplateMove> PossibleMoves = new List<ITemplateMove>();
         
-        public void AddPossibleMove(TemplateMove move)
+        public void AddPossibleMove(ITemplateMove move)
         {
             PossibleMoves.Add(move);
         }
@@ -55,9 +55,9 @@ namespace GameWarden
             Player = copy.Player;
             Pos = new Position(copy.Pos);
 
-            PossibleMoves = new List<TemplateMove>();
-            foreach (TemplateMove m in copy.PossibleMoves)
-                PossibleMoves.Add(m);
+            PossibleMoves = new List<ITemplateMove>(copy.PossibleMoves);
+            //foreach (var m in copy.PossibleMoves)
+            //    PossibleMoves.Add(m);
 
             Path = new Stack<Position>();
             foreach (Position pos in copy.Path)
@@ -74,9 +74,16 @@ namespace GameWarden
             return PossibleMoves.Any(m => m.CanApply(Pos, to, state) && m.IsCapture);
         }
 
-        public TemplateMove GetPossibleMove(Position to, IGameState state)
+        public IConcreteMove GetPossibleMove(Position to, IGameState state)
         {
-            return PossibleMoves.FirstOrDefault(m => m.CanApply(Pos, to, state));
+            try
+            {
+                return PossibleMoves.FirstOrDefault(m => m.CanApply(Pos, to, state)).Concretize(Pos, to);
+            }
+            catch
+            {
+                throw new Exception("No possible move found.");
+            }
         }
     }
 }

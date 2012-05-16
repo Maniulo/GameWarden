@@ -9,7 +9,7 @@ namespace GameWarden
         void MovePiece(Position from, Position to);
 
         void PlacePieceN(Position pos);
-        void RemovePieceN(Position pos, IPiece p);
+        void RemovePieceN(IPiece p);
         void MovePieceN(Position from, Position to);
 
         IPiece this[Position index] { get; }
@@ -94,9 +94,9 @@ namespace GameWarden
             // p.Move(pos);
         }
 
-        public void RemovePieceN(Position pos, IPiece p)
+        public void RemovePieceN(IPiece p)
         {
-            this[pos] = p;
+            this[p.Pos] = p;
             // p.Pos = pos; //CreateEmptyPiece(pos);
         }
 
