@@ -11,17 +11,12 @@ namespace GameWarden.Chess
             this.State = new FENParser().Parse(metainfo["FEN"] ?? FENParser.DefaultFEN, this.Players); // !!! We probably should delete this after testing
         }
 
-        public ChessState CurrentState
-        {
-            get
-            {
-                return (ChessState)this.State;
-            }
-        }
-
         public override string ToString()
         {
-            return new FENParser().Generate(CurrentState);
+            return new FENParser().Generate((ChessState)State);
         }
+
+        public new static int DimX { get { return 8; } }
+        public new static int DimY { get { return 8; } }
     }
 }

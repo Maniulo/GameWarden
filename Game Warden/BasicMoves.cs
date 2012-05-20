@@ -2,9 +2,9 @@ using System;
 
 namespace GameWarden
 {
-    public class VerticalMove : SimpleTemplateMove
+    public class VerticalMoveTemplate : TemplateMove
     {
-        public VerticalMove(int? maxLength = null, bool? capture = null, Boolean pathCheck = true)
+        public VerticalMoveTemplate(int? maxLength = null, bool? capture = null, Boolean pathCheck = true)
             : base (maxLength, capture, pathCheck) { }
 
         public override bool CanApply(Position from, Position to, IGameState state)
@@ -21,9 +21,9 @@ namespace GameWarden
         }
     }
 
-    public class HorizontalMove : SimpleTemplateMove
+    public class HorizontalMoveTemplate : TemplateMove
     {
-        public HorizontalMove(int? maxLength = null, bool? capture = null, Boolean pathCheck = true)
+        public HorizontalMoveTemplate(int? maxLength = null, bool? capture = null, Boolean pathCheck = true)
             : base(maxLength, capture, pathCheck) { }
 
         public override bool CanApply(Position from, Position to, IGameState state)
@@ -40,9 +40,9 @@ namespace GameWarden
         }
     }
 
-    public class DiagonalMove : SimpleTemplateMove
+    public class DiagonalMoveTemplate : TemplateMove
     {
-        public DiagonalMove(int? maxLength = null, bool? capture = null, Boolean pathCheck = true)
+        public DiagonalMoveTemplate(int? maxLength = null, bool? capture = null, Boolean pathCheck = true)
             : base(maxLength, capture, pathCheck) { }
 
         public override bool CanApply(Position from, Position to, IGameState state)

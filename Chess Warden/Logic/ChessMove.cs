@@ -8,7 +8,6 @@ namespace GameWarden.Chess
         public Position From;
         public Position To;
         protected IConcreteMove Move;
-        private IPiece CapturedPiece;
 
         public PieceTypes PieceType;
         public String Desc;
@@ -88,25 +87,5 @@ namespace GameWarden.Chess
         {
             Move.Rollback(state);
         }
-        /*
-        public bool CanApply(IGameState state)
-        {
-            if (state is ChessState)    // ???
-            {
-                var cs = state as ChessState;
-
-                if (Move == null)
-                    Move = Solve(cs);
-
-                if (Move == null)
-                    throw new Exception(String.Format("Move \"{0}\" cannot be solved.", Desc));
-
-                return Move.CanApply(From, To, cs);
-            }
-            else
-            {
-                throw new ArgumentException();
-            }
-        }*/
     }
 }

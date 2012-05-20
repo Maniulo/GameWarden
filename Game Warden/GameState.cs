@@ -1,8 +1,10 @@
 using System;
+using System.Collections.Generic;
+using System.Collections.Specialized;
 
 namespace GameWarden
 {
-    public interface IGameState
+    public interface IGameState : IEnumerable<IPiece>
     {
         void PlacePiece(Position pos, IPiece p);
         void RemovePiece(Position pos);
@@ -12,11 +14,15 @@ namespace GameWarden
         void RemovePieceN(IPiece p);
         void MovePieceN(Position from, Position to);
 
+        IPiece this[int file, int rank] { get; }
         IPiece this[Position index] { get; }
     }
 
     public abstract class GameState : IGameState
     {
+        private readonly int DimX;
+        private readonly int DimY;
+        
         protected IPiece[,] Board;
 
         protected GameState(int dimX, int dimY)
@@ -26,9 +32,13 @@ namespace GameWarden
             for (int file = 0; file < dimX; ++file)
                 for (int rank = 0; rank < dimY; ++rank)
                     Board[file, rank] = CreateEmptyPiece(new Position(file + 1, rank + 1));
+
+            DimX = dimX;
+            DimY = dimY;
         }
 
-        protected IPiece this[int file, int rank]
+        // !!!!11
+        public IPiece this[int file, int rank]
         {
             get
             {
@@ -97,7 +107,6 @@ namespace GameWarden
         public void RemovePieceN(IPiece p)
         {
             this[p.Pos] = p;
-            // p.Pos = pos; //CreateEmptyPiece(pos);
         }
 
         public void MovePieceN(Position from, Position to)
@@ -106,6 +115,18 @@ namespace GameWarden
             this[from].Unmove();
             //this[to].Move(to);
             this[to] = CreateEmptyPiece(to);
+        }
+
+        public IEnumerator<IPiece> GetEnumerator()
+        {
+            for (var rank = DimX; rank >= 1; --rank)
+                for (var file = 1; file <= DimY; ++file)
+                    yield return this[file, rank];
+        }
+
+        System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()
+        {
+            return GetEnumerator();
         }
     }
 }

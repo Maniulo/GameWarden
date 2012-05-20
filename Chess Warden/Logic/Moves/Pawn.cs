@@ -2,7 +2,7 @@ using System;
 
 namespace GameWarden.Chess
 {
-    public class PawnMove : VerticalMove
+    public class PawnMove : VerticalMoveTemplate
     {
         public PawnMove()
             : base(2, false) { }
@@ -29,7 +29,7 @@ namespace GameWarden.Chess
         }
     }
 
-    public class PawnCapture : SimpleTemplateMove
+    public class PawnCapture : TemplateMove
     {
         public PawnCapture()
             : base(1, true)
@@ -51,6 +51,34 @@ namespace GameWarden.Chess
             }
 
             return false;
+        }
+    }
+
+    public class EnPassant : ITemplateMove
+    {
+        public bool IsCapture
+        {
+            get { return true; }
+        }
+
+        public bool CanApply(Position from, Position to, IGameState state)
+        {
+            if (to.Equals(((ChessState)state).EnPassant))
+                if (Position.FileDistance(to, from) == 1)
+                    switch (state[from].Player.Order)
+                    {
+                        case 1:
+                            return to.Rank - from.Rank == 1;
+                        case 2:
+                            return from.Rank - to.Rank == 1;
+                    }
+
+            return false;
+        }
+
+        public IConcreteMove Concretize(Position from, Position to)
+        {
+            return new EnPassantConcrete(from, to);
         }
     }
 
@@ -82,34 +110,6 @@ namespace GameWarden.Chess
         {
             state.MovePieceN(From, To);
             state.RemovePieceN(CapturedPiece);
-        }
-    }
-
-    public class EnPassant : ITemplateMove
-    {
-        public bool IsCapture
-        {
-            get { return true; }
-        }
-
-        public bool CanApply(Position from, Position to, IGameState state)
-        {
-            if (to.Equals(((ChessState)state).EnPassant))
-                if (Position.FileDistance(to, from) == 1)
-                    switch (state[from].Player.Order)
-                    {
-                        case 1:
-                            return to.Rank - from.Rank == 1;
-                        case 2:
-                            return from.Rank - to.Rank == 1;
-                    }
-
-            return false;
-        }
-
-        public IConcreteMove Concretize(Position from, Position to)
-        {
-            return new EnPassantConcrete(from, to);
         }
     }
 }

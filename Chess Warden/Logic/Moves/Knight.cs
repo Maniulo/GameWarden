@@ -1,8 +1,8 @@
 namespace GameWarden.Chess
 {
-    public class KnightMove : SimpleTemplateMove
+    public class KnightMoveTemplate : TemplateMove
     {
-        public KnightMove()
+        public KnightMoveTemplate()
             : base(null, null, false) {}
 
         public override bool CanApply(Position @from, Position to, IGameState state)

@@ -22,7 +22,7 @@ namespace GameWarden.Tests
 
             ChessGame game = new PGNParser().Parse(pgn, new AlgebraicNotation());
             game.MakeMove();
-            Assert.AreEqual("8/8/8/8/8/P7/8/8 w KQkq - 0 1", game.CurrentState.ToString());
+            Assert.AreEqual("8/8/8/8/8/P7/8/8 w KQkq - 0 1", game.State.ToString());
         }
 
         [TestMethod]
@@ -35,7 +35,7 @@ namespace GameWarden.Tests
 
             ChessGame game = new PGNParser().Parse(pgn, new AlgebraicNotation());
             game.MakeMove();
-            Assert.AreEqual("8/8/8/8/4P3/8/8/8 w KQkq - 0 1", game.CurrentState.ToString());
+            Assert.AreEqual("8/8/8/8/4P3/8/8/8 w KQkq - 0 1", game.State.ToString());
         }
 
         [TestMethod]
@@ -48,7 +48,7 @@ namespace GameWarden.Tests
 
             ChessGame game = new PGNParser().Parse(pgn, new AlgebraicNotation());
             game.MakeMove();
-            Assert.AreEqual("8/8/p7/8/8/8/8/8 w KQkq - 0 1", game.CurrentState.ToString());
+            Assert.AreEqual("8/8/p7/8/8/8/8/8 w KQkq - 0 1", game.State.ToString());
         }
 
         [TestMethod]
@@ -61,7 +61,7 @@ namespace GameWarden.Tests
 
             ChessGame game = new PGNParser().Parse(pgn, new AlgebraicNotation());
             game.MakeMove();
-            Assert.AreEqual("8/8/5P2/8/8/8/8/8 w KQkq f6 0 1", game.CurrentState.ToString());
+            Assert.AreEqual("8/8/5P2/8/8/8/8/8 w KQkq f6 0 1", game.State.ToString());
         }
 
         [TestMethod]
@@ -74,7 +74,7 @@ namespace GameWarden.Tests
 
             ChessGame game = new PGNParser().Parse(pgn, new AlgebraicNotation());
             game.MakeMove();
-            Assert.AreEqual("8/8/8/4P3/8/8/8/8 w KQkq - 0 1", game.CurrentState.ToString());
+            Assert.AreEqual("8/8/8/4P3/8/8/8/8 w KQkq - 0 1", game.State.ToString());
         }
 
         [TestMethod]
@@ -100,7 +100,7 @@ namespace GameWarden.Tests
 
             ChessGame game = new PGNParser().Parse(pgn, new AlgebraicNotation());
             game.MakeMove();
-            Assert.AreEqual("7B/7P/8/8/8/8/8/8 w KQkq - 0 1", game.CurrentState.ToString());
+            Assert.AreEqual("7B/7P/8/8/8/8/8/8 w KQkq - 0 1", game.State.ToString());
         }
 
         [TestMethod]
@@ -113,7 +113,7 @@ namespace GameWarden.Tests
 
             ChessGame game = new PGNParser().Parse(pgn);
             game.MakeMove();
-            Assert.AreEqual("8/8/8/8/8/8/8/7R w KQkq - 0 1", game.CurrentState.ToString());
+            Assert.AreEqual("8/8/8/8/8/8/8/7R w KQkq - 0 1", game.State.ToString());
         }
 
         [TestMethod]
@@ -127,7 +127,7 @@ namespace GameWarden.Tests
             ChessGame game = new PGNParser().Parse(pgn);
             game.MakeMove();
             game.MakeMove();
-            Assert.AreEqual("Q7/8/8/8/8/8/8/q7 w KQkq - 0 1", game.CurrentState.ToString());
+            Assert.AreEqual("Q7/8/8/8/8/8/8/q7 w KQkq - 0 1", game.State.ToString());
         }
 
         [TestMethod]
@@ -140,7 +140,7 @@ namespace GameWarden.Tests
 
             ChessGame game = new PGNParser().Parse(pgn);
             game.MakeMove();
-            Assert.AreEqual("8/8/3pN3/3P4/8/8/8/8 w KQkq - 0 1", game.CurrentState.ToString());
+            Assert.AreEqual("8/8/3pN3/3P4/8/8/8/8 w KQkq - 0 1", game.State.ToString());
         }
 
         [TestMethod]
@@ -153,7 +153,7 @@ namespace GameWarden.Tests
 
             ChessGame game = new PGNParser().Parse(pgn);
             game.MakeMove();
-            Assert.AreEqual("8/8/8/8/8/8/1K6/8 w KQkq - 0 1", game.CurrentState.ToString());
+            Assert.AreEqual("8/8/8/8/8/8/1K6/8 w KQkq - 0 1", game.State.ToString());
         }
 
         [TestMethod]
@@ -167,7 +167,7 @@ namespace GameWarden.Tests
 
             ChessGame game = new PGNParser().Parse(pgn);
             game.MakeMove();
-            Assert.AreEqual("8/8/8/8/8/2K5/8/8 w KQkq - 0 1", game.CurrentState.ToString());
+            Assert.AreEqual("8/8/8/8/8/2K5/8/8 w KQkq - 0 1", game.State.ToString());
         }
 
         [TestMethod]
@@ -180,7 +180,7 @@ namespace GameWarden.Tests
 
             ChessGame game = new PGNParser().Parse(pgn);
             game.MakeMove();
-            Assert.AreEqual("8/8/8/8/8/8/8/5RK1 w KQkq - 0 1", game.CurrentState.ToString());
+            Assert.AreEqual("8/8/8/8/8/8/8/5RK1 w KQkq - 0 1", game.State.ToString());
         }
 
         [TestMethod]
@@ -194,7 +194,7 @@ namespace GameWarden.Tests
 
             ChessGame game = new PGNParser().Parse(pgn);
             game.MakeMove();
-            Assert.AreEqual("8/8/8/8/8/8/8/5RK1 w KQkq - 0 1", game.CurrentState.ToString());
+            Assert.AreEqual("8/8/8/8/8/8/8/5RK1 w KQkq - 0 1", game.State.ToString());
         }
 
         [TestMethod]
@@ -248,7 +248,7 @@ namespace GameWarden.Tests
             while (game.MakeMove()) ;
             while (game.UndoMove()) ;
 
-            Assert.AreEqual("r7/8/8/8/8/8/8/B7 w KQkq - 0 1", game.CurrentState.ToString());
+            Assert.AreEqual("r7/8/8/8/8/8/8/B7 w KQkq - 0 1", game.State.ToString());
         }
 
         

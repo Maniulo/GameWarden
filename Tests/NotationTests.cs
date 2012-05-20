@@ -144,7 +144,7 @@ namespace GameWarden.Tests
             pgn[2] = "1. d2d3";
             
             ChessGame game = new PGNParser().Parse(pgn, new AlgebraicNotation());
-            Assert.AreEqual("8/8/8/8/8/8/3P4/8 w KQkq - 0 1", game.CurrentState.ToString());
+            Assert.AreEqual("8/8/8/8/8/8/3P4/8 w KQkq - 0 1", game.State.ToString());
         }
     }
 }

@@ -11,9 +11,9 @@ namespace GameWarden.Chess.Notations
     public class AlgebraicNotation : IChessMoveNotation
     {
         public Regex RxMove;
-        readonly IPiecePresentation Presentation;
+        readonly IChessPiecePresentation Presentation;
 
-        public AlgebraicNotation(IPiecePresentation presentation)
+        public AlgebraicNotation(IChessPiecePresentation presentation)
         {
             Presentation = presentation;
             String figureSymbols = Presentation.ToString();
@@ -64,9 +64,9 @@ namespace GameWarden.Chess.Notations
                 else
                 {
                     if (mv.Groups["Piece"].Success)
-                        m.PieceType = Presentation.GetType(mv.Groups["Piece"].Value[0]);
+                        m.PieceType = Presentation.GetPieceType(mv.Groups["Piece"].Value[0]);
                     else
-                        m.PieceType = Presentation.GetType(null);
+                        m.PieceType = Presentation.GetPieceType(null);
 
                     m.To = new Position(mv.Groups["ToFile"].Value + mv.Groups["ToRank"].Value);
                     m.From = new Position();

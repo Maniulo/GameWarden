@@ -7,7 +7,6 @@ namespace GameWarden
     public interface ITemplateMove
     {
         Boolean IsCapture { get; }
-        // Player Player { get; set; }
         bool CanApply(Position from, Position to, IGameState state);
         IConcreteMove Concretize(Position from, Position to);
     }
@@ -18,7 +17,7 @@ namespace GameWarden
         void Rollback(IGameState state);
     }
 
-    public abstract class SimpleTemplateMove : ITemplateMove
+    public abstract class TemplateMove : ITemplateMove
     {
         protected bool? Capture;
         protected int? MaxLength;
@@ -31,20 +30,10 @@ namespace GameWarden
 
         public Player Player { get; set; }
 
-        protected List<Position> Path;
+        protected List<Position> Path = new List<Position>();
 
-        protected SimpleTemplateMove(SimpleTemplateMove copy)
+        protected TemplateMove(int? maxLength = null, bool? capture = null, Boolean pathCheck = true)
         {
-            Capture = copy.Capture;
-            PathCheck = copy.PathCheck;
-            MaxLength = copy.MaxLength;
-
-            Path = new List<Position>(copy.Path);
-        }
-
-        protected SimpleTemplateMove(int? maxLength = null, bool? capture = null, Boolean pathCheck = true)
-        {
-            Path = new List<Position>();
             Capture = capture;
             PathCheck = pathCheck;
             MaxLength = maxLength;
@@ -76,34 +65,42 @@ namespace GameWarden
                 CheckCapture(to, state) &&
                 CheckLength();
             Path.Clear();
+
             return result;
         }
 
         public virtual IConcreteMove Concretize(Position from, Position to)
         {
-            return new SimpleConcreteMove(from, to);
+            return new ConcreteMove(from, to, IsCapture);
         }
     }
 
-    public class SimpleConcreteMove : IConcreteMove
+    public class ConcreteMove : IConcreteMove
     {
-        public Position From;
-        public Position To;
+        private readonly Position From;
+        private readonly Position To;
+        private readonly Boolean Capture;
+        private IPiece CapturedPiece;
 
-        public SimpleConcreteMove(Position from, Position to)
+        public ConcreteMove(Position from, Position to, Boolean capture)
         {
             From = from;
             To = to;
+            Capture = capture;
+        }
+
+        public virtual void Apply(IGameState state)
+        {
+            if (Capture)
+                CapturedPiece = state[To];
+            state.MovePiece(From, To);
         }
 
         public virtual void Rollback(IGameState state)
         {
             state.MovePieceN(From, To);
-        }
-
-        public virtual void Apply(IGameState state)
-        {
-            state.MovePiece(From, To);
+            if (Capture)
+                state.RemovePieceN(CapturedPiece);
         }
     }
 }

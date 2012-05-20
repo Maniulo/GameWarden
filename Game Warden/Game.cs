@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -5,13 +6,16 @@ namespace GameWarden
 {
     public abstract class Game
     {
+        public static int DimX { get { throw new NotImplementedException(); }  }
+        public static int DimY  { get { throw new NotImplementedException(); }  }
+
         private int Mover = 0;
 
         public Meta Info;
 
         public List<IConcreteMove> Moves = new List<IConcreteMove>();
 
-        protected IGameState State;
+        public IGameState State;
 
         protected Game(int maxPlayers)
         {
