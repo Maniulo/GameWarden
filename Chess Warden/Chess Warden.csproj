@@ -67,24 +67,13 @@
     <Compile Include="Board.xaml.cs">
       <DependentUpon>Board.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Logic\ChessPiece.cs" />
-    <Compile Include="Logic\ChessPieceFactory.cs" />
-    <Compile Include="Logic\ChessState.cs" />
     <Compile Include="FileIO.cs" />
     <Compile Include="Window.xaml.cs">
       <DependentUpon>Window.xaml</DependentUpon>
+      <SubType>Component</SubType>
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Logic\Moves\Knight.cs" />
-    <Compile Include="Logic\Moves\Castling.cs" />
-    <Compile Include="Logic\ChessGame.cs" />
-    <Compile Include="Notations\PiecePresentations.cs" />
-    <Compile Include="Notations\FENParser.cs" />
-    <Compile Include="Logic\ChessMove.cs" />
-    <Compile Include="Notations\MoveNotations.cs" />
-    <Compile Include="Notations\PGNParser.cs" />
-    <Compile Include="Logic\Moves\Pawn.cs" />
     <Compile Include="Properties\AssemblyInfo.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -109,6 +98,10 @@
     <AppDesigner Include="Properties\" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\Chess Warden Logic\Chess Warden Logic.csproj">
+      <Project>{4BB24267-0848-41C6-B579-65DC2EB44AA6}</Project>
+      <Name>Chess Warden Logic</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Game Warden\Game Warden.csproj">
       <Project>{16B5E47F-42D8-485C-9CB8-E914E84267BE}</Project>
       <Name>Game Warden</Name>
@@ -132,6 +125,13 @@
   </ItemGroup>
   <ItemGroup>
     <Resource Include="file.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="all.png" />
+    <Resource Include="filter.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="piece.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

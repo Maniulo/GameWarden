@@ -16,10 +16,5 @@ namespace GameWarden.Chess
         {
             Type = copy.Type;
         }
-
-        public override string ToString()
-        {
-            return base.ToString();
-        }
     }
 }

@@ -52,6 +52,10 @@
     <Compile Include="FirstTests.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\Chess Warden Logic\Chess Warden Logic.csproj">
+      <Project>{4BB24267-0848-41C6-B579-65DC2EB44AA6}</Project>
+      <Name>Chess Warden Logic</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Chess Warden\Chess Warden.csproj">
       <Project>{A26E1193-09C1-413B-B246-98B6DB9854D2}</Project>
       <Name>Chess Warden</Name>

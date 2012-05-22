@@ -1,24 +1,16 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
 using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
 using System.Windows.Shapes;
 using GameWarden.Chess.Notations;
 
 namespace GameWarden.Chess
 {
-    /// <summary>
-    /// Interaction logic for Board.xaml
-    /// </summary>
-    public partial class Board : UserControl
+    public partial class Board : UserControl, IEnumerable<Cell>
     {
         public int DimX
         {
@@ -70,48 +62,40 @@ namespace GameWarden.Chess
             }
         }
 
-        private Game game;
-        public Game Game
+        public static readonly DependencyProperty StateProperty = DependencyProperty.Register(
+            "State", typeof(GameState), typeof(Board), new FrameworkPropertyMetadata(OnStateChanged, CoerceValueCallback));
+        private static object CoerceValueCallback(DependencyObject d, object e)
         {
-            get { return game; }
-            set
-            {
-                game = value;
-                Refresh();
-            }
+            ((Board)d).Refresh();
+            return e;
         }
-        
+        private static void OnStateChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            ((Board)d).Refresh();
+        }
+        public GameState State
+        {
+            get { return (GameState)GetValue(StateProperty); }
+            set { SetValue(StateProperty, value); }
+        }
+
         private Cell[,] Squares;
+        private double CellSize; 
 
-        public void MakeMove()
-        {
-            Game.MakeMove();
-            Refresh();
-        }
-        public void UndoMove()
-        {
-            Game.UndoMove();
-            Refresh();
-        }
-
-        private void ClearCanvas()
-        {
-            theCanvas.Children.Clear();
-        }
-
-        public void DrawPath(Cell c)
+        // Drawing piece path
+        private void DrawPath(Cell c)
         {
             ClearCanvas();
             DrawLine(
-                c.Piece.Path.Select(pos => Squares[pos.File - 1, DimY - pos.Rank + 1])
+                c.Piece.Path.Select(pos => Squares[pos.File - 1, DimY - pos.Rank])
                 );
         }
-        public void DrawLine(IEnumerable<Cell> cells)
+        private void DrawLine(IEnumerable<Cell> cells)
         {
             var myLine = new Polyline { Stroke = Brushes.Coral };
 
             foreach (Cell c in cells)
-                myLine.Points.Add(c.Center);
+                myLine.Points.Add(GetCellCenter(c));
 
             myLine.HorizontalAlignment = HorizontalAlignment.Left;
             myLine.VerticalAlignment = VerticalAlignment.Center;
@@ -119,23 +103,31 @@ namespace GameWarden.Chess
 
             theCanvas.Children.Add(myLine);
         }
+        private Point GetCellCenter(Cell cell)
+        {
+            return new Point((cell.X + 0.5) * CellSize, (cell.Y + 0.5) * CellSize);
+        }
+        private void ClearCanvas()
+        {
+            theCanvas.Children.Clear();
+        }
 
         public void Refresh()
         {
             ClearCanvas();
 
-            /*W.eventLabel.Content = Game.Info["Event"];
-            W.siteLabel.Content = Game.Info["Site"];
-            W.blackLabel.Content = Game.Info["Black"];
-            W.whiteLabel.Content = Game.Info["White"];
-            W.dateLabel.Content = Game.Info["Date"];
-            W.resultLabel.Content = Game.Info["Result"];
-            W.roundLabel.Content = Game.Info["Round"];*/
-
-            foreach (var p in Game.State)
+            foreach (var p in State)
                 Squares[p.Pos.File - 1, p.Pos.Rank - 1].Piece = (Piece)p;
         }
 
+        // Initializers
+        public Board()
+        {
+            InitializeComponent();
+            InitializeGrid();
+            PopulateGrid();
+            BringCanvasToFront();
+        }
         private void InitializeGrid()
         {
             Squares = new Cell[DimX, DimY];
@@ -146,31 +138,28 @@ namespace GameWarden.Chess
             for (int rank = 1; rank <= DimY; ++rank)
                 theGrid.RowDefinitions.Add(new RowDefinition());
         }
-
         private void PopulateGrid()
         {
             IPiecePresentation presentation = new FigurinePresentation();
-            int ww = (int)theGrid.Width / DimX;
-            int hh = (int)theGrid.Height / DimY;
 
             for (int file = 0; file < DimX; ++file)
                 for (int rank = 0; rank < DimY; ++rank)
                 {
-                    Cell cell = Squares[file, rank] = new Cell(ww * file, hh * rank) { Presentation = presentation };
+                    Cell cell = Squares[file, rank] = new Cell(file, rank) { Presentation = presentation };
                     theGrid.Children.Add(cell);
                     Grid.SetColumn(cell, file);
                     Grid.SetRow(cell, DimY - rank - 1);
                     CreateContextMenu(cell);
                 }
         }
-
-        public Board()
+        private void BringCanvasToFront()
         {
-            InitializeComponent();
-            InitializeGrid();
-            PopulateGrid();
+            var canvas = theGrid.Children[0];
+            theGrid.Children.RemoveAt(0);
+            theGrid.Children.Add(canvas);
         }
-
+        
+        // Context menu
         private void CreateContextMenu(Cell cell)
         {
             ContextMenu = new ContextMenu();
@@ -179,7 +168,6 @@ namespace GameWarden.Chess
             ContextMenu.Items.Add(item);
             ContextMenuService.SetContextMenu(cell, ContextMenu);
         }
-
         private void ItemOnClick(object sender, RoutedEventArgs e)
         {
             DrawPath(((MenuItem)sender).CommandParameter as Cell);
@@ -187,16 +175,30 @@ namespace GameWarden.Chess
 
         protected override Size ArrangeOverride(Size constraint)
         {
-            var size = Math.Min(constraint.Width/DimX, constraint.Height/DimY);
+            CellSize = Math.Min(constraint.Width / DimX,
+                                constraint.Height / DimY);
 
-            theGrid.Width = DimX * size;
-            theGrid.Height = DimY * size;
+            theGrid.Width = DimX * CellSize;
+            theGrid.Height = DimY * CellSize;
+            
+            foreach (Cell c in Squares)
+                c.FontSize = CellSize / 1.5;
+
             ClearCanvas();
 
-            foreach (Cell c in Squares)
-                c.FontSize = size / 2;
-
             return base.ArrangeOverride(constraint);
+        }
+
+        public IEnumerator<Cell> GetEnumerator()
+        {
+            for (int i = 0; i < DimX; ++i)
+                for (int j = 0; j < DimY; ++j)
+                    yield return Squares[i,j];
+        }
+
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return GetEnumerator();
         }
     }
 
@@ -204,17 +206,17 @@ namespace GameWarden.Chess
     {
         public IPiecePresentation Presentation;
 
-        private readonly int X;
-        private readonly int Y;
+        public readonly int X;
+        public readonly int Y;
 
-        private Piece p;
+        private Piece piece;
         public Piece Piece
         {
-            get { return p; }
+            get { return piece; }
             set
             {
-                p = value;
-                Content = Presentation.GetPresentation(p); //!!!
+                piece = value;
+                Content = Presentation.GetPresentation(piece); //!!!
             }
         }
 
@@ -227,17 +229,5 @@ namespace GameWarden.Chess
             HorizontalContentAlignment = HorizontalAlignment.Center;
             VerticalContentAlignment = VerticalAlignment.Center;
         }
-
-        public Point Center
-        {
-            get
-            {
-                return
-                    new Point(
-                        X + ActualWidth / 2,
-                        Y + ActualHeight / 2);
-            }
-        }
-
     }
 }

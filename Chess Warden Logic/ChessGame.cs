@@ -13,7 +13,7 @@ namespace GameWarden.Chess
 
         public override string ToString()
         {
-            return new FENParser().Generate((ChessState)State);
+            return Info["Event"] + ": " + Info["White"] + " vs. " + Info["Black"];// +" on " + Info["Date"] + " (" + Info["Result"] + ")";
         }
 
         public new static int DimX { get { return 8; } }

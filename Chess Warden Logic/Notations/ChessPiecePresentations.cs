@@ -1,26 +1,15 @@
 ﻿using System;
-using GameWarden.Chess.Notations;
 
-namespace GameWarden.Chess
+namespace GameWarden.Chess.Notations
 {
-    public enum PieceTypes
-    {
-        Pawn,
-        Knight,
-        Bishop,
-        Rook,
-        Queen,
-        King
-    }
-
     public interface IChessPiecePresentation : IPiecePresentation
     {
-        PieceTypes GetPieceType(char? c);
+        PieceTypes GetPieceType(Object c);
     }
 
     public class EnglishPresentation : IChessPiecePresentation
     {
-        virtual public Char? GetPresentation(IPiece p)
+        virtual public Object GetPresentation(IPiece p)
         {
             var piece = p as ChessPiece;
 
@@ -44,16 +33,16 @@ namespace GameWarden.Chess
             throw new ArgumentException();
         }
 
-        virtual public IPiece GetPiece(char? c)
+        virtual public IPiece GetPiece(Object c)
         {
             return new ChessPiece { Type = GetPieceType(c) };
         }
 
-        virtual public PieceTypes GetPieceType(char? c)
+        virtual public PieceTypes GetPieceType(Object c)
         {
-            if (c.HasValue)
+            if (((char?)c).HasValue)
             {
-                switch (c.Value)
+                switch (((char?)c).Value)
                 {
                     case 'N':
                         return PieceTypes.Knight;
@@ -83,14 +72,14 @@ namespace GameWarden.Chess
     {
         readonly EnglishPresentation Template = new EnglishPresentation();
 
-        public char? GetPresentation(IPiece p)
+        public Object GetPresentation(IPiece p)
         {
             var piece = p as ChessPiece;
 
             if (piece == null)
                 throw new ArgumentException();
 
-            var c = (piece.Type == PieceTypes.Pawn) ? 'p' : Template.GetPresentation(piece).Value;
+            var c = (piece.Type == PieceTypes.Pawn) ? 'p' : ((char?)Template.GetPresentation(piece)).Value;
 
             switch (p.Player.Order)
             {
@@ -105,16 +94,15 @@ namespace GameWarden.Chess
             return c;
         }
 
-        public IPiece GetPiece(char? c)
+        public IPiece GetPiece(Object c)
         {
-            return new ChessPiece { Type = GetPieceType(c), Player = Char.IsUpper(c.Value) ? new Player(1) : new Player(2) };
+            return new ChessPiece { Type = GetPieceType(c), Player = Char.IsUpper(((char?)c).Value) ? new Player(1) : new Player(2) };
         }
 
-        public PieceTypes GetPieceType(char? c)
+        public PieceTypes GetPieceType(Object c)
         {
-            c = Char.ToUpper(c.Value);
-
-            return c == 'P' ? PieceTypes.Pawn : Template.GetPieceType(c);
+            char? ch = Char.ToUpper(((char?)c).Value);
+            return ch == 'P' ? PieceTypes.Pawn : Template.GetPieceType(ch);
         }
 
         public override string ToString()
@@ -173,29 +161,37 @@ namespace GameWarden.Chess
             throw new Exception();
         }
 
-        virtual public IPiece GetPiece(Char? o)
+        public override string ToString()
         {
-            return new ChessPiece();
-            /*
-            switch (o)
-            {
-                case '♙': return new Pawn(PieceColour.White);
-                case '♘': return new Knight(PieceColour.White);
-                case '♗': return new Bishop(PieceColour.White);
-                case '♖': return new Rook(PieceColour.White);
-                case '♕': return new Queen(PieceColour.White);
-                case '♔': return new King(PieceColour.White);
-                case '♟': return new Pawn(PieceColour.Black);
-                case '♞': return new Knight(PieceColour.Black);
-                case '♝': return new Bishop(PieceColour.Black);
-                case '♜': return new Rook(PieceColour.Black);
-                case '♛': return new Queen(PieceColour.Black);
-                case '♚': return new King(PieceColour.Black);
-                default: return new NullPiece();
-            }*/
+            return "♙♘♗♖♕♔♟♞♝♜♛♚";
         }
 
-        virtual public Char? GetPresentation(IPiece p)
+        virtual public IPiece GetPiece(Object o)
+        {
+            var p = new ChessPiece { Type = GetPieceType(o) };
+
+            switch ((Char?)o)
+            {
+                case '♙':
+                case '♘': 
+                case '♗': 
+                case '♖': 
+                case '♕':
+                case '♔': p.Player = new Player(1);
+                    break;
+                case '♟': 
+                case '♞': 
+                case '♝': 
+                case '♜': 
+                case '♛':
+                case '♚': p.Player = new Player(2);
+                    break;
+            }
+
+            return p;
+        }
+
+        virtual public Object GetPresentation(IPiece p)
         {
             if (p.IsEmpty)
                 return null;
@@ -203,52 +199,31 @@ namespace GameWarden.Chess
             return p.Player.Order == 1 ? GetWhitePieceSymbol(p) : GetBlackPieceSymbol(p);
         }
 
-        public PieceTypes GetPieceType(char? c)
+        public PieceTypes GetPieceType(Object c)
         {
-            throw new NotImplementedException();
-        }
-    }
-
-    public class ChessPieceFactory
-    {
-        public ChessPiece CreatePiece(Char? type, IPiecePresentation presentation)
-        {
-            var p = presentation.GetPiece(type) as ChessPiece;
-            if (p == null)
-                throw new ArgumentException();
-            
-            switch (p.Type)
+            switch (c as Char?)
             {
-                case PieceTypes.Pawn:
-                    p.AddPossibleMove(new PawnMove());
-                    p.AddPossibleMove(new PawnCapture());
-                    p.AddPossibleMove(new EnPassant());
-                    break;
-                case PieceTypes.Knight:
-                    p.AddPossibleMove(new KnightMoveTemplate());
-                    break;
-                case PieceTypes.Bishop:
-                    p.AddPossibleMove(new DiagonalMoveTemplate());
-                    break;
-                case PieceTypes.Rook:
-                    p.AddPossibleMove(new HorizontalMoveTemplate());
-                    p.AddPossibleMove(new VerticalMoveTemplate());
-                    break;
-                case PieceTypes.Queen:
-                    p.AddPossibleMove(new HorizontalMoveTemplate());
-                    p.AddPossibleMove(new VerticalMoveTemplate());
-                    p.AddPossibleMove(new DiagonalMoveTemplate());
-                    break;
-                case PieceTypes.King:
-                    p.AddPossibleMove(new HorizontalMoveTemplate(1));
-                    p.AddPossibleMove(new VerticalMoveTemplate(1));
-                    p.AddPossibleMove(new DiagonalMoveTemplate(1));
-                    p.AddPossibleMove(new Castling(Castling.CastlingType.Kingside));
-                    p.AddPossibleMove(new Castling(Castling.CastlingType.Queenside));
-                    break;
+                case '♟':
+                case '♙':
+                    return PieceTypes.Pawn;
+                case '♞':
+                case '♘':
+                    return PieceTypes.Knight;
+                case '♝':
+                case '♗':
+                    return PieceTypes.Bishop;
+                case '♜':
+                case '♖':
+                    return PieceTypes.Rook;
+                case '♛':
+                case '♕':
+                    return PieceTypes.Queen;
+                case '♚':
+                case '♔':
+                    return PieceTypes.King;
             }
 
-            return p;
+            throw new ArgumentException();
         }
     }
 }

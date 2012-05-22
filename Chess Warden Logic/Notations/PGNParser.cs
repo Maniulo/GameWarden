@@ -114,14 +114,13 @@ namespace GameWarden.Chess.Notations
 
             result.Add("");
 
-            // AlgebraicNotation AN = new AlgebraicNotation();
-            int i = 1;
             var movetext = new StringBuilder();
             var mover = game.Moves.GetEnumerator();
+            var moveCount = 1;
 
             while (mover.MoveNext())
             {
-                movetext.Append((i++) + ". ");
+                movetext.Append((moveCount++) + ". ");
                 movetext.Append(mover.Current + " ");
                 if (mover.MoveNext())
                     movetext.Append(mover.Current + " ");

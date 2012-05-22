@@ -1,5 +1,6 @@
 using System;
-using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.Linq;
 using GameWarden.Chess.Notations;
 
@@ -24,7 +25,7 @@ namespace GameWarden.Chess
 
         protected ChessPiece GetKing(Player player)
         {
-            return this.Where(p => !p.IsEmpty && ((ChessPiece) p).Type == PieceTypes.King && p.Player == player).Cast<ChessPiece>().FirstOrDefault();
+            return (ChessPiece)this.FirstOrDefault(p => !p.IsEmpty && ((ChessPiece)p).Type == PieceTypes.King && p.Player == player);
         }
 
         public Boolean IsUnderAttack(Position pos, Player defencePlayer)
@@ -35,7 +36,7 @@ namespace GameWarden.Chess
         public ChessState()
             : base(8, 8) { }
 
-        public override IPiece CreateEmptyPiece(Position pos)
+        public override IPiece CreateEmptyPiece(Position pos) // !!!
         {
             var p = new ChessPiece { IsEmpty = true };
             p.Move(pos);
@@ -46,7 +47,7 @@ namespace GameWarden.Chess
         {
             return new FENParser().Generate(this);
         }
-        
+
         
     }
 }

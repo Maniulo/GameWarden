@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Collections.Specialized;
+using System.ComponentModel;
 
 namespace GameWarden
 {
@@ -18,7 +20,7 @@ namespace GameWarden
         IPiece this[Position index] { get; }
     }
 
-    public abstract class GameState : IGameState
+    public abstract class GameState : IGameState 
     {
         private readonly int DimX;
         private readonly int DimY;
@@ -116,7 +118,7 @@ namespace GameWarden
             //this[to].Move(to);
             this[to] = CreateEmptyPiece(to);
         }
-
+        
         public IEnumerator<IPiece> GetEnumerator()
         {
             for (var rank = DimX; rank >= 1; --rank)

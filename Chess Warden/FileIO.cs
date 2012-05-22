@@ -68,9 +68,16 @@ namespace GameWarden.Chess
             for (int i = 0; i < lines.Count(); ++i)
             {
                 result.Add(lines[i]);
-            
+
                 if (lines[i].Equals(""))
+                {
                     ++emptyLines;
+                    while (lines[i].Equals(""))
+                    {
+                        ++i;
+                    }
+                    --i;
+                }
 
                 if (emptyLines == 2)
                 {
