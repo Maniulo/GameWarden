@@ -12,8 +12,8 @@
         <ribbon:Ribbon x:Name="Ribbon">
             <ribbon:Ribbon.ApplicationMenu>
                 <ribbon:RibbonApplicationMenu SmallImageSource="Resourses\file.png">
-                    <ribbon:RibbonApplicationMenuItem Header="Import" Icon="Resourses/import.png" x:Name="OpenPGNBtn" Click="OpenPGNClick" />
-                    <ribbon:RibbonApplicationMenuItem Header="Export" Icon="Resourses/export.png" x:Name="SavePGNBtn" Click="SavePGNClick" />
+                    <ribbon:RibbonApplicationMenuItem Header="Import" ImageSource="Resourses/import.png" x:Name="OpenPGNBtn" Click="OpenPGNClick" />
+                    <ribbon:RibbonApplicationMenuItem Header="Export" ImageSource="Resourses/export.png" x:Name="SavePGNBtn" Click="SavePGNClick" IsEnabled="{Binding ElementName=ResultsList, Path=SelectedItems.Count}" />
                 </ribbon:RibbonApplicationMenu>
             </ribbon:Ribbon.ApplicationMenu>
             <ribbon:RibbonTab x:Name="HomeTab" 
