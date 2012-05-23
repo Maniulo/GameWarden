@@ -11,9 +11,9 @@ namespace GameWarden.Chess.Notations
     public class AlgebraicNotation : IChessMoveNotation
     {
         public Regex RxMove;
-        readonly IChessPiecePresentation Presentation;
+        readonly IChessPieceTypePresentation Presentation;
 
-        public AlgebraicNotation(IChessPiecePresentation presentation)
+        public AlgebraicNotation(IChessPieceTypePresentation presentation)
         {
             Presentation = presentation;
             String figureSymbols = Presentation.ToString();

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using GameWarden.Chess.Notations;
 
 namespace GameWarden.Chess
@@ -15,7 +16,7 @@ namespace GameWarden.Chess
 
     public class ChessPieceFactory
     {
-        public void PopulatePiece(ChessPiece p, PieceTypes type)
+        static private void AddMoves(ChessPiece p)
         {
             switch (p.Type)
             {
@@ -48,15 +49,21 @@ namespace GameWarden.Chess
                     break;
             }
         }
-
-        public ChessPiece CreatePiece(Char? pieceCode, IPiecePresentation presentation)
+        static public ChessPiece CreatePiece(Object pieceCode, IChessPresentation presentation, List<Player> players)
         {
-            var p = presentation.GetPiece(pieceCode) as ChessPiece;
-            if (p == null)
-                throw new ArgumentException();
+            var p = new ChessPiece();
 
-            PopulatePiece(p, p.Type);
-
+            if (!presentation.IsEmpty(pieceCode))
+            {
+                p.Type = presentation.GetPieceType(pieceCode);
+                p.Player = players.Find(s => s.Order == presentation.GetPlayer(pieceCode));
+                AddMoves(p);
+            }
+            else
+            {
+                p.IsEmpty = true;
+            }
+            
             return p;
         }
     }

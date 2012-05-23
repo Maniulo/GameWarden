@@ -35,7 +35,7 @@ namespace GameWarden.Chess
             var PieceButtons = new List<RibbonToggleButton>();
 
             foreach (Char c in figures.ToString())
-                PieceButtons.Add(new RibbonToggleButton { Label = c.ToString() });
+                PieceButtons.Add(new RibbonToggleButton { Label = c.ToString(), Content = c });
             PieceButtons.Add(new RibbonToggleButton { Label = "x" });
 
             foreach (var btn in PieceButtons)
@@ -56,12 +56,12 @@ namespace GameWarden.Chess
         void c_MouseUp(object sender, MouseButtonEventArgs e)
         {
             var c = sender as Cell;
-            theGame.PlacePiece(new Position(c.X+1, c.Y+1), figures.GetPiece(placedPiece));
+            theGame.PlacePiece(new Position(c.X+1, c.Y+1), ChessPieceFactory.CreatePiece(placedPiece, figures, theGame.Game.Players)); // !!!
         }
 
         void btn_Click(object sender, RoutedEventArgs e)
         {
-            placedPiece = ((RibbonToggleButton)sender).Label[0];
+            placedPiece = ((RibbonToggleButton)sender).Content;
             Cursor = Cursors.Hand;
         }
 
@@ -75,18 +75,7 @@ namespace GameWarden.Chess
             theBoard.Refresh();
         }
         
-        private void OpenPGNClick(object sender, RoutedEventArgs e)
-        {
-            var filename = OpenFileDialog();
-
-            if (filename != null)
-            {
-                var ldr = new DBLoader(Games);
-
-                
-                ldr.RunWorkerAsync(filename);
-            }
-        }
+        
 
         public void Contains(object sender, FilterEventArgs e)
         {
@@ -109,38 +98,15 @@ namespace GameWarden.Chess
             }
         }
 
-        // File dialogs functions
-        private static String OpenFileDialog()
+        
+
+        private void SetBindings(Object context)
         {
-            var dlg = new OpenFileDialog { Filter = "PGN Files|*.pgn" };
-            bool? result = dlg.ShowDialog();
+            LayoutRoot.DataContext = context;
 
-            if (result == true)
-            {
-                String filename = dlg.FileName;
-                return filename;
-            }
+            foreach (Label l in InfoGroup.Children)
+                l.DataContext = context;
 
-            return null;
-        }
-        private static String SaveFileDialog()
-        {
-            var dlg = new SaveFileDialog { Filter = "PGN Files|*.pgn" };
-            bool? result = dlg.ShowDialog();
-
-            if (result == true)
-            {
-                String filename = dlg.FileName;
-                return filename;
-            }
-            return null;
-        }
-
-        private void ResultsList_SelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
-            theGame.Game = (ChessGame)e.AddedItems[0];
-
-            LayoutRoot.DataContext = theGame;
             theBoard.SetBinding(Board.StateProperty, "State");
             eventLabel.SetBinding(Label.ContentProperty, "Event");
             siteLabel.SetBinding(Label.ContentProperty, "Site");
@@ -149,18 +115,28 @@ namespace GameWarden.Chess
             whiteLabel.SetBinding(Label.ContentProperty, "White");
             blackLabel.SetBinding(Label.ContentProperty, "Black");
             resultLabel.SetBinding(Label.ContentProperty, "Result");
-            
+
             var b = new Binding("FEN");
             var v = new ExceptionValidationRule();
             b.UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged;
             b.ValidationRules.Add(v);
             FENSearch.SetBinding(TextBox.TextProperty, b);
-            
+        }
+
+        private void ResultsListSelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            theGame.Game = (ChessGame)e.AddedItems[0];
+            SetBindings(theGame);
         }
 
         private void TextboxSearchTextChanged(object sender, TextChangedEventArgs e)
         {
             View.View.Refresh();
+        }
+
+        private void RibbonButton_Click(object sender, RoutedEventArgs e)
+        {
+            ((RibbonButton)sender).Label = new ChessEngineConnector().FindBestMove("S:/engine3.exe", theGame.State);
         }
     }
 
@@ -183,7 +159,7 @@ namespace GameWarden.Chess
 
             int count = io.Count();
             
-            foreach (Game g in io.ImportPGN())
+            foreach (ChessGame g in io.ImportPGN())
             {
                 ReportProgress(0, g); //l.Invoke(Invoke(new MethodInvoker(Delegate {l.Items.Add(g);})));
             }

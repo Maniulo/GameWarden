@@ -19,6 +19,11 @@ namespace GameWarden.Chess
         {
             while (lines.Any() && lines[0].Equals(""))
                 lines.RemoveAt(0);
+
+            while (lines.Any() && lines[lines.Count-1].Equals(""))
+                lines.RemoveAt(lines.Count-1);
+
+            lines.Add("");
         }
 
         public int Count()
@@ -72,10 +77,9 @@ namespace GameWarden.Chess
                 if (lines[i].Equals(""))
                 {
                     ++emptyLines;
-                    while (lines[i].Equals(""))
-                    {
+                    while (i < lines.Count && lines[i].Equals(""))
                         ++i;
-                    }
+
                     --i;
                 }
 
@@ -88,27 +92,27 @@ namespace GameWarden.Chess
                 }
             }
 
-            yield return result;
+            if (result.Count > 0)
+                yield return result;
         }
-
-        /*
-        public void ExportPGN(IEnumerable<Game> games)
+        
+        public void ExportPGN(IEnumerable<ChessGame> games)
         {
             var writer = new StreamWriter(Filepath);
-            foreach (Game game in games)
-            {
+            foreach (ChessGame game in games)
                 ExportSinglePGN(game, writer);
-            }
+            
             writer.Close();
         }
-        private static void ExportSinglePGN(Game game, TextWriter writer)
+
+        private static void ExportSinglePGN(ChessGame game, TextWriter writer)
         {
-            foreach (var s in new PGNPresentation().GetPresentation(game))
-            {
+            var pgn = new PGNParser();
+            foreach (var s in pgn.Generate(game))
                 writer.WriteLine(s);
-            }
+
             writer.WriteLine("");
         }
-         */
+        
     }
 }

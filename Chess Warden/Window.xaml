@@ -3,7 +3,7 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:ribbon="clr-namespace:Microsoft.Windows.Controls.Ribbon;assembly=RibbonControlsLibrary"
                      xmlns:Chess="clr-namespace:GameWarden.Chess" Title="Chess Warden" 
-        Width="1087" Height="537" Icon="/Chess%20Warden;component/icon.ico" WindowStartupLocation="CenterScreen" MinWidth="400" MinHeight="537">
+        Width="1087" Height="537" Icon="/Resourses/icon.ico" WindowStartupLocation="CenterScreen" MinWidth="400" MinHeight="537">
     <Grid x:Name="LayoutRoot" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
@@ -11,46 +11,16 @@
         </Grid.RowDefinitions>
         <ribbon:Ribbon x:Name="Ribbon">
             <ribbon:Ribbon.ApplicationMenu>
-                <ribbon:RibbonApplicationMenu SmallImageSource="file.png">
-                    <ribbon:RibbonApplicationMenuItem Header="Open..."
-                                                      x:Name="OpenPGNBtn" Click="OpenPGNClick" />
+                <ribbon:RibbonApplicationMenu SmallImageSource="Resourses\file.png">
+                    <ribbon:RibbonApplicationMenuItem Header="Import" Icon="Resourses/import.png" x:Name="OpenPGNBtn" Click="OpenPGNClick" />
+                    <ribbon:RibbonApplicationMenuItem Header="Export" Icon="Resourses/export.png" x:Name="SavePGNBtn" Click="SavePGNClick" />
                 </ribbon:RibbonApplicationMenu>
             </ribbon:Ribbon.ApplicationMenu>
-            <ribbon:RibbonTab x:Name="SearchTab" 
-                              Header="Search">
-                <ribbon:RibbonGroup x:Name="Results" Header="Games"  LargeImageSource="all.png">
-                    <ListBox ScrollViewer.HorizontalScrollBarVisibility="Disabled" Height="66" Name="ResultsList" SelectionChanged="ResultsList_SelectionChanged" BorderThickness="1" MinWidth="500" BorderBrush="#FFB9C9DA" />
-                </ribbon:RibbonGroup>
-                <ribbon:RibbonGroup x:Name="Metadata"  Header="Filter" LargeImageSource="filter.png">
-                    <Grid HorizontalAlignment="Right" Name="MetadataInner">
-                        <Grid.RowDefinitions>
-                            <RowDefinition />
-                            <RowDefinition />
-                            <RowDefinition />
-                        </Grid.RowDefinitions>
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition/>
-                            <ColumnDefinition/>
-                            <ColumnDefinition/>
-                        </Grid.ColumnDefinitions>
-                        <ribbon:RibbonTextBox Label="Event" Height="29" Name="EventSearch" HorizontalAlignment="Right" Grid.Row="0" Grid.Column="0" TextChanged="TextboxSearchTextChanged" />
-                        <ribbon:RibbonTextBox Label="Site" Height="29" Name="SiteSearch" HorizontalAlignment="Right" Grid.Row="1" Grid.Column="0" TextChanged="TextboxSearchTextChanged"/>
-                        <ribbon:RibbonTextBox Label="Date" Height="29" Name="DateSearch" HorizontalAlignment="Right" Grid.Row="2" Grid.Column="0" TextChanged="TextboxSearchTextChanged"/>
-                        <ribbon:RibbonTextBox Label="Round" Height="29" Name="RoundSearch" HorizontalAlignment="Right" Grid.Row="0" Grid.Column="2" TextChanged="TextboxSearchTextChanged"/>
-                        <ribbon:RibbonTextBox Label="White" Height="29" Name="WhiteSearch" HorizontalAlignment="Right" Grid.Row="0" Grid.Column="1" TextChanged="TextboxSearchTextChanged"/>
-                        <ribbon:RibbonTextBox Label="Black" Height="29" Name="BlackSearch" HorizontalAlignment="Right" Grid.Row="1" Grid.Column="1" TextChanged="TextboxSearchTextChanged"/>
-                        <ribbon:RibbonTextBox Label="Result" Height="29" Name="ResultSearch" HorizontalAlignment="Right" Grid.Row="1" Grid.Column="2" TextChanged="TextboxSearchTextChanged"/>
-                        <ribbon:RibbonTextBox Label="FEN" Height="29" Name="FENSearch" HorizontalAlignment="Right" Grid.Row="2" Grid.ColumnSpan="2" Grid.Column="1" TextChanged="TextboxSearchTextChanged" TextBoxWidth="213" />
-                    </Grid>
-                </ribbon:RibbonGroup>
-                <ribbon:RibbonGroup x:Name="Position" Header="Define position" LargeImageSource="piece.png">
-                </ribbon:RibbonGroup>
-            </ribbon:RibbonTab>
             <ribbon:RibbonTab x:Name="HomeTab" 
                               Header="Home">
-                <ribbon:RibbonGroup x:Name="Group3" 
-                                    Header="Info">
-                    <Grid>
+                <ribbon:RibbonGroup x:Name="RibbonInfoGroup" 
+                                    Header="Info" LargeImageSource="Resourses/info.png" >
+                    <Grid Name="InfoGroup">
                         <Grid.RowDefinitions>
                             <RowDefinition />
                             <RowDefinition />
@@ -79,11 +49,44 @@
                         <Label Height="28" Name="blackLabel" HorizontalAlignment="Left" VerticalAlignment="Top" Grid.Row="1" Grid.Column="5" Content="–" />
                         <Label Content="Result:" Height="28" Name="resultCaption" HorizontalAlignment="Right" VerticalAlignment="Top" Grid.Row="0" Grid.Column="6" FontWeight="Bold"  />
                         <Label Height="28" Name="resultLabel" HorizontalAlignment="Left" VerticalAlignment="Top" Grid.Row="0" Grid.Column="7" Content="–" />
-                    </Grid>                    
+                    </Grid>
                 </ribbon:RibbonGroup>
-
+                <ribbon:RibbonGroup x:Name="Group4" 
+                                    Header="Analysis">
+                    <ribbon:RibbonButton LargeImageSource="Resourses/analysis.png" SmallImageSource="Resourses/analysis.png" Label="Best move" Click="RibbonButton_Click"/>
+                    <ribbon:RibbonButton LargeImageSource="Resourses/statistics.png" SmallImageSource="Resourses/statistics.png" Label="Statistics"/>
+                </ribbon:RibbonGroup>
             </ribbon:RibbonTab>
-            
+            <ribbon:RibbonTab x:Name="SearchTab" 
+                              Header="Search">
+                <ribbon:RibbonGroup x:Name="Results" Header="Games"  LargeImageSource="Resourses\all.png">
+                    <ListBox ScrollViewer.HorizontalScrollBarVisibility="Disabled" Height="66" Name="ResultsList" SelectionChanged="ResultsListSelectionChanged" BorderThickness="1" MinWidth="500" BorderBrush="#FFB9C9DA" />
+                </ribbon:RibbonGroup>
+                <ribbon:RibbonGroup x:Name="Metadata"  Header="Filter" LargeImageSource="Resourses\filter.png">
+                    <Grid HorizontalAlignment="Right" Name="MetadataInner">
+                        <Grid.RowDefinitions>
+                            <RowDefinition />
+                            <RowDefinition />
+                            <RowDefinition />
+                        </Grid.RowDefinitions>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition/>
+                            <ColumnDefinition/>
+                            <ColumnDefinition/>
+                        </Grid.ColumnDefinitions>
+                        <ribbon:RibbonTextBox Label="Event" Height="29" Name="EventSearch" HorizontalAlignment="Right" Grid.Row="0" Grid.Column="0" TextChanged="TextboxSearchTextChanged" />
+                        <ribbon:RibbonTextBox Label="Site" Height="29" Name="SiteSearch" HorizontalAlignment="Right" Grid.Row="1" Grid.Column="0" TextChanged="TextboxSearchTextChanged"/>
+                        <ribbon:RibbonTextBox Label="Date" Height="29" Name="DateSearch" HorizontalAlignment="Right" Grid.Row="2" Grid.Column="0" TextChanged="TextboxSearchTextChanged"/>
+                        <ribbon:RibbonTextBox Label="Round" Height="29" Name="RoundSearch" HorizontalAlignment="Right" Grid.Row="0" Grid.Column="2" TextChanged="TextboxSearchTextChanged"/>
+                        <ribbon:RibbonTextBox Label="White" Height="29" Name="WhiteSearch" HorizontalAlignment="Right" Grid.Row="0" Grid.Column="1" TextChanged="TextboxSearchTextChanged"/>
+                        <ribbon:RibbonTextBox Label="Black" Height="29" Name="BlackSearch" HorizontalAlignment="Right" Grid.Row="1" Grid.Column="1" TextChanged="TextboxSearchTextChanged"/>
+                        <ribbon:RibbonTextBox Label="Result" Height="29" Name="ResultSearch" HorizontalAlignment="Right" Grid.Row="1" Grid.Column="2" TextChanged="TextboxSearchTextChanged"/>
+                        <ribbon:RibbonTextBox Label="FEN" Height="29" Name="FENSearch" HorizontalAlignment="Right" Grid.Row="2" Grid.ColumnSpan="2" Grid.Column="1" TextChanged="TextboxSearchTextChanged" TextBoxWidth="213" />
+                    </Grid>
+                </ribbon:RibbonGroup>
+                <ribbon:RibbonGroup x:Name="Position" Header="Define position" LargeImageSource="Resourses\piece.png">
+                </ribbon:RibbonGroup>
+            </ribbon:RibbonTab>
         </ribbon:Ribbon>
         <Chess:Board x:Name="theBoard" Grid.Row="1" Margin="20,20,20,40" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" LightBackground="BlanchedAlmond" DarkBackground="BurlyWood"/>
         <ScrollBar Name="movesScrollBar" VerticalAlignment="Bottom" Height="20" Orientation="Horizontal" ValueChanged="movesScrollBar_ValueChanged" Margin="20,0,219,20" Grid.Row="1"/>

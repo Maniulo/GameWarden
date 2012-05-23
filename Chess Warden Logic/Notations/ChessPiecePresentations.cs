@@ -2,12 +2,22 @@
 
 namespace GameWarden.Chess.Notations
 {
-    public interface IChessPiecePresentation : IPiecePresentation
+    public interface IChessPieceTypePresentation : IPiecePresentation
     {
         PieceTypes GetPieceType(Object c);
     }
 
-    public class EnglishPresentation : IChessPiecePresentation
+    public interface IChessPiecePlayerPresentation : IPiecePresentation
+    {
+        int GetPlayer(Object c);
+    }
+
+    public interface IChessPresentation : IChessPieceTypePresentation, IChessPiecePlayerPresentation
+    {
+        bool IsEmpty(Object c);
+    }
+
+    public class EnglishPresentation : IChessPieceTypePresentation
     {
         virtual public Object GetPresentation(IPiece p)
         {
@@ -32,12 +42,6 @@ namespace GameWarden.Chess.Notations
 
             throw new ArgumentException();
         }
-
-        virtual public IPiece GetPiece(Object c)
-        {
-            return new ChessPiece { Type = GetPieceType(c) };
-        }
-
         virtual public PieceTypes GetPieceType(Object c)
         {
             if (((char?)c).HasValue)
@@ -61,14 +65,13 @@ namespace GameWarden.Chess.Notations
             else
                 return PieceTypes.Pawn;
         }
-
         public override string ToString()
         {
             return "NBRQK";
         }
     }
 
-    public class EnglishFENPresentation : IChessPiecePresentation
+    public class EnglishFENPresentation : IChessPresentation
     {
         readonly EnglishPresentation Template = new EnglishPresentation();
 
@@ -94,26 +97,29 @@ namespace GameWarden.Chess.Notations
             return c;
         }
 
-        public IPiece GetPiece(Object c)
+        virtual public bool IsEmpty(Object c)
         {
-            return new ChessPiece { Type = GetPieceType(c), Player = Char.IsUpper(((char?)c).Value) ? new Player(1) : new Player(2) };
+            return c == null;
         }
-
-        public PieceTypes GetPieceType(Object c)
+        virtual public PieceTypes GetPieceType(Object c)
         {
             char? ch = Char.ToUpper(((char?)c).Value);
             return ch == 'P' ? PieceTypes.Pawn : Template.GetPieceType(ch);
         }
-
+        virtual public int GetPlayer(Object o)
+        {
+            return Char.IsUpper(((char?) o).Value) ? 1 : 2;
+        }
+        
         public override string ToString()
         {
-            return "NBRQKPnbrqkp";
+            return "PNBRQKpnbrqk";
         }
     }
 
-    public class FigurinePresentation : IChessPiecePresentation
+    public class FigurinePresentation : IChessPresentation
     {
-        Char GetWhitePieceSymbol(IPiece p)
+        private Char GetWhitePieceSymbol(IPiece p)
         {
             var piece = p as ChessPiece;
 
@@ -136,8 +142,7 @@ namespace GameWarden.Chess.Notations
 
             throw new Exception();
         }
-
-        Char GetBlackPieceSymbol(IPiece p)
+        private Char GetBlackPieceSymbol(IPiece p)
         {
             var piece = p as ChessPiece;
 
@@ -160,37 +165,6 @@ namespace GameWarden.Chess.Notations
 
             throw new Exception();
         }
-
-        public override string ToString()
-        {
-            return "♙♘♗♖♕♔♟♞♝♜♛♚";
-        }
-
-        virtual public IPiece GetPiece(Object o)
-        {
-            var p = new ChessPiece { Type = GetPieceType(o) };
-
-            switch ((Char?)o)
-            {
-                case '♙':
-                case '♘': 
-                case '♗': 
-                case '♖': 
-                case '♕':
-                case '♔': p.Player = new Player(1);
-                    break;
-                case '♟': 
-                case '♞': 
-                case '♝': 
-                case '♜': 
-                case '♛':
-                case '♚': p.Player = new Player(2);
-                    break;
-            }
-
-            return p;
-        }
-
         virtual public Object GetPresentation(IPiece p)
         {
             if (p.IsEmpty)
@@ -199,7 +173,11 @@ namespace GameWarden.Chess.Notations
             return p.Player.Order == 1 ? GetWhitePieceSymbol(p) : GetBlackPieceSymbol(p);
         }
 
-        public PieceTypes GetPieceType(Object c)
+        virtual public bool IsEmpty(Object c)
+        {
+            return c == null;
+        }
+        virtual public PieceTypes GetPieceType(Object c)
         {
             switch (c as Char?)
             {
@@ -224,6 +202,33 @@ namespace GameWarden.Chess.Notations
             }
 
             throw new ArgumentException();
+        }
+        virtual public int GetPlayer(Object o)
+        {
+            switch ((Char?)o)
+            {
+                case '♙':
+                case '♘':
+                case '♗':
+                case '♖':
+                case '♕':
+                case '♔': 
+                    return 1;
+                case '♟':
+                case '♞':
+                case '♝':
+                case '♜':
+                case '♛':
+                case '♚':
+                    return 2;
+            }
+
+            throw new ArgumentException();
+        }
+        
+        public override string ToString()
+        {
+            return "♙♘♗♖♕♔♟♞♝♜♛♚";
         }
     }
 }

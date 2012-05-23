@@ -22,16 +22,11 @@ namespace GameWarden.Tests
             var s = new StreamWriter(Filepath);
 
             foreach (String str in FirstGamePGN)
-            {
                 s.WriteLine(str);
-            }
             s.WriteLine("");
 
             foreach (String str in SecondGamePGN)
-            {
                 s.WriteLine(str);
-            }
-
             s.Close();
         }
 
@@ -47,7 +42,6 @@ namespace GameWarden.Tests
         public void ImportCountFuncTest()
         {
             var f = new FileIO(Filepath);
-            //IEnumerable<ChessGame> gs = f.ImportPGN();
             Assert.AreEqual(2, f.Count());
         }
 

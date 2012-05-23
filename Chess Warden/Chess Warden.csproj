@@ -36,7 +36,7 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <PropertyGroup>
-    <ApplicationIcon>icon.ico</ApplicationIcon>
+    <ApplicationIcon>Resourses\icon.ico</ApplicationIcon>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Microsoft.Windows.Shell, Version=3.5.41019.1, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL" />
@@ -67,7 +67,9 @@
     <Compile Include="Board.xaml.cs">
       <DependentUpon>Board.xaml</DependentUpon>
     </Compile>
+    <Compile Include="ChessEngineConnector.cs" />
     <Compile Include="FileIO.cs" />
+    <Compile Include="FileIOFunctions.cs" />
     <Compile Include="Window.xaml.cs">
       <DependentUpon>Window.xaml</DependentUpon>
       <SubType>Component</SubType>
@@ -118,20 +120,33 @@
     </Page>
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="icon.ico" />
+    <Resource Include="Resourses\icon.ico" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="icon24.png" />
+    <Resource Include="Resourses\icon24.png" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="file.png" />
+    <Resource Include="Resourses\file.png" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="all.png" />
-    <Resource Include="filter.png" />
+    <Resource Include="Resourses\all.png" />
+    <Resource Include="Resourses\filter.png" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="piece.png" />
+    <Resource Include="Resourses\piece.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resourses\analysis.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resourses\statistics.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resourses\info.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resourses\export.png" />
+    <Resource Include="Resourses\import.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
