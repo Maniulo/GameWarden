@@ -40,8 +40,9 @@ namespace GameWarden.Chess
         
         private readonly CastlingType CType;
 
+        private int KingToFile { get { return CType == CastlingType.Kingside ? 7 : 3; } }
         private int RookFromFile { get { return CType == CastlingType.Kingside ? 8 : 1; } }
-        private int RookToFile { get { return CType == CastlingType.Kingside ? 6 : 3; } }
+        private int RookToFile { get { return CType == CastlingType.Kingside ? 6 : 4; } }
 
         public Castling(CastlingType type)
             : base(null, false, true)
@@ -55,14 +56,24 @@ namespace GameWarden.Chess
             var rook = cState[RookFromFile, from.Rank] as ChessPiece;
             var king = cState[from] as ChessPiece;
 
-            if (rook.Type == PieceTypes.Rook)
-                if (king.Path.Count == 1 && rook.Path.Count == 1)
+            if (rook.Type == PieceTypes.Rook && to.File == KingToFile)
+                if (king.Path.Count == 1 && rook.Path.Count == 1 && !cState.IsKingOpen(state[from].Player))
                     if (base.CanApply(from, to, state))
                     {
                         Boolean result = true;
-                        for (int kingPathFile = from.File; kingPathFile <= to.File; ++kingPathFile)
-                            result &= ! cState.IsUnderAttack(new Position(kingPathFile, from.Rank),
-                                                                         state[from].Player);
+                        switch (CType)
+                        {
+                            case CastlingType.Kingside:
+                                for (int kingPathFile = from.File; kingPathFile <= to.File; ++kingPathFile)
+                                    result &= !cState.IsUnderAttack(new Position(kingPathFile, from.Rank), state[from].Player);
+                                break;
+                            case CastlingType.Queenside:
+                                for (int kingPathFile = from.File; kingPathFile >= to.File; --kingPathFile)
+                                    result &= !cState.IsUnderAttack(new Position(kingPathFile, from.Rank),
+                                                                                 state[from].Player);
+                                break;
+                        }
+                        
 
                         return result;
                     }

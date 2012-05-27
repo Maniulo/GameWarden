@@ -80,7 +80,12 @@ namespace GameWarden.Chess.Notations
             
             return game;
         }
-        
+
+        public IEnumerable<ChessMove> ParseMoves(String movetext, IEnumerable<Player> players = null)
+        {
+            return ParseMoves(movetext, new AlgebraicNotation(), players);
+        }
+
         public IEnumerable<ChessMove> ParseMoves(String movetext, IChessMoveNotation moveNotation, IEnumerable<Player> players = null)
         {
             if (players == null)
@@ -111,9 +116,14 @@ namespace GameWarden.Chess.Notations
         public List<String> Generate(ChessGame game)
         {
             var result = game.Info.Select(tag => "[" + tag.Key + " \"" + tag.Value + "\"]").ToList();
-
             result.Add("");
+            result.Add(GenerateMovetext(game));
+            return result;
+        }
 
+        public String GenerateMovetext(ChessGame game)
+        {
+            String result;
             var movetext = new StringBuilder();
             var mover = game.Moves.GetEnumerator();
             var moveCount = 1;
@@ -126,10 +136,9 @@ namespace GameWarden.Chess.Notations
                     movetext.Append(mover.Current + " ");
             }
 
-            movetext.Remove(movetext.Length - 1, 1);
-            result.Add(movetext.ToString());
-
-            return result;
+            if (movetext.Length > 0)
+                movetext.Remove(movetext.Length - 1, 1);
+            return movetext.ToString();
         }
     }
 }

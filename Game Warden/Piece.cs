@@ -70,7 +70,7 @@ namespace GameWarden
 
         public virtual Boolean CanAttack(Position to, IGameState state)
         {
-            return PossibleMoves.Any(m => m.CanApply(Pos, to, state) && m.IsCapture);
+            return PossibleMoves.Any(m => m.IsCapture && m.CanApply(Pos, to, state));
         }
 
         public virtual IConcreteMove GetPossibleMove(Position to, IGameState state)

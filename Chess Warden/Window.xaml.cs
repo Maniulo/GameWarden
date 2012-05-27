@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Data.Entity;
 using System.IO;
 using System.Linq;
 using System.Reflection;
@@ -21,24 +22,41 @@ namespace GameWarden.Chess
     public partial class Window : RibbonWindow
     {
         private readonly ChessEngineConnector ChessEngine = new ChessEngineConnector();
-
+        private readonly ChessEntities DB = new ChessEntities();
+        private GameCollection GamesCollection;
         private readonly VisualChess theGame = new VisualChess();
 
-        private readonly ObservableCollection<Game> Games = new ObservableCollection<Game>();
-        private readonly CollectionViewSource View;
+        private ObservableCollection<Game> Games;
+        private CollectionViewSource View;
         private Object placedPiece;
-        private FigurinePresentation figures = new FigurinePresentation();
+        private readonly FigurinePresentation figures = new FigurinePresentation();
 
+        private void ClearDB()
+        {
+            foreach (var o in from c in DB.GameStates select c)
+                DB.GameStates.DeleteObject(o);
+            foreach (var o in from c in DB.Games select c)
+                DB.Games.DeleteObject(o);
+            DB.SaveChanges();
+        }
+        
         public Window()
         {
             InitializeComponent();
             InitializeEngine();
-
-            View = new CollectionViewSource { Source = Games };
-            View.Filter += Contains;
-            ResultsList.ItemsSource = View.View;
-
+            //ClearDB();
+            InitializeDB();
             InitializePieceButtons();
+        }
+
+        private void InitializeDB()
+        {
+            GamesCollection = new GameCollection(DB);
+            View = new CollectionViewSource { Source = GamesCollection };
+            ResultsList.ItemsSource = View.View;
+            View.Filter += Contains;
+
+            //WhiteBest.SetBinding()
         }
 
         private void InitializeEngine()
@@ -93,7 +111,8 @@ namespace GameWarden.Chess
         void c_MouseUp(object sender, MouseButtonEventArgs e)
         {
             var c = sender as Cell;
-            theGame.PlacePiece(new Position(c.X+1, c.Y+1), ChessPieceFactory.CreatePiece(placedPiece, figures, theGame.Game.Players)); // !!!
+            if (e.ChangedButton == MouseButton.Left)
+                theGame.PlacePiece(new Position(c.X+1, c.Y+1), ChessPieceFactory.CreatePiece(placedPiece, figures, theGame.Game.Players)); // !!!
         }
 
         void btn_Click(object sender, RoutedEventArgs e)
@@ -110,28 +129,31 @@ namespace GameWarden.Chess
                 theGame.UndoMove();
 
             theBoard.Refresh();
+
+            
             //ChessEngine.FindBestMove(theGame.State);
         }
 
         public void Contains(object sender, FilterEventArgs e)
         {
-            Game game = e.Item as Game;
+            e.Accepted = false;
 
-            if (game.Info["Event"].Contains(EventSearch.Text) &&
-                game.Info["Site"].Contains(SiteSearch.Text) &&
-                game.Info["White"].Contains(WhiteSearch.Text) &&
-                game.Info["Black"].Contains(BlackSearch.Text) &&
-                game.Info["Result"].Contains(ResultSearch.Text) &&
-                game.Info["Date"].Contains(DateSearch.Text) &&
-                game.Info["Round"].Contains(RoundSearch.Text)
-                )
-            {
-                e.Accepted = true;
-            }
-            else
-            {
-                e.Accepted = false;    
-            }
+            try {
+                var game = e.Item as DBGame;
+                if (game != null)
+                    if (game.Event.Contains(EventSearch.Text) &&
+                        game.Site.Contains(SiteSearch.Text) &&
+                        game.White.Contains(WhiteSearch.Text) &&
+                        game.Black.Contains(BlackSearch.Text) &&
+                        game.Result.Contains(ResultSearch.Text) &&
+                        game.Date.Contains(DateSearch.Text) &&
+                        game.Round.Contains(RoundSearch.Text) &&
+                        (game.GameStates.Any(state => state.FEN.Contains(FENSearch.Text)) || FENSearch.Text == "" || FENSearch.Text == "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1")
+                        )
+                    {
+                        e.Accepted = true;
+                    }
+            } catch { }
         }
 
         private void SetBindings(Object context)
@@ -159,9 +181,12 @@ namespace GameWarden.Chess
 
         private void ResultsListSelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            theGame.Game = (ChessGame)e.AddedItems[0];
-            SetBindings(theGame);
-            ChessEngine.FindBestMove(theGame.State);
+            if (e.AddedItems.Count != 0)
+            {
+                theGame.Game = ((DBGame) e.AddedItems[0]).Game;
+                SetBindings(theGame);
+                ChessEngine.FindBestMove(theGame.State);
+            }
         }
 
         private void TextboxSearchTextChanged(object sender, TextChangedEventArgs e)
@@ -198,6 +223,36 @@ namespace GameWarden.Chess
             }
             else
                 ChessEngine.Path = value.Path;
+        }
+
+        private void RibbonButton_Click(object sender, RoutedEventArgs e)
+        {
+            DB.SaveChanges();
+
+            var cState = theGame.State.ToString();
+            var Query = from game in DB.Games
+                        join state in DB.GameStates on game.ID equals state.Game
+                        where state.FEN.Equals(cState)
+                        select game.ID;
+            int total = Query.AsEnumerable().Distinct().Count();
+
+            if (total > 0)
+            {
+
+                var Query2 = from game in DB.Games
+                             join state in DB.GameStates on game.ID equals state.Game
+                             where state.FEN.Equals(cState) && game.Result.Equals("1-0")
+                        select game.ID;
+                WhiteBest.Content = (double)Query2.AsEnumerable().Distinct().Count() / total;
+
+                Query2 = from game in DB.Games
+                         join state in DB.GameStates on game.ID equals state.Game
+                         where state.FEN.Equals(cState) && game.Result.Equals("0-1")
+                        select game.ID;
+                BlackBest.Content = (double)Query2.AsEnumerable().Distinct().Count() / total;
+
+                this.Title = total.ToString();
+            }
         }
     }
 

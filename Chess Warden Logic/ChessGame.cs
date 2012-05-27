@@ -4,11 +4,20 @@ namespace GameWarden.Chess
 {
     public class ChessGame : Game
     {
+        public ChessGame()
+            : this (new Meta())
+        {
+            
+        }
+
         public ChessGame(Meta metainfo)
             : base(2)
         {
             Info = metainfo;
-            this.State = new FENParser().Parse(metainfo["FEN"] ?? FENParser.DefaultFEN, this.Players); // !!! We probably should delete this after testing
+
+            State = new FENParser().Parse(
+                (Info["FEN"] == null) || (Info["FEN"].Equals("")) ? FENParser.DefaultFEN : Info["FEN"],
+                 Players); // !!! We probably should delete this after testing
         }
 
         public override string ToString()

@@ -39,9 +39,9 @@ namespace GameWarden.Chess
         private void OpenPGNClick(object sender, RoutedEventArgs e)
         {
             var filename = OpenFileDialog("PGN Files|*.pgn");
-
+            
             if (filename != null)
-                new DBLoader(Games).RunWorkerAsync(filename);
+                new DBLoader(GamesCollection).RunWorkerAsync(filename);
         }
 
         private void SavePGNClick(object sender, RoutedEventArgs e)

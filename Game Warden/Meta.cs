@@ -16,7 +16,7 @@ namespace GameWarden
         {
             get 
             {
-                return Info.ContainsKey(key) ? Info[key] : null;
+                return Info.ContainsKey(key) ? Info[key] : "";
             }
             set
             {

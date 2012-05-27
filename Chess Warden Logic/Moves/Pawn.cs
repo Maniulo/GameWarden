@@ -27,6 +27,50 @@ namespace GameWarden.Chess
                     throw new ArgumentException();
             }
         }
+
+        public override IConcreteMove Concretize(Position from, Position to)
+        {
+            return new PawnConcreteMove(from, to);
+        }
+    }
+
+    public class PawnConcreteMove : ConcreteMove
+    {
+        private Position From;
+        private Position To;
+        private bool IsEnPassant;
+        private Position EnPassantOld;
+
+        public PawnConcreteMove(Position @from, Position to) : base(@from, to, false)
+        {
+            From = from;
+            To = to;
+            IsEnPassant = Position.RankDistance(from, to) == 2;
+        }
+
+        public override void Apply(IGameState state)
+        {
+            if (IsEnPassant)
+            {
+                EnPassantOld = ((ChessState) state).EnPassant;
+                switch (state[From].Player.Order)
+                {
+                    case 1:
+                        ((ChessState)state).EnPassant = new Position(To.File, To.Rank - 1);
+                        break;
+                    case 2:
+                        ((ChessState)state).EnPassant = new Position(To.File, To.Rank + 1);
+                        break;
+                }
+            }
+            base.Apply(state);
+        }
+
+        public override void Rollback(IGameState state)
+        {
+            ((ChessState)state).EnPassant = EnPassantOld;
+            base.Rollback(state);
+        }
     }
 
     public class PawnCapture : TemplateMove
@@ -96,7 +140,12 @@ namespace GameWarden.Chess
 
         private static Position EnemyPawn(ChessState state)
         {
-            return new Position(state.EnPassant.File, state.EnPassant.Rank - 1);
+            switch (state.EnPassant.Rank)
+            {
+                case 3: return new Position(state.EnPassant.File, state.EnPassant.Rank + 1);
+                case 6: return new Position(state.EnPassant.File, state.EnPassant.Rank - 1);
+            }
+            throw new ArgumentException();
         }
 
         public void Apply(IGameState state)

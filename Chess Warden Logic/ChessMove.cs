@@ -16,6 +16,7 @@ namespace GameWarden.Chess
         public Boolean CastlingQueenside;
         public bool IsPromotion;
         public PieceTypes PromotionTo;
+        private Position SavedEnPassant;
 
         protected virtual IConcreteMove Solve(ChessState state)
         {
@@ -78,6 +79,9 @@ namespace GameWarden.Chess
                 if (Move == null)
                     throw new Exception(String.Format("Move \"{0}\" cannot be solved.", Desc));
 
+                SavedEnPassant = ((ChessState) state).EnPassant;
+                if (!(Move is EnPassantConcrete))
+                    ((ChessState) state).EnPassant = null;
                 Move.Apply(state);
             }
             else
@@ -89,6 +93,7 @@ namespace GameWarden.Chess
         public void Rollback(IGameState state)
         {
             Move.Rollback(state);
+            ((ChessState)state).EnPassant = SavedEnPassant;
         }
     }
 }

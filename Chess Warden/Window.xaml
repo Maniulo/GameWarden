@@ -76,28 +76,35 @@
                 </ribbon:RibbonGroup>
                 <ribbon:RibbonGroup x:Name="Group4" 
                                     Header="Analysis" LargeImageSource="Resourses/statistics.png">
-                    <ribbon:RibbonComboBox Name="EnginesDropDown" SmallImageSource="Resourses/gear.png" Margin="2,11,0,0">
-                        <ribbon:RibbonGallery Name="EnginesGallery" SelectionChanged="EngineSelected">
-                            <ribbon:RibbonGalleryCategory Name="EnginesCategory">
-                            </ribbon:RibbonGalleryCategory>
-                        </ribbon:RibbonGallery>
-                    </ribbon:RibbonComboBox>
                     <Grid>
+                        <Grid.RowDefinitions>
+                          <RowDefinition />
+                          <RowDefinition />
+                        </Grid.RowDefinitions>
                         <Grid.ColumnDefinitions>
                           <ColumnDefinition />
                           <ColumnDefinition />
                           <ColumnDefinition />
+                          <ColumnDefinition />
                         </Grid.ColumnDefinitions>
-                        <ribbon:RibbonTextBox Name="Depth" SmallImageSource="Resourses/down.png" TextBoxWidth="25" Grid.Column="0"/>
-                        <ribbon:RibbonControl Padding="0" Margin="10,0,0,0" Grid.Column="1">
+                        <ribbon:RibbonComboBox Name="EnginesDropDown" SmallImageSource="Resourses/gear.png" Margin="2,8,0,0" Grid.Row="0" Grid.ColumnSpan="3">
+                            <ribbon:RibbonGallery Name="EnginesGallery" SelectionChanged="EngineSelected">
+                                <ribbon:RibbonGalleryCategory Name="EnginesCategory">
+                                </ribbon:RibbonGalleryCategory>
+                            </ribbon:RibbonGallery>
+                        </ribbon:RibbonComboBox>
+                        <ribbon:RibbonTextBox Name="Depth" SmallImageSource="Resourses/down.png" TextBoxWidth="25" Grid.Row="1" Grid.Column="0"/>
+                        <ribbon:RibbonControl Padding="0" Margin="10,0,0,0" Grid.Row="1" Grid.Column="1">
                             <Image Source="Resourses/best.png" Width="16" Height="16" />
                         </ribbon:RibbonControl>
-                        <Label Name="BestMove" Content="123"  Grid.Column="2"/>
+                        <Label Name="BestMove" Content="123" Grid.Row="1"  Grid.Column="2"/>
+                        <Label Name="WhiteBest" Content="123" Grid.Row="0" Margin="0,8,0,0" Grid.Column="3" DataContext="{Binding}" />
+                        <Label Name="BlackBest" Content="123" Grid.Row="1" Grid.Column="3"/>
                     </Grid>
                     
                     
                     <ribbon:RibbonButton LargeImageSource="Resourses/analysis.png" SmallImageSource="Resourses/analysis.png" Label="Find best move" Click="RefreshBest"/>
-                    <ribbon:RibbonButton LargeImageSource="Resourses/statistics.png" SmallImageSource="Resourses/statistics.png" Label="Statistics"/>
+                    <ribbon:RibbonButton LargeImageSource="Resourses/statistics.png" SmallImageSource="Resourses/statistics.png" Label="Statistics" Click="RibbonButton_Click"/>
                 </ribbon:RibbonGroup>
             </ribbon:RibbonTab>
             <ribbon:RibbonTab x:Name="SearchTab" 
