@@ -68,11 +68,14 @@
       <DependentUpon>Board.xaml</DependentUpon>
     </Compile>
     <Compile Include="ChessEngineConnector.cs" />
+    <Compile Include="DBLoader.cs">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="FileIO.cs" />
     <Compile Include="FileIOFunctions.cs" />
+    <Compile Include="VisualChess.cs" />
     <Compile Include="Window.xaml.cs">
       <DependentUpon>Window.xaml</DependentUpon>
-      <SubType>Component</SubType>
     </Compile>
   </ItemGroup>
   <ItemGroup>
@@ -93,6 +96,7 @@
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
+    <None Include="app.config" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
@@ -147,6 +151,18 @@
   <ItemGroup>
     <Resource Include="Resourses\export.png" />
     <Resource Include="Resourses\import.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resourses\path.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resourses\down.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resourses\gear.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resourses\best.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

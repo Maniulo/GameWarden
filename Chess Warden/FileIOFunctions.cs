@@ -9,9 +9,9 @@ namespace GameWarden.Chess
 {
     public partial class Window
     {
-        private static String OpenFileDialog()
+        private static String OpenFileDialog(String filter)
         {
-            var dlg = new OpenFileDialog { Filter = "PGN Files|*.pgn" };
+            var dlg = new OpenFileDialog { Filter = filter };
             bool? result = dlg.ShowDialog();
 
             if (result == true)
@@ -23,9 +23,9 @@ namespace GameWarden.Chess
             return null;
         }
 
-        private static String SaveFileDialog()
+        private static String SaveFileDialog(String filter)
         {
-            var dlg = new SaveFileDialog { Filter = "PGN Files|*.pgn" };
+            var dlg = new SaveFileDialog { Filter = filter };
             bool? result = dlg.ShowDialog();
 
             if (result == true)
@@ -38,7 +38,7 @@ namespace GameWarden.Chess
 
         private void OpenPGNClick(object sender, RoutedEventArgs e)
         {
-            var filename = OpenFileDialog();
+            var filename = OpenFileDialog("PGN Files|*.pgn");
 
             if (filename != null)
                 new DBLoader(Games).RunWorkerAsync(filename);
@@ -46,7 +46,7 @@ namespace GameWarden.Chess
 
         private void SavePGNClick(object sender, RoutedEventArgs e)
         {
-            var filename = SaveFileDialog();
+            var filename = SaveFileDialog("PGN Files|*.pgn");
             var items = ((IList)ResultsList.SelectedItems).Cast<ChessGame>();
 
             if (filename != null)

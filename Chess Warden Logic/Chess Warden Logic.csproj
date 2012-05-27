@@ -45,6 +45,7 @@
     <Compile Include="ChessPiece.cs" />
     <Compile Include="ChessPieceFactory.cs" />
     <Compile Include="ChessState.cs" />
+    <Compile Include="Moves\Promotion.cs" />
     <Compile Include="Notations\ChessPiecePresentations.cs" />
     <Compile Include="Moves\Castling.cs" />
     <Compile Include="Moves\Knight.cs" />

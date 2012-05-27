@@ -94,7 +94,7 @@ namespace GameWarden.Chess
             To = to;
         }
 
-        private Position EnemyPawn(ChessState state)
+        private static Position EnemyPawn(ChessState state)
         {
             return new Position(state.EnPassant.File, state.EnPassant.Rank - 1);
         }

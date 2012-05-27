@@ -16,11 +16,13 @@ namespace GameWarden.Chess
 
     public class ChessPieceFactory
     {
-        static private void AddMoves(ChessPiece p)
+        static public void AddMoves(ChessPiece p)
         {
             switch (p.Type)
             {
                 case PieceTypes.Pawn:
+                    p.AddPossibleMove(new Promotion(new PawnMove(), new[] { PieceTypes.Knight, PieceTypes.Bishop, PieceTypes.Rook, PieceTypes.Queen }));
+                    p.AddPossibleMove(new Promotion(new PawnCapture(), new[] { PieceTypes.Knight, PieceTypes.Bishop, PieceTypes.Rook, PieceTypes.Queen }));
                     p.AddPossibleMove(new PawnMove());
                     p.AddPossibleMove(new PawnCapture());
                     p.AddPossibleMove(new EnPassant());
@@ -49,6 +51,7 @@ namespace GameWarden.Chess
                     break;
             }
         }
+
         static public ChessPiece CreatePiece(Object pieceCode, IChessPresentation presentation, List<Player> players)
         {
             var p = new ChessPiece();

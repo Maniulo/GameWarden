@@ -80,7 +80,7 @@ namespace GameWarden.Chess.Notations
             
             return game;
         }
-
+        
         public IEnumerable<ChessMove> ParseMoves(String movetext, IChessMoveNotation moveNotation, IEnumerable<Player> players = null)
         {
             if (players == null)

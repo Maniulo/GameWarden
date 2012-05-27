@@ -128,11 +128,6 @@ namespace GameWarden
             return String.Format("{0}{1}", GetFileLetter(File), Rank);
         }
 
-        public static string ToString(int file, int rank)
-        {
-            return String.Format("{0}{1}", GetFileLetter(file), rank);
-        }
-
         public override bool Equals(Object obj)
         {
             if (ReferenceEquals(null, obj)) return false;

@@ -12,8 +12,7 @@ namespace GameWarden
         void Move(Position pos);
         void Unmove();
         void AddPossibleMove(ITemplateMove move);
-        Boolean CanMove(Position to, IGameState state);
-        IConcreteMove GetPossibleMove(Position to, IGameState state);
+        void ResetPossibleMoves();
     }
 
     public class Piece : IPiece
@@ -56,7 +55,7 @@ namespace GameWarden
             Pos = new Position(copy.Pos);
 
             PossibleMoves = new List<ITemplateMove>(copy.PossibleMoves);
-            //foreach (var m in copy.PossibleMoves)
+            //foreach (var m in copy.PossibleMoves) // !!!
             //    PossibleMoves.Add(m);
 
             Path = new Stack<Position>();
@@ -64,17 +63,17 @@ namespace GameWarden
                 Path.Push(new Position(pos));
         }
 
-        public Boolean CanMove(Position to, IGameState state)
+        public virtual Boolean CanMove(Position to, IGameState state)
         {
             return PossibleMoves.Any(m => m.CanApply(Pos, to, state));
         }
 
-        public Boolean CanAttack(Position to, IGameState state)
+        public virtual Boolean CanAttack(Position to, IGameState state)
         {
             return PossibleMoves.Any(m => m.CanApply(Pos, to, state) && m.IsCapture);
         }
 
-        public IConcreteMove GetPossibleMove(Position to, IGameState state)
+        public virtual IConcreteMove GetPossibleMove(Position to, IGameState state)
         {
             try
             {
@@ -84,6 +83,11 @@ namespace GameWarden
             {
                 throw new Exception("No possible move found.");
             }
+        }
+
+        public void ResetPossibleMoves()
+        {
+            PossibleMoves.Clear();
         }
     }
 }

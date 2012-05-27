@@ -26,7 +26,7 @@ namespace GameWarden.Chess.Notations
                             "(?<FromFile>[a-h])?" + "(?<FromRank>[1-8])?" +
                             "(?<Capture>x)?" +
                             "(?<ToFile>[a-h])(?<ToRank>[1-8])" +
-                            "(?<Promotion>=?[{0}])?" +
+                            "(?:=?(?<Promotion>[{0}]))?" +
                             "(?<EnPassant>e.p.)?" +
                         ")" +
                     "|" + "(?<Kingside>O-O)" +
@@ -54,6 +54,11 @@ namespace GameWarden.Chess.Notations
 
                 var castlingKingside = mv.Groups["Kingside"].Success;
                 var castlingQueenside = mv.Groups["Queenside"].Success;
+                var promotion = mv.Groups["Promotion"].Success;
+
+                m.IsPromotion = promotion;
+                if (promotion)
+                    m.PromotionTo = Presentation.GetPieceType(mv.Groups["Promotion"].Value);
 
                 if (castlingKingside || castlingQueenside)
                 {

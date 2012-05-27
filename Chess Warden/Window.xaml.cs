@@ -2,7 +2,9 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
@@ -18,20 +20,55 @@ namespace GameWarden.Chess
     /// </summary>
     public partial class Window : RibbonWindow
     {
+        private readonly ChessEngineConnector ChessEngine = new ChessEngineConnector();
+
         private readonly VisualChess theGame = new VisualChess();
 
         private readonly ObservableCollection<Game> Games = new ObservableCollection<Game>();
         private readonly CollectionViewSource View;
         private Object placedPiece;
         private FigurinePresentation figures = new FigurinePresentation();
+
         public Window()
         {
             InitializeComponent();
+            InitializeEngine();
 
             View = new CollectionViewSource { Source = Games };
             View.Filter += Contains;
             ResultsList.ItemsSource = View.View;
 
+            InitializePieceButtons();
+        }
+
+        private void InitializeEngine()
+        {
+            String path = 
+                Assembly.GetEntryAssembly().Location.Substring(0, Assembly.GetEntryAssembly().Location.LastIndexOf('\\')) +
+                Properties.Settings.Default.EnginesPath;
+
+            var engines = Directory.GetFiles(path, "*.exe")
+                                    .Select(s => new Engine(s)).ToList();
+
+            engines.Add(new Engine("zzz", "Browse..."));
+
+            EnginesCategory.Items.SortDescriptions.Add(new SortDescription("Path", ListSortDirection.Ascending));
+            EnginesCategory.ItemsSource = engines;
+            if (engines.Count > 1)
+                EnginesGallery.SelectedItem = EnginesCategory.Items[0];
+
+            var b = new Binding("Depth");
+            var v = new ExceptionValidationRule();
+            Depth.DataContext = ChessEngine;
+            b.UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged;
+            b.ValidationRules.Add(v);
+            Depth.SetBinding(TextBox.TextProperty, b);
+            BestMove.DataContext = ChessEngine;
+            BestMove.SetBinding(ContentProperty, "State");
+        }
+
+        private void InitializePieceButtons()
+        {
             var PieceButtons = new List<RibbonToggleButton>();
 
             foreach (Char c in figures.ToString())
@@ -73,9 +110,8 @@ namespace GameWarden.Chess
                 theGame.UndoMove();
 
             theBoard.Refresh();
+            //ChessEngine.FindBestMove(theGame.State);
         }
-        
-        
 
         public void Contains(object sender, FilterEventArgs e)
         {
@@ -98,8 +134,6 @@ namespace GameWarden.Chess
             }
         }
 
-        
-
         private void SetBindings(Object context)
         {
             LayoutRoot.DataContext = context;
@@ -108,13 +142,13 @@ namespace GameWarden.Chess
                 l.DataContext = context;
 
             theBoard.SetBinding(Board.StateProperty, "State");
-            eventLabel.SetBinding(Label.ContentProperty, "Event");
-            siteLabel.SetBinding(Label.ContentProperty, "Site");
-            roundLabel.SetBinding(Label.ContentProperty, "Round");
-            dateLabel.SetBinding(Label.ContentProperty, "Date");
-            whiteLabel.SetBinding(Label.ContentProperty, "White");
-            blackLabel.SetBinding(Label.ContentProperty, "Black");
-            resultLabel.SetBinding(Label.ContentProperty, "Result");
+            eventLabel.SetBinding(ContentProperty, "Event");
+            siteLabel.SetBinding(ContentProperty, "Site");
+            roundLabel.SetBinding(ContentProperty, "Round");
+            dateLabel.SetBinding(ContentProperty, "Date");
+            whiteLabel.SetBinding(ContentProperty, "White");
+            blackLabel.SetBinding(ContentProperty, "Black");
+            resultLabel.SetBinding(ContentProperty, "Result");
 
             var b = new Binding("FEN");
             var v = new ExceptionValidationRule();
@@ -127,6 +161,7 @@ namespace GameWarden.Chess
         {
             theGame.Game = (ChessGame)e.AddedItems[0];
             SetBindings(theGame);
+            ChessEngine.FindBestMove(theGame.State);
         }
 
         private void TextboxSearchTextChanged(object sender, TextChangedEventArgs e)
@@ -134,123 +169,60 @@ namespace GameWarden.Chess
             View.View.Refresh();
         }
 
-        private void RibbonButton_Click(object sender, RoutedEventArgs e)
+        private void RefreshBest(object sender, RoutedEventArgs e)
         {
-            ((RibbonButton)sender).Label = new ChessEngineConnector().FindBestMove("S:/engine3.exe", theGame.State);
+            ChessEngine.FindBestMove(theGame.State);
+        }
+
+        private void EngineSelected(object sender, RoutedPropertyChangedEventArgs<object> e)
+        {
+            var value = (Engine)e.NewValue;
+            if (value.Name == "Browse...")
+            {
+                var list = sender as RibbonGallery;
+                var category = list.Items[0] as RibbonGalleryCategory;
+                var filename = OpenFileDialog("Chess Engine|*.exe");
+
+                if (filename != null)
+                {
+                    IEditableCollectionViewAddNewItem items = category.Items;
+                    if (items.CanAddNewItem)
+                    {
+                        object newitem = items.AddNewItem(new Engine(filename));
+                        items.CommitNew();
+                        list.SelectedItem = newitem;
+                    }
+                }
+                else
+                    list.SelectedItem = category.Items[0];
+            }
+            else
+                ChessEngine.Path = value.Path;
         }
     }
 
-    public class DBLoader : BackgroundWorker
+    public struct Engine
     {
-        private ObservableCollection<Game> l;
-        public DBLoader(ObservableCollection<Game> list)
+        private String path;
+        public String Path { get { return path; } }
+        private String name;
+        public String Name { get { return name; } }
+
+        public Engine(String npath)
         {
-            l = list;
-            WorkerReportsProgress = true;
-            DoWork += Import;
-            ProgressChanged += MakeProgress;
-            RunWorkerCompleted += FinishWork;
+            path = npath;
+            name = path.Substring(path.LastIndexOf('\\') + 1, path.Length - 5 - path.LastIndexOf('\\'));
         }
 
-        private void Import(object sender, DoWorkEventArgs e)
+        public Engine(String npath, String caption)
         {
-            var filename = (String)e.Argument;
-            var io = new FileIO(filename);
-
-            int count = io.Count();
-            
-            foreach (ChessGame g in io.ImportPGN())
-            {
-                ReportProgress(0, g); //l.Invoke(Invoke(new MethodInvoker(Delegate {l.Items.Add(g);})));
-            }
-        }
-        private void FinishWork(object sender, RunWorkerCompletedEventArgs e)
-        {
-
+            path = npath;
+            name = caption;
         }
 
-        private void MakeProgress(object sender, ProgressChangedEventArgs e)
+        public override String ToString()
         {
-            l.Add((Game)e.UserState);
-        }
-    }
-
-    class VisualChess : INotifyPropertyChanged
-    {
-        public ChessGame Game;
-        public ChessState State
-        {
-            get
-            {
-                return (ChessState)Game.State;
-            }
-            set
-            {
-                Game.State = value;
-                OnPropertyChanged("State");
-            }
-        }
-
-        public String Event { get { return Game.Info["Event"]; } }
-        public String Site { get { return Game.Info["Site"]; } }
-        public String Data { get { return Game.Info["Data"]; } }
-        public String Round { get { return Game.Info["Round"]; } }
-        public String Result { get { return Game.Info["Result"]; } }
-        public String White { get { return Game.Info["White"]; } }
-        public String Black { get { return Game.Info["Black"]; } }
-        public String FEN
-        {
-            get
-            {
-                return Game.State.ToString();
-            }
-            set
-            {
-                try
-                {
-                    State = new FENParser().Parse(value);
-                    OnPropertyChanged("FEN");
-                }
-                catch
-                {
-                    throw new ArgumentException();
-                }
-            }
-        }
-
-        public void PlacePiece(Position pos, IPiece p)
-        {
-            State.PlacePiece(pos, p);
-            OnPropertyChanged("State");
-            OnPropertyChanged("FEN");
-        }
-
-        public void MakeMove()
-        {
-            Game.MakeMove();
-            OnPropertyChanged("FEN");
-        }
-
-        public void UndoMove()
-        {
-            Game.UndoMove();
-            OnPropertyChanged("FEN");
-        }
-
-        public void Reset()
-        {
-            while (Game.UndoMove()) ;
-        }
-
-        public event PropertyChangedEventHandler PropertyChanged;
-
-        private void OnPropertyChanged(string info)
-        {
-            PropertyChangedEventHandler handler = PropertyChanged;
-            if (handler != null)
-            {
-                handler(this, new PropertyChangedEventArgs(info));
-            }
+            return Name;
         }
     }
 }

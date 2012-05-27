@@ -14,6 +14,8 @@ namespace GameWarden.Chess
 
         public Boolean CastlingKingside;
         public Boolean CastlingQueenside;
+        public bool IsPromotion;
+        public PieceTypes PromotionTo;
 
         protected virtual IConcreteMove Solve(ChessState state)
         {
@@ -34,9 +36,10 @@ namespace GameWarden.Chess
                     if (p.Type == PieceType &&
                         p.Player == Player &&
                         From.Equals(p.Pos) &&
-                        p.CanMove(To, state))
+                        p.CanMove(To, state, PromotionTo))
                     {
-                        var mv = p.GetPossibleMove(To, state);
+                        var mv = p.GetPossibleMove(To, state, PromotionTo);
+
                         mv.Apply(state);
                         if (!state.IsKingOpen(Player))
                         {

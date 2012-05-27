@@ -116,8 +116,8 @@ namespace GameWarden.Chess
         {
             ClearCanvas();
 
-            foreach (var p in State)
-                Squares[p.Pos.File - 1, p.Pos.Rank - 1].Piece = (Piece)p;
+            foreach (Piece p in State)
+                Squares[p.Pos.File - 1, p.Pos.Rank - 1].Piece = p;
         }
 
         // Initializers
@@ -163,7 +163,7 @@ namespace GameWarden.Chess
         private void CreateContextMenu(Cell cell)
         {
             ContextMenu = new ContextMenu();
-            var item = new MenuItem { Header = "Show path", CommandParameter = cell };
+            var item = new MenuItem { Header = "Show path", CommandParameter = cell, Icon = "/Resourses/path.png" };
             item.Click += ItemOnClick;
             ContextMenu.Items.Add(item);
             ContextMenuService.SetContextMenu(cell, ContextMenu);

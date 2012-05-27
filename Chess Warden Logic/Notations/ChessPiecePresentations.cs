@@ -44,9 +44,18 @@ namespace GameWarden.Chess.Notations
         }
         virtual public PieceTypes GetPieceType(Object c)
         {
-            if (((char?)c).HasValue)
-            {
-                switch (((char?)c).Value)
+            char ch = ' ';
+
+            if (c == null)
+                return PieceTypes.Pawn;
+
+            if (c is String)
+                ch = ((String)c)[0];
+
+            if (c is char)
+                ch = (char)c;
+
+                switch (ch)
                 {
                     case 'N':
                         return PieceTypes.Knight;
@@ -61,10 +70,8 @@ namespace GameWarden.Chess.Notations
                 }
 
                 throw new ArgumentException();
-            }
-            else
-                return PieceTypes.Pawn;
         }
+
         public override string ToString()
         {
             return "NBRQK";
