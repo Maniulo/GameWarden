@@ -7,19 +7,32 @@ namespace GameWarden.Chess
     class VisualChess : INotifyPropertyChanged
     {
         public ChessGame Game;
+
+        public ChessState state;
         public ChessState State
         {
             get
             {
-                return (ChessState)Game.State;
+                if (state != null)
+                    return state;
+                
+                if (Game == null)
+                    return null; 
+                
+                return(ChessState)Game.State;
             }
             set
             {
-                Game.State = value;
+                state = value;
                 OnPropertyChanged("State");
+                OnPropertyChanged("FEN");
             }
         }
 
+        public String Movetext
+        {
+            get { return new PGNParser().GenerateMovetext(Game); }
+        }
         public String Event { get { return Game.Info["Event"]; } }
         public String Site { get { return Game.Info["Site"]; } }
         public String Data { get { return Game.Info["Data"]; } }
@@ -31,13 +44,13 @@ namespace GameWarden.Chess
         {
             get
             {
-                return Game.State.ToString();
+                return FENParser.GenerateBoard(State);
             }
             set
             {
                 try
                 {
-                    State = new FENParser().Parse(value);
+                    State = new FENParser().ParseBoard(value);
                     OnPropertyChanged("FEN");
                 }
                 catch
@@ -56,12 +69,14 @@ namespace GameWarden.Chess
 
         public void MakeMove()
         {
+            state = null;
             Game.MakeMove();
             OnPropertyChanged("FEN");
         }
 
         public void UndoMove()
         {
+            state = null;
             Game.UndoMove();
             OnPropertyChanged("FEN");
         }

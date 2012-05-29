@@ -9,31 +9,30 @@ namespace GameWarden.Chess.Notations
     {
         public const String DefaultFEN = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1"; // !!!
 
-        readonly IChessPresentation Presentation;
-        Regex rxFEN;
+        // static due to optimization
+        private static readonly IChessPresentation Presentation = new EnglishFENPresentation();
+        private static readonly Regex RxFEN;
 
-        public FENParser(IChessPresentation presentation)
+        static FENParser()
         {
-            Presentation = presentation;
             String figureSymbols = Presentation.ToString();
             String rxFENString = "^(?<Board>(?:(?:[" + figureSymbols + "|1-8]{1,8})/){7}(?:[" + figureSymbols + "|1-8]{1,8})) (?<Player>[wb]) (?<K>K)?(?<Q>Q)?(?<k>k)?(?<q>q)? (?<EnPassant>(?:-|[a-h][1-8]))" + @" (?<HalfMoves>\d+) (?<FullMoves>\d+)$";
-            rxFEN = new Regex(rxFENString, RegexOptions.None);
+            RxFEN = new Regex(rxFENString, RegexOptions.None);
         }
-
-        public FENParser()
-            : this(new EnglishFENPresentation()) { }
 
         public ChessState Parse(String fenRecord, List<Player> players = null)
         {
-            var gs = new ChessState();
             if (players == null)
-                players = new List<Player> {new Player(1), new Player(2)};
+                players = new List<Player> { new ChessPlayer(1), new ChessPlayer(2) };
 
-            if (rxFEN.IsMatch(fenRecord))
+            if (RxFEN.IsMatch(fenRecord))
             {
-                Match m = rxFEN.Match(fenRecord);
-                gs.Player = m.Groups["Player"].Value;
+                Match m = RxFEN.Match(fenRecord);
 
+                var gs = ParseBoard(m.Groups["Board"].Value, players);
+                
+                gs.Player = m.Groups["Player"].Value[0];
+                
                 gs.CastlingKingsideWhite = m.Groups["K"].Success;
                 gs.CastlingQueensideWhite = m.Groups["Q"].Success;
                 gs.CastlingKingsideBlack = m.Groups["k"].Success;
@@ -41,23 +40,9 @@ namespace GameWarden.Chess.Notations
 
                 if (m.Groups["EnPassant"].Value != "-")
                     gs.EnPassant = m.Groups["EnPassant"].Value;
-                gs.HalfMoves = m.Groups["HalfMoves"].Value;
-                gs.FullMoves = m.Groups["FullMoves"].Value;
 
-                int file = 1, rank = 8;
-                
-                foreach (Char? ch in ParseBoard(m.Groups["Board"].Value))
-                {
-                    IPiece p = ChessPieceFactory.CreatePiece(ch, Presentation, players);
-
-                    gs.PlacePiece(new Position(file, rank), p);
-
-                    if (++file > 8)
-                    {
-                        --rank;
-                        file = 1;
-                    }                    
-                }
+                gs.HalfMoves = Int32.Parse(m.Groups["HalfMoves"].Value);
+                gs.FullMoves = Int32.Parse(m.Groups["FullMoves"].Value);
 
                 return gs;
             }
@@ -67,7 +52,30 @@ namespace GameWarden.Chess.Notations
             }
         }
 
-        private IEnumerable<Char?> ParseBoard(String boardString)
+        public ChessState ParseBoard(String s, List<Player> players = null)
+        {
+            if (players == null)
+                players = new List<Player> { new ChessPlayer(1), new ChessPlayer(2) };
+
+            var gs = new ChessState();
+            int file = 1, rank = 8;
+            foreach (Char? ch in GetBoardChars(s))
+            {
+                IPiece p = ChessPieceFactory.CreatePiece(ch, Presentation, players);
+
+                gs.PlacePiece(new Position(file, rank), p);
+
+                if (++file > 8)
+                {
+                    --rank;
+                    file = 1;
+                }
+            }
+
+            return gs;
+        }
+
+        private IEnumerable<Char?> GetBoardChars(String boardString)
         {
             foreach (Char c in boardString)
             {
@@ -88,7 +96,20 @@ namespace GameWarden.Chess.Notations
             }            
         }
 
-        private String GenerateBoard(ChessState gameState)
+        public static String Generate(ChessState gameState)
+        {
+            return String.Format("{0} {1} {2} {3} {4} {5}",
+                                 GenerateBoard(gameState), gameState.Player,
+                                 (gameState.CastlingKingsideWhite ? "K" : "") +
+                                 (gameState.CastlingQueensideWhite ? "Q" : "") +
+                                 (gameState.CastlingKingsideBlack ? "k" : "") +
+                                 (gameState.CastlingQueensideBlack ? "q" : ""),
+                                 gameState.EnPassant == null ? "-" : gameState.EnPassant.ToString(),
+                                 gameState.HalfMoves,
+                                 gameState.FullMoves);
+        }
+
+        public static String GenerateBoard(ChessState gameState)
         {
             var result = new StringBuilder();
 
@@ -121,21 +142,8 @@ namespace GameWarden.Chess.Notations
         private static void AddEmptySpaces(StringBuilder result, ref int emptySpaces)
         {
             if (emptySpaces > 0)
-                result.Append(emptySpaces.ToString());
+                result.Append(emptySpaces);
             emptySpaces = 0;
-        }
-
-        public String Generate(ChessState gameState)
-        {
-            return String.Format("{0} {1} {2} {3} {4} {5}",
-                                 GenerateBoard(gameState), gameState.Player,
-                                 (gameState.CastlingKingsideWhite ? "K" : "") + 
-                                 (gameState.CastlingQueensideWhite ? "Q" : "") + 
-                                 (gameState.CastlingKingsideBlack ? "k" : "") + 
-                                 (gameState.CastlingQueensideBlack ? "q" : ""),
-                                 gameState.EnPassant == null ? "-" : gameState.EnPassant.ToString(),
-                                 gameState.HalfMoves,
-                                 gameState.FullMoves);
         }
     }
 }

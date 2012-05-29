@@ -17,16 +17,7 @@ namespace GameWarden
 
         public IGameState State;
 
-        protected Game(int maxPlayers)
-        {
-            Info = new Meta();
-            Players = new List<Player>();
-
-            for (var i = 0; i < maxPlayers; ++i)
-                Players.Add(new Player(i + 1));
-        }
-
-        public List<Player> Players;
+        public List<Player> Players = new List<Player>();
 
         public bool MakeMove()
         {

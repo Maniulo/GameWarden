@@ -52,11 +52,12 @@ namespace GameWarden
         {
             IsEmpty = copy.IsEmpty;
             Player = copy.Player;
-            Pos = new Position(copy.Pos);
+            if (copy.Pos != null)
+                Pos = new Position(copy.Pos);
 
             PossibleMoves = new List<ITemplateMove>(copy.PossibleMoves);
-            //foreach (var m in copy.PossibleMoves) // !!!
-            //    PossibleMoves.Add(m);
+            foreach (var m in copy.PossibleMoves)
+                PossibleMoves.Add(m);
 
             Path = new Stack<Position>();
             foreach (Position pos in copy.Path)

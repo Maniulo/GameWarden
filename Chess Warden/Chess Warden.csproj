@@ -61,6 +61,7 @@
     <Reference Include="RibbonControlsLibrary, Version=4.0.0.11019, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL" />
     <Reference Include="System" />
     <Reference Include="System.ComponentModel.DataAnnotations" />
+    <Reference Include="System.configuration" />
     <Reference Include="System.Data" />
     <Reference Include="System.Data.Entity" />
     <Reference Include="System.Data.Linq" />
@@ -94,15 +95,18 @@
     <Compile Include="DB\DBLoader.cs">
       <SubType>Component</SubType>
     </Compile>
+    <Compile Include="DB\EntityDataReader.cs" />
     <Compile Include="FileIO.cs" />
-    <Compile Include="FileIOFunctions.cs" />
-    <Compile Include="Main\GameCollection.cs" />
+    <Compile Include="Window Partials\Filtering.cs" />
+    <Compile Include="Window Partials\Menu.cs" />
     <Compile Include="ChessModel.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
       <DependentUpon>ChessModel.edmx</DependentUpon>
     </Compile>
-    <Compile Include="VisualChess.cs" />
+    <Compile Include="Window Partials\PositionSetter.cs" />
+    <Compile Include="WPFChess.cs" />
+    <Compile Include="Window Partials\Statistics.cs" />
     <Compile Include="Window.xaml.cs">
       <DependentUpon>Window.xaml</DependentUpon>
     </Compile>

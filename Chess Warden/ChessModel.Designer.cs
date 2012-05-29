@@ -236,10 +236,7 @@ namespace GameWarden.Chess
         private global::System.Int32 _ID;
         partial void OnIDChanging(global::System.Int32 value);
         partial void OnIDChanged();
-
-
-
-
+        
         /// <summary>
         /// No Metadata Documentation available.
         /// </summary>
@@ -261,12 +258,8 @@ namespace GameWarden.Chess
                 OnEventChanged();
             }
         }
-        private global::System.String _Event;
         partial void OnEventChanging(global::System.String value);
         partial void OnEventChanged();
-
-
-
 
         /// <summary>
         /// No Metadata Documentation available.
@@ -289,7 +282,6 @@ namespace GameWarden.Chess
                 OnSiteChanged();
             }
         }
-        private global::System.String _Site;
         partial void OnSiteChanging(global::System.String value);
         partial void OnSiteChanged();
 
@@ -316,7 +308,6 @@ namespace GameWarden.Chess
                 OnDateChanged();
             }
         }
-        private global::System.String _Date;
         partial void OnDateChanging(global::System.String value);
         partial void OnDateChanged();
 
@@ -343,7 +334,6 @@ namespace GameWarden.Chess
                 OnRoundChanged();
             }
         }
-        private global::System.String _Round;
         partial void OnRoundChanging(global::System.String value);
         partial void OnRoundChanged();
 
@@ -370,7 +360,6 @@ namespace GameWarden.Chess
                 OnWhiteChanged();
             }
         }
-        private global::System.String _White;
         partial void OnWhiteChanging(global::System.String value);
         partial void OnWhiteChanged();
 
@@ -397,12 +386,9 @@ namespace GameWarden.Chess
                 OnBlackChanged();
             }
         }
-        private global::System.String _Black;
         partial void OnBlackChanging(global::System.String value);
         partial void OnBlackChanged();
-
-
-
+        
         /// <summary>
         /// No Metadata Documentation available.
         /// </summary>
@@ -424,12 +410,9 @@ namespace GameWarden.Chess
                 OnResultChanged();
             }
         }
-        private global::System.String _Result;
         partial void OnResultChanging(global::System.String value);
         partial void OnResultChanged();
-
-
-
+        
         /// <summary>
         /// No Metadata Documentation available.
         /// </summary>

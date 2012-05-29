@@ -39,18 +39,43 @@ namespace GameWarden.Chess
         private void OpenPGNClick(object sender, RoutedEventArgs e)
         {
             var filename = OpenFileDialog("PGN Files|*.pgn");
-            
+
             if (filename != null)
-                new DBLoader(GamesCollection).RunWorkerAsync(filename);
+            {
+                var worker = new DBLoader(GamesCollection, DB);
+                worker.RunWorkerAsync(filename);
+                worker.RunWorkerCompleted += PGNImported;
+            }
+        }
+
+        void PGNImported(object sender, System.ComponentModel.RunWorkerCompletedEventArgs e)
+        {
+            String msg;
+            if (e.Error == null)
+            {
+                msg = String.Format("Games successfully imported: {0}.\n", e.Result);
+            }
+            else
+            {
+                msg = String.Format("Games successfully imported: {0}.\nErrors: {1}.\nSee app log for details.", e.Error.Data["Done"], e.Error.Data["Errors"]);
+            }
+            
+            Message.Dispatcher.BeginInvoke(new Action(
+                                               delegate
+                                                   {
+                                                       Message.IsOpen = true;
+                                                       MessageText.Text = msg;
+                                                   }
+                                               ));
         }
 
         private void SavePGNClick(object sender, RoutedEventArgs e)
         {
             var filename = SaveFileDialog("PGN Files|*.pgn");
-            var items = ((IList)ResultsList.SelectedItems).Cast<ChessGame>();
+            var items = ResultsList.SelectedItems.Cast<DBGame>();
 
             if (filename != null)
-                new FileIO(filename).ExportPGN(items);
+                new FileIO(filename).ExportPGN(items.Select(c => c.Game));
         }
     }
 }

@@ -123,7 +123,6 @@ namespace GameWarden.Chess.Notations
 
         public String GenerateMovetext(ChessGame game)
         {
-            String result;
             var movetext = new StringBuilder();
             var mover = game.Moves.GetEnumerator();
             var moveCount = 1;

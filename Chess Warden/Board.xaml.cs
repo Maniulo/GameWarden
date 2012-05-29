@@ -5,6 +5,7 @@ using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
+using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 using GameWarden.Chess.Notations;
 
@@ -116,8 +117,9 @@ namespace GameWarden.Chess
         {
             ClearCanvas();
 
-            foreach (Piece p in State)
-                Squares[p.Pos.File - 1, p.Pos.Rank - 1].Piece = p;
+            if (State != null)
+                foreach (Piece p in State)
+                    Squares[p.Pos.File - 1, p.Pos.Rank - 1].Piece = p;
         }
 
         // Initializers
@@ -163,7 +165,7 @@ namespace GameWarden.Chess
         private void CreateContextMenu(Cell cell)
         {
             ContextMenu = new ContextMenu();
-            var item = new MenuItem { Header = "Show path", CommandParameter = cell, Icon = "/Resourses/path.png" };
+            var item = new MenuItem { Header = "Show path", CommandParameter = cell, Icon = new Image() { Source = new BitmapImage( new Uri("/Resourses/path.png", UriKind.Relative)) } };
             item.Click += ItemOnClick;
             ContextMenu.Items.Add(item);
             ContextMenuService.SetContextMenu(cell, ContextMenu);

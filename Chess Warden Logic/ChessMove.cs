@@ -69,7 +69,7 @@ namespace GameWarden.Chess
 
         public void Apply(IGameState state)
         {
-            if (state is ChessState)    // ???
+            if (state is ChessState)
             {
                 var cs = state as ChessState;
 
@@ -79,9 +79,14 @@ namespace GameWarden.Chess
                 if (Move == null)
                     throw new Exception(String.Format("Move \"{0}\" cannot be solved.", Desc));
 
-                SavedEnPassant = ((ChessState) state).EnPassant;
+                SavedEnPassant = cs.EnPassant;
                 if (!(Move is EnPassantConcrete))
-                    ((ChessState) state).EnPassant = null;
+                    cs.EnPassant = null;
+
+                cs.SwitchPlayers();
+                if (Player.Order == 2)
+                    ++cs.FullMoves;
+
                 Move.Apply(state);
             }
             else
@@ -92,8 +97,19 @@ namespace GameWarden.Chess
 
         public void Rollback(IGameState state)
         {
-            Move.Rollback(state);
-            ((ChessState)state).EnPassant = SavedEnPassant;
+            if (state is ChessState)
+            {
+                var cs = state as ChessState;
+                Move.Rollback(state);
+                cs.SwitchPlayers();
+                cs.EnPassant = SavedEnPassant;
+                if (Player.Order == 2)
+                    --cs.FullMoves;
+            }
+            else
+            {
+                throw new ArgumentException();
+            }
         }
     }
 }

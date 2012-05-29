@@ -1,4 +1,5 @@
-﻿using GameWarden.Chess.Notations;
+﻿using System;
+using GameWarden.Chess.Notations;
 
 namespace GameWarden.Chess
 {
@@ -10,10 +11,17 @@ namespace GameWarden.Chess
             
         }
 
+        public ChessGame(ChessGame o)
+        {
+            throw new NotImplementedException();
+        }
+
         public ChessGame(Meta metainfo)
-            : base(2)
         {
             Info = metainfo;
+
+            Players.Add(new ChessPlayer(1));
+            Players.Add(new ChessPlayer(2));
 
             State = new FENParser().Parse(
                 (Info["FEN"] == null) || (Info["FEN"].Equals("")) ? FENParser.DefaultFEN : Info["FEN"],

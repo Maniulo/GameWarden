@@ -8,14 +8,14 @@ namespace GameWarden.Chess
 {
     public class ChessState : GameState
     {
-        public String Player;
+        public Char Player;
         public Boolean CastlingKingsideWhite;
         public Boolean CastlingKingsideBlack;
         public Boolean CastlingQueensideWhite;
         public Boolean CastlingQueensideBlack;
         public Position EnPassant;
-        public String HalfMoves;
-        public String FullMoves;
+        public int HalfMoves;
+        public int FullMoves;
 
         public Boolean IsKingOpen(Player defencePlayer)
         {
@@ -25,7 +25,7 @@ namespace GameWarden.Chess
 
         protected ChessPiece GetKing(Player player)
         {
-            return (ChessPiece)this.FirstOrDefault(p => !p.IsEmpty && ((ChessPiece)p).Type == PieceTypes.King && p.Player == player);
+            return ((ChessPlayer) player).MyKing;
         }
 
         public Boolean IsUnderAttack(Position pos, Player defencePlayer)
@@ -36,18 +36,65 @@ namespace GameWarden.Chess
         public ChessState()
             : base(8, 8) { }
 
-        public override IPiece CreateEmptyPiece(Position pos) // !!!
+        public ChessState(ChessState o)
+            : this()
+        {
+            Player = o.Player;
+            CastlingKingsideBlack = o.CastlingKingsideBlack;
+            CastlingKingsideWhite = o.CastlingKingsideWhite;
+            CastlingQueensideBlack = o.CastlingQueensideBlack;
+            CastlingQueensideWhite = o.CastlingQueensideWhite;
+            if (o.EnPassant != null)
+                EnPassant = new Position(o.EnPassant);
+            HalfMoves = o.HalfMoves;
+            FullMoves = o.FullMoves;
+
+            foreach (var p in o)
+                Board[p.Pos.File-1, p.Pos.Rank-1] = p;
+        }
+
+        public void SwitchPlayers()
+        {
+            switch (Player)
+                {
+                    case 'w':
+                        Player = 'b';
+                        break;
+                    case 'b':
+                        Player = 'w';
+                        break;
+                }
+        }
+
+        public override IPiece PlaceEmptyPiece(Position pos)
         {
             var p = new ChessPiece { IsEmpty = true };
             p.Move(pos);
             return p;
         }
 
-        public override string ToString()
+        public override void PlacePiece(Position pos, IPiece p)
         {
-            return new FENParser().Generate(this);
+            var cp = p as ChessPiece;
+
+            if (cp != null)
+            {
+                if (cp.Type == PieceTypes.King)
+                {
+                    ((ChessPlayer)p.Player).MyKing = cp;
+                }
+
+                base.PlacePiece(pos, p);
+            }
+            else
+            {
+                throw new ArgumentException();
+            }
         }
 
-        
+        public override string ToString()
+        {
+            return FENParser.Generate(this);
+        }
     }
 }

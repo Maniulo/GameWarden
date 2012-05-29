@@ -52,8 +52,11 @@ namespace GameWarden.Chess
             }
         }
 
-        static public ChessPiece CreatePiece(Object pieceCode, IChessPresentation presentation, List<Player> players)
+        static public ChessPiece CreatePiece(Object pieceCode, IChessPresentation presentation, List<Player> players = null)
         {
+            if (players == null)
+                players = new List<Player> { new ChessPlayer(1), new ChessPlayer(2) };
+
             var p = new ChessPiece();
 
             if (!presentation.IsEmpty(pieceCode))

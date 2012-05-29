@@ -44,6 +44,7 @@
     <Compile Include="ChessMove.cs" />
     <Compile Include="ChessPiece.cs" />
     <Compile Include="ChessPieceFactory.cs" />
+    <Compile Include="ChessPlayer.cs" />
     <Compile Include="ChessState.cs" />
     <Compile Include="Moves\Promotion.cs" />
     <Compile Include="Notations\ChessPiecePresentations.cs" />
@@ -51,7 +52,7 @@
     <Compile Include="Moves\Knight.cs" />
     <Compile Include="Moves\Pawn.cs" />
     <Compile Include="Notations\FENParser.cs" />
-    <Compile Include="Notations\MoveNotations.cs" />
+    <Compile Include="Notations\ANParser.cs" />
     <Compile Include="Notations\PGNParser.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

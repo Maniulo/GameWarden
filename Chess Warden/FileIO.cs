@@ -9,10 +9,12 @@ namespace GameWarden.Chess
     public class FileIO
     {
         private readonly String Filepath;
+        private readonly String ErrorFilepath;
 
-        public FileIO(String filepath)
+        public FileIO(String filepath, String errors = @"C:\1.txt")
         {
             Filepath = filepath;
+            ErrorFilepath = errors;
         }
 
         private static void RemoveTrailingEmptyLines(List<String> lines)
@@ -46,8 +48,27 @@ namespace GameWarden.Chess
             var pgnParser = new PGNParser();
             var lines = ReadFile();
             var pgnGames = SeparateGames(lines);
+            ChessGame result = null;
 
-            return pgnGames.Select(pgnParser.Parse);
+            foreach (var game in pgnGames)
+            {
+                try
+                {
+                    result = pgnParser.Parse(game);
+                }
+                catch (Exception)
+                {
+                    if (ErrorFilepath != null)
+                    {
+                        var writer = new StreamWriter(ErrorFilepath, true);
+                        foreach (var s in game) writer.WriteLine(s);
+                        writer.Close();
+                    }
+                }
+
+                if (result != null)
+                    yield return result;
+            }
         }
 
         private List<String> ReadFile()

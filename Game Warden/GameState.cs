@@ -33,7 +33,7 @@ namespace GameWarden
 
             for (int file = 0; file < dimX; ++file)
                 for (int rank = 0; rank < dimY; ++rank)
-                    Board[file, rank] = CreateEmptyPiece(new Position(file + 1, rank + 1));
+                    Board[file, rank] = PlaceEmptyPiece(new Position(file + 1, rank + 1));
 
             DimX = dimX;
             DimY = dimY;
@@ -80,50 +80,50 @@ namespace GameWarden
             }
         }
 
-        public abstract IPiece CreateEmptyPiece(Position pos);
+        public abstract IPiece PlaceEmptyPiece(Position pos);
 
-        public void PlacePiece(Position pos, IPiece p)
+        public virtual void PlacePiece(Position pos, IPiece p)
         {
             this[pos] = p;
             p.Move(pos);
         }
 
-        public void RemovePiece(Position pos)
+        public virtual void RemovePiece(Position pos)
         {
-            this[pos] = CreateEmptyPiece(pos);
+            this[pos] = PlaceEmptyPiece(pos);
         }
 
-        public void MovePiece(Position from, Position to)
+        public virtual void MovePiece(Position from, Position to)
         {
             this[to] = this[from];
             this[to].Move(to);
-            this[from] = CreateEmptyPiece(from);
+            this[from] = PlaceEmptyPiece(from);
         }
 
-        public void PlacePieceN(Position pos)
+        public virtual void PlacePieceN(Position pos)
         {
-            this[pos] = CreateEmptyPiece(pos);
+            this[pos] = PlaceEmptyPiece(pos);
             // p.Move(pos);
         }
 
-        public void RemovePieceN(IPiece p)
+        public virtual void RemovePieceN(IPiece p)
         {
             this[p.Pos] = p;
         }
 
-        public void MovePieceN(Position from, Position to)
+        public virtual void MovePieceN(Position from, Position to)
         {
             this[from] = this[to];
             this[from].Unmove();
             //this[to].Move(to);
-            this[to] = CreateEmptyPiece(to);
+            this[to] = PlaceEmptyPiece(to);
         }
         
         public IEnumerator<IPiece> GetEnumerator()
         {
-            for (var rank = DimX; rank >= 1; --rank)
-                for (var file = 1; file <= DimY; ++file)
-                    yield return this[file, rank];
+            for (var rank = DimX - 1; rank >= 0; --rank)
+                for (var file = 0; file < DimY; ++file)
+                    yield return Board[file, rank];
         }
 
         System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()

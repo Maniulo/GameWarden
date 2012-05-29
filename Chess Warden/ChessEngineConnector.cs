@@ -75,8 +75,6 @@ namespace GameWarden.Chess
         private readonly IChessMoveNotation Parser = new AlgebraicNotation();
         private readonly Regex RxBestMove = new Regex("bestmove (?<Move>.*) ponder");
 
-        
-
         private Process P;
         private void StartProcess()
         {
@@ -96,7 +94,7 @@ namespace GameWarden.Chess
             P.StandardInput.WriteLine("ucinewgame");
 
             if (st != null)
-                P.StandardInput.WriteLine("position fen " + new FENParser().Generate(st));
+                P.StandardInput.WriteLine("position fen " + FENParser.Generate(st));
 
             P.StandardInput.WriteLine("go depth " + depth);
 
@@ -146,6 +144,31 @@ namespace GameWarden.Chess
             {
                 handler(this, new PropertyChangedEventArgs(info));
             }
+        }
+    }
+
+    public struct Engine
+    {
+        private readonly String path;
+        public String Path { get { return path; } }
+        private readonly String name;
+        public String Name { get { return name; } }
+
+        public Engine(String npath)
+        {
+            path = npath;
+            name = path.Substring(path.LastIndexOf('\\') + 1, path.Length - 5 - path.LastIndexOf('\\'));
+        }
+
+        public Engine(String npath, String caption)
+        {
+            path = npath;
+            name = caption;
+        }
+
+        public override String ToString()
+        {
+            return Name;
         }
     }
 }
