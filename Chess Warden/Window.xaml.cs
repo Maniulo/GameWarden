@@ -29,12 +29,15 @@ namespace GameWarden.Chess
             UncheckButton(this, null);
         }
 
-        private void movesScrollBar_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
+        private void MovesScrollBarValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
         {
-            if (e.NewValue > e.OldValue)
-                TheGame.MakeMove();
+            int Amount = (int)e.NewValue - (int)e.OldValue;
+            if (Amount > 0)
+                for (; Amount > 0; --Amount )
+                    TheGame.MakeMove();
             else
-                TheGame.UndoMove();
+                for (; Amount < 0; ++Amount)
+                    TheGame.UndoMove();
 
             theBoard.Refresh();
         }
@@ -54,18 +57,25 @@ namespace GameWarden.Chess
             blackLabel.SetBinding(ContentProperty, "Black");
             resultLabel.SetBinding(ContentProperty, "Result");
 
+            movesScrollBar.Maximum = ((VisualChess) context).Moves;
+            movesScrollBar.Value = 0;
+            movesScrollBar.ViewportSize = 10;
+
             Movetext.DataContext = context;
             Movetext.SetBinding(TextBox.TextProperty, new Binding("Movetext") {Mode = BindingMode.OneWay});
+            
+            theBoard.DataContext = context;
+            theBoard.SetBinding(Board.StateProperty, "State");
+        }
 
+        private void SetBindingsSearch(Object context)
+        {
             var b = new Binding("FEN");
             var v = new ExceptionValidationRule();
             b.UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged;
             b.ValidationRules.Add(v);
             FENSearch.DataContext = context;
             FENSearch.SetBinding(TextBox.TextProperty, b);
-
-            theBoard.DataContext = context;
-            theBoard.SetBinding(Board.StateProperty, "State");
         }
 
         private void ResultsListSelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -92,11 +102,13 @@ namespace GameWarden.Chess
                     TheGame.State = new ChessState();
                     SetBindings(TheGame);
                 }
+                SetBindingsSearch(TheGame);
             }
 
             if (e.AddedItems.Contains(HomeTab))
             {
                 TheGame.State = null;
+                SetBindingsSearch(null);
                 ResetGUI();
             }
         }

@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 
 namespace GameWarden
 {
@@ -9,21 +8,41 @@ namespace GameWarden
         public static int DimX { get { throw new NotImplementedException(); }  }
         public static int DimY  { get { throw new NotImplementedException(); }  }
 
-        private int Mover = 0;
-
         public Meta Info;
 
-        public List<IConcreteMove> Moves = new List<IConcreteMove>();
+        private readonly List<IConcreteMove> moves = new List<IConcreteMove>();
+
+        public IEnumerable<IConcreteMove> Moves()
+        {
+            return moves;
+        }
+
+        public int CurrentMove { get; private set; }
+
+        public int MovesCount
+        {
+            get { return moves.Count; }
+        }
 
         public IGameState State;
 
         public List<Player> Players = new List<Player>();
 
+        protected Game()
+        {
+            CurrentMove = 0;
+        }
+
+        public void AddMove(IConcreteMove m)
+        {
+            moves.Add(m);
+        }
+
         public bool MakeMove()
         {
-            if (Mover < Moves.Count)
+            if (CurrentMove < MovesCount)
             {
-                Moves[Mover++].Apply(State);
+                moves[CurrentMove++].Apply(State);
                 return true;
             }
 
@@ -32,9 +51,9 @@ namespace GameWarden
 
         public bool UndoMove()
         {
-            if (Mover > 0)
+            if (CurrentMove > 0)
             {
-                Moves[--Mover].Rollback(State);
+                moves[--CurrentMove].Rollback(State);
                 return true;
             }
 

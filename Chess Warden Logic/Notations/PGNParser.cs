@@ -76,7 +76,7 @@ namespace GameWarden.Chess.Notations
 
             var game = new ChessGame(metainfo);
             foreach (ChessMove cm in ParseMoves(movetext, moveNotation, game.Players))
-                game.Moves.Add(cm);
+                game.AddMove(cm);
             
             return game;
         }
@@ -124,19 +124,20 @@ namespace GameWarden.Chess.Notations
         public String GenerateMovetext(ChessGame game)
         {
             var movetext = new StringBuilder();
-            var mover = game.Moves.GetEnumerator();
             var moveCount = 1;
 
-            while (mover.MoveNext())
+            foreach (var m in game.Moves())
             {
-                movetext.Append((moveCount++) + ". ");
-                movetext.Append(mover.Current + " ");
-                if (mover.MoveNext())
-                    movetext.Append(mover.Current + " ");
+                if (moveCount % 2 == 1)
+                    movetext.Append((moveCount+1)/2 + ". ");
+                movetext.Append(m + " ");
+                
+                moveCount++;
             }
 
             if (movetext.Length > 0)
                 movetext.Remove(movetext.Length - 1, 1);
+
             return movetext.ToString();
         }
     }

@@ -59,6 +59,8 @@ namespace GameWarden.Chess
                 }
             }
         }
+        public int Moves { get { return Game.MovesCount; } }
+        public int CurrentMove { get { return Game.CurrentMove; } }
 
         public void PlacePiece(Position pos, IPiece p)
         {

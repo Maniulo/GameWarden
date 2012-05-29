@@ -50,10 +50,10 @@ namespace GameWarden.Tests
         public void ParseFENCastling()
         {
             ChessState gameState = new FENParser().Parse("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w Kq - 0 1");
-            Assert.IsTrue(gameState.CastlingKingsideWhite);
-            Assert.IsFalse(gameState.CastlingQueensideWhite);
-            Assert.IsFalse(gameState.CastlingKingsideBlack);
-            Assert.IsTrue(gameState.CastlingQueensideBlack);
+            Assert.IsTrue(gameState.Castling.KingsideWhite);
+            Assert.IsFalse(gameState.Castling.QueensideWhite);
+            Assert.IsFalse(gameState.Castling.KingsideBlack);
+            Assert.IsTrue(gameState.Castling.QueensideBlack);
         }
 
         /*
@@ -132,7 +132,7 @@ namespace GameWarden.Tests
             ChessGame game = new PGNParser().Parse(pgn, new AlgebraicNotation());
             Assert.AreEqual("Some Event", game.Info["Event"]);
             for (int i = 0; i < 4; ++i)
-                Assert.AreEqual(moves[i], ((ChessMove)game.Moves[i]).Desc);
+                Assert.AreEqual(moves[i], ((ChessMove)game.Moves().ToList()[i]).Desc);
         }
 
         [TestMethod]

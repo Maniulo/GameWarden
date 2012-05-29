@@ -13,20 +13,42 @@ namespace GameWarden.Chess
 {
     public partial class Board : UserControl, IEnumerable<Cell>
     {
+        private int dimX;
         public int DimX
         {
-            get { return (int)GameType.GetProperty("DimX").GetValue(null, null); }
-        }
-        public int DimY
-        {
-            get { return (int)GameType.GetProperty("DimY").GetValue(null, null); }
+            get { return dimX; }
+            set
+            {
+                if (value > 0)
+                {
+                    dimX = value;
+                    InitializeGrid();
+                    PopulateGrid();
+                }
+                else
+                {
+                    throw new ArgumentOutOfRangeException();
+                }
+            }
         }
 
-        private Type gameType = typeof(ChessGame);
-        public Type GameType
+        private int dimY;
+        public int DimY
         {
-            get { return gameType; }
-            set { gameType = value; }
+            get { return dimY; }
+            set
+            {
+                if (value > 0)
+                {
+                    dimY = value;
+                    InitializeGrid();
+                    PopulateGrid();
+                }
+                else
+                {
+                    throw new ArgumentOutOfRangeException();
+                }
+            }
         }
 
         private Brush _LightBackground;
@@ -126,33 +148,41 @@ namespace GameWarden.Chess
         public Board()
         {
             InitializeComponent();
-            InitializeGrid();
-            PopulateGrid();
             BringCanvasToFront();
         }
         private void InitializeGrid()
         {
-            Squares = new Cell[DimX, DimY];
+            if (DimX > 0 && DimY > 0)
+            {
+                Squares = new Cell[DimX,DimY];
 
-            for (int file = 1; file <= DimX; ++file)
-                theGrid.ColumnDefinitions.Add(new ColumnDefinition());
+                theGrid.ColumnDefinitions.Clear();
+                theGrid.RowDefinitions.Clear();
 
-            for (int rank = 1; rank <= DimY; ++rank)
-                theGrid.RowDefinitions.Add(new RowDefinition());
+                for (int file = 1; file <= DimX; ++file)
+                    theGrid.ColumnDefinitions.Add(new ColumnDefinition());
+
+                for (int rank = 1; rank <= DimY; ++rank)
+                    theGrid.RowDefinitions.Add(new RowDefinition());
+            }
         }
         private void PopulateGrid()
         {
-            IPiecePresentation presentation = new FigurinePresentation();
+            if (DimX > 0 && DimY > 0)
+            {
+                IPiecePresentation presentation = new FigurinePresentation();
+                theGrid.Children.Clear();
 
-            for (int file = 0; file < DimX; ++file)
-                for (int rank = 0; rank < DimY; ++rank)
-                {
-                    Cell cell = Squares[file, rank] = new Cell(file, rank) { Presentation = presentation };
-                    theGrid.Children.Add(cell);
-                    Grid.SetColumn(cell, file);
-                    Grid.SetRow(cell, DimY - rank - 1);
-                    CreateContextMenu(cell);
-                }
+                for (int file = 0; file < DimX; ++file)
+                    for (int rank = 0; rank < DimY; ++rank)
+                    {
+                        Cell cell = Squares[file, rank] = new Cell(file, rank) {Presentation = presentation};
+                        theGrid.Children.Add(cell);
+                        Grid.SetColumn(cell, file);
+                        Grid.SetRow(cell, DimY - rank - 1);
+                        CreateContextMenu(cell);
+                    }
+            }
         }
         private void BringCanvasToFront()
         {

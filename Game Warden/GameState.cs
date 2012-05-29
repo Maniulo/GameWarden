@@ -16,31 +16,30 @@ namespace GameWarden
         void RemovePieceN(IPiece p);
         void MovePieceN(Position from, Position to);
 
-        IPiece this[int file, int rank] { get; }
+        //IPiece this[int file, int rank] { get; }
         IPiece this[Position index] { get; }
     }
 
-    public abstract class GameState : IGameState 
+    public class GameState : IGameState 
     {
         private readonly int DimX;
         private readonly int DimY;
         
         protected IPiece[,] Board;
 
-        protected GameState(int dimX, int dimY)
+        public GameState(int dimX, int dimY)
         {
             Board = new IPiece[dimX, dimY];
 
             for (int file = 0; file < dimX; ++file)
                 for (int rank = 0; rank < dimY; ++rank)
-                    Board[file, rank] = PlaceEmptyPiece(new Position(file + 1, rank + 1));
+                    PlaceEmptyPiece(new Position(file + 1, rank + 1));
 
             DimX = dimX;
             DimY = dimY;
         }
 
-        // !!!!11
-        public IPiece this[int file, int rank]
+        private IPiece this[int file, int rank]
         {
             get
             {
@@ -63,7 +62,7 @@ namespace GameWarden
                 }
                 catch
                 {
-                    throw new Exception();
+                    throw new ArgumentOutOfRangeException("index");
                 }
             }
 
@@ -75,12 +74,15 @@ namespace GameWarden
                 }
                 catch
                 {
-                    throw new ArgumentNullException();
+                    throw new ArgumentOutOfRangeException("index");
                 }
             }
         }
 
-        public abstract IPiece PlaceEmptyPiece(Position pos);
+        public virtual void PlaceEmptyPiece(Position pos)
+        {
+            PlacePiece(pos, new Piece { IsEmpty = true });
+        }
 
         public virtual void PlacePiece(Position pos, IPiece p)
         {
@@ -90,20 +92,19 @@ namespace GameWarden
 
         public virtual void RemovePiece(Position pos)
         {
-            this[pos] = PlaceEmptyPiece(pos);
+            PlaceEmptyPiece(pos);
         }
 
         public virtual void MovePiece(Position from, Position to)
         {
             this[to] = this[from];
             this[to].Move(to);
-            this[from] = PlaceEmptyPiece(from);
+            PlaceEmptyPiece(from);
         }
 
         public virtual void PlacePieceN(Position pos)
         {
-            this[pos] = PlaceEmptyPiece(pos);
-            // p.Move(pos);
+            PlaceEmptyPiece(pos);
         }
 
         public virtual void RemovePieceN(IPiece p)
@@ -115,8 +116,7 @@ namespace GameWarden
         {
             this[from] = this[to];
             this[from].Unmove();
-            //this[to].Move(to);
-            this[to] = PlaceEmptyPiece(to);
+            PlaceEmptyPiece(to);
         }
         
         public IEnumerator<IPiece> GetEnumerator()

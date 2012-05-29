@@ -431,7 +431,7 @@ namespace GameWarden.Chess
                 _Moves = StructuralObject.SetValidValue(value, true);
                 if (_Moves != null)
                     foreach (ChessMove m in new PGNParser().ParseMoves(_Moves, TheGame.Players))
-                        TheGame.Moves.Add(m);
+                        TheGame.AddMove(m);
                 ReportPropertyChanged("Moves");
                 OnMovesChanged();
             }

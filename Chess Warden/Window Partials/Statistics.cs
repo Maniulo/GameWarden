@@ -57,7 +57,7 @@ namespace GameWarden.Chess
 
         private void RefreshStatistics()
         {
-            var cState = TheGame.State.ToString();
+            var cState = TheGame.State.ToStringShort();
 
             var total = (from game in DB.Games
                          join state in DB.GameStates on game.ID equals state.Game

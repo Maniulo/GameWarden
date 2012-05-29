@@ -8,11 +8,11 @@ namespace GameWarden
         {
             get
             { 
-                try
+                if (_File.HasValue)
                 {
                     return _File.Value;
                 }
-                catch
+                else
                 {
                     throw new Exception("Attempt to get file value from partially initialized position.");
                 }
@@ -23,11 +23,11 @@ namespace GameWarden
         {
             get
             {
-                try
+                if (_Rank.HasValue)
                 {
                     return _Rank.Value;
                 }
-                catch
+                else
                 {
                     throw new Exception("Attempt to get rank value from partially initialized position.");
                 }
@@ -70,41 +70,26 @@ namespace GameWarden
             return new Position(s);
         }
         
-        public int GetFile(Char c)
+        public static int GetFile(Char c)
         {
+            c = Char.ToLower(c);
             if (FileCharACode <= c && c <= FileCharZCode)
             {
                 return (c - FileCharACode) + 1;
             }
             else
             {
-                throw new ArgumentException();
+                throw new ArgumentOutOfRangeException();
             }
             
         }
-        public int GetRank(Char c)
+        public static int GetRank(Char c)
         {
-            try
-            {
-                return (int)Char.GetNumericValue(c);
-            }
-            catch
-            {
-                throw new ArgumentException();
-            }
+            int r = (int)Char.GetNumericValue(c);
+            if (r != -1) return r;
+            throw new ArgumentOutOfRangeException();
         }
 
-        public static int RankDistance(Position from, Position to)
-        {
-            try
-            {
-                return Math.Abs(from.Rank - to.Rank);
-            }
-            catch
-            {
-                throw new ArgumentNullException();
-            }
-        }
         public static int FileDistance(Position from, Position to)
         {
             try
@@ -113,7 +98,18 @@ namespace GameWarden
             }
             catch
             {
-                throw new ArgumentNullException();
+                throw new ArgumentNullException("File of a position is undefined.", new Exception());
+            }
+        }
+        public static int RankDistance(Position from, Position to)
+        {
+            try
+            {
+                return Math.Abs(from.Rank - to.Rank);
+            }
+            catch
+            {
+                throw new ArgumentNullException("Rank of a position is undefined.", new Exception());
             }
         }
 

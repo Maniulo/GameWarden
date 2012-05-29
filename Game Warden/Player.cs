@@ -1,10 +1,8 @@
-﻿using System.Text;
-
-namespace GameWarden
+﻿namespace GameWarden
 {
     public class Player
     {
-        public int Order;
+        public int Order { get; private set; }
 
         public Player(int order)
         {

@@ -11,7 +11,7 @@ namespace GameWarden.Chess
         private readonly String Filepath;
         private readonly String ErrorFilepath;
 
-        public FileIO(String filepath, String errors = @"C:\1.txt")
+        public FileIO(String filepath, String errors = @"\err.log")
         {
             Filepath = filepath;
             ErrorFilepath = errors;

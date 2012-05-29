@@ -33,10 +33,10 @@ namespace GameWarden.Chess.Notations
                 
                 gs.Player = m.Groups["Player"].Value[0];
                 
-                gs.CastlingKingsideWhite = m.Groups["K"].Success;
-                gs.CastlingQueensideWhite = m.Groups["Q"].Success;
-                gs.CastlingKingsideBlack = m.Groups["k"].Success;
-                gs.CastlingQueensideBlack = m.Groups["q"].Success;
+                gs.Castling.KingsideWhite = m.Groups["K"].Success;
+                gs.Castling.QueensideWhite = m.Groups["Q"].Success;
+                gs.Castling.KingsideBlack = m.Groups["k"].Success;
+                gs.Castling.QueensideBlack = m.Groups["q"].Success;
 
                 if (m.Groups["EnPassant"].Value != "-")
                     gs.EnPassant = m.Groups["EnPassant"].Value;
@@ -100,10 +100,10 @@ namespace GameWarden.Chess.Notations
         {
             return String.Format("{0} {1} {2} {3} {4} {5}",
                                  GenerateBoard(gameState), gameState.Player,
-                                 (gameState.CastlingKingsideWhite ? "K" : "") +
-                                 (gameState.CastlingQueensideWhite ? "Q" : "") +
-                                 (gameState.CastlingKingsideBlack ? "k" : "") +
-                                 (gameState.CastlingQueensideBlack ? "q" : ""),
+                                 (gameState.Castling.KingsideWhite ? "K" : "") +
+                                 (gameState.Castling.QueensideWhite ? "Q" : "") +
+                                 (gameState.Castling.KingsideBlack ? "k" : "") +
+                                 (gameState.Castling.QueensideBlack ? "q" : ""),
                                  gameState.EnPassant == null ? "-" : gameState.EnPassant.ToString(),
                                  gameState.HalfMoves,
                                  gameState.FullMoves);

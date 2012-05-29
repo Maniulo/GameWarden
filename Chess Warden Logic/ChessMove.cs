@@ -83,9 +83,9 @@ namespace GameWarden.Chess
                 if (!(Move is EnPassantConcrete))
                     cs.EnPassant = null;
 
-                cs.SwitchPlayers();
                 if (Player.Order == 2)
                     ++cs.FullMoves;
+                cs.SwitchPlayers();
 
                 Move.Apply(state);
             }

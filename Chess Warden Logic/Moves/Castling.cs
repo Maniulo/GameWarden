@@ -9,6 +9,8 @@ namespace GameWarden.Chess
         private readonly Position From;
         private readonly Position To;
 
+        private CastlingPossibility Castling;
+
         public CastlingConcrete(Position from, Position to, Position rookFrom, Position rookTo)
         {
             From = from;
@@ -19,12 +21,29 @@ namespace GameWarden.Chess
 
         public void Apply(IGameState state)
         {
+            var s = state as ChessState;
+
+            Castling = s.Castling;
+            switch(state[From].Player.Order)
+            {
+                case 1:
+                    s.Castling.KingsideWhite  = false;
+                    s.Castling.QueensideWhite = false;
+                    break;
+                case 2:
+                    s.Castling.KingsideBlack  = false;
+                    s.Castling.QueensideBlack = false;
+                    break;
+            }
+            
             state.MovePiece(From, To);
             state.MovePiece(RookFrom, RookTo);
         }
         
         public void Rollback(IGameState state)
         {
+            var s = state as ChessState;
+            s.Castling = Castling;
             state.MovePieceN(From, To);
             state.MovePieceN(RookFrom, RookTo);
         }
@@ -53,7 +72,7 @@ namespace GameWarden.Chess
         public override bool CanApply(Position from, Position to, IGameState state)
         {
             var cState = state as ChessState;   // !!!
-            var rook = cState[RookFromFile, from.Rank] as ChessPiece;
+            var rook = cState[new Position(RookFromFile, from.Rank)] as ChessPiece;
             var king = cState[from] as ChessPiece;
 
             if (rook.Type == PieceTypes.Rook && to.File == KingToFile)

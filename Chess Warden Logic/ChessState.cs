@@ -6,13 +6,18 @@ using GameWarden.Chess.Notations;
 
 namespace GameWarden.Chess
 {
+    public struct CastlingPossibility
+    {
+        public Boolean KingsideWhite;
+        public Boolean KingsideBlack;
+        public Boolean QueensideWhite;
+        public Boolean QueensideBlack;
+    }
+
     public class ChessState : GameState
     {
         public Char Player;
-        public Boolean CastlingKingsideWhite;
-        public Boolean CastlingKingsideBlack;
-        public Boolean CastlingQueensideWhite;
-        public Boolean CastlingQueensideBlack;
+        public CastlingPossibility Castling;
         public Position EnPassant;
         public int HalfMoves;
         public int FullMoves;
@@ -40,10 +45,9 @@ namespace GameWarden.Chess
             : this()
         {
             Player = o.Player;
-            CastlingKingsideBlack = o.CastlingKingsideBlack;
-            CastlingKingsideWhite = o.CastlingKingsideWhite;
-            CastlingQueensideBlack = o.CastlingQueensideBlack;
-            CastlingQueensideWhite = o.CastlingQueensideWhite;
+
+            Castling = o.Castling;
+
             if (o.EnPassant != null)
                 EnPassant = new Position(o.EnPassant);
             HalfMoves = o.HalfMoves;
@@ -66,11 +70,10 @@ namespace GameWarden.Chess
                 }
         }
 
-        public override IPiece PlaceEmptyPiece(Position pos)
+        public override void PlaceEmptyPiece(Position pos)
         {
             var p = new ChessPiece { IsEmpty = true };
-            p.Move(pos);
-            return p;
+            PlacePiece(pos, p);
         }
 
         public override void PlacePiece(Position pos, IPiece p)
@@ -95,6 +98,11 @@ namespace GameWarden.Chess
         public override string ToString()
         {
             return FENParser.Generate(this);
+        }
+
+        public string ToStringShort()
+        {
+            return FENParser.GenerateBoard(this);
         }
     }
 }

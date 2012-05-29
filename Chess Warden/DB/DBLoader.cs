@@ -50,7 +50,7 @@ namespace GameWarden.Chess
                 do
                 {
                     var gs = new DBGameState
-                             {FEN = dbGame.Game.State.ToString(), Games = dbGame, Num = num++, Game = lastID};
+                             {FEN = ((ChessState)dbGame.Game.State).ToStringShort(), Games = dbGame, Num = num++, Game = lastID};
                     dbGame.GameStates.Add(gs);
                     GameStatesToInsert.Add(gs);
                 } while (dbGame.Game.MakeMove());
