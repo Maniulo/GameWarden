@@ -21,33 +21,33 @@ namespace GameWarden.Chess
             switch (p.Type)
             {
                 case PieceTypes.Pawn:
-                    p.AddPossibleMove(new Promotion(new PawnMove(), new[] { PieceTypes.Knight, PieceTypes.Bishop, PieceTypes.Rook, PieceTypes.Queen }));
-                    p.AddPossibleMove(new Promotion(new PawnCapture(), new[] { PieceTypes.Knight, PieceTypes.Bishop, PieceTypes.Rook, PieceTypes.Queen }));
-                    p.AddPossibleMove(new PawnMove());
-                    p.AddPossibleMove(new PawnCapture());
-                    p.AddPossibleMove(new EnPassant());
+                    p.PossibleMoves.Add(new Promotion(new PawnMove(), new[] { PieceTypes.Knight, PieceTypes.Bishop, PieceTypes.Rook, PieceTypes.Queen }));
+                    p.PossibleMoves.Add(new Promotion(new PawnCapture(), new[] { PieceTypes.Knight, PieceTypes.Bishop, PieceTypes.Rook, PieceTypes.Queen }));
+                    p.PossibleMoves.Add(new PawnMove());
+                    p.PossibleMoves.Add(new PawnCapture());
+                    p.PossibleMoves.Add(new EnPassant());
                     break;
                 case PieceTypes.Knight:
-                    p.AddPossibleMove(new KnightMoveTemplate());
+                    p.PossibleMoves.Add(new KnightMoveTemplate());
                     break;
                 case PieceTypes.Bishop:
-                    p.AddPossibleMove(new DiagonalMoveTemplate());
+                    p.PossibleMoves.Add(new DiagonalMoveTemplate());
                     break;
                 case PieceTypes.Rook:
-                    p.AddPossibleMove(new HorizontalMoveTemplate());
-                    p.AddPossibleMove(new VerticalMoveTemplate());
+                    p.PossibleMoves.Add(new HorizontalMoveTemplate());
+                    p.PossibleMoves.Add(new VerticalMoveTemplate());
                     break;
                 case PieceTypes.Queen:
-                    p.AddPossibleMove(new HorizontalMoveTemplate());
-                    p.AddPossibleMove(new VerticalMoveTemplate());
-                    p.AddPossibleMove(new DiagonalMoveTemplate());
+                    p.PossibleMoves.Add(new HorizontalMoveTemplate());
+                    p.PossibleMoves.Add(new VerticalMoveTemplate());
+                    p.PossibleMoves.Add(new DiagonalMoveTemplate());
                     break;
                 case PieceTypes.King:
-                    p.AddPossibleMove(new HorizontalMoveTemplate(1));
-                    p.AddPossibleMove(new VerticalMoveTemplate(1));
-                    p.AddPossibleMove(new DiagonalMoveTemplate(1));
-                    p.AddPossibleMove(new Castling(Castling.CastlingType.Kingside));
-                    p.AddPossibleMove(new Castling(Castling.CastlingType.Queenside));
+                    p.PossibleMoves.Add(new HorizontalMoveTemplate(1));
+                    p.PossibleMoves.Add(new VerticalMoveTemplate(1));
+                    p.PossibleMoves.Add(new DiagonalMoveTemplate(1));
+                    p.PossibleMoves.Add(new Castling(Castling.CastlingType.Kingside));
+                    p.PossibleMoves.Add(new Castling(Castling.CastlingType.Queenside));
                     break;
             }
         }
@@ -55,7 +55,7 @@ namespace GameWarden.Chess
         static public ChessPiece CreatePiece(Object pieceCode, IChessPresentation presentation, List<Player> players = null)
         {
             if (players == null)
-                players = new List<Player> { new ChessPlayer(1), new ChessPlayer(2) };
+                players = new List<Player> { new Player(1), new Player(2) };
 
             var p = new ChessPiece();
 

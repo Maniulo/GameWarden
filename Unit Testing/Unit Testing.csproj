@@ -50,11 +50,12 @@
     </CodeAnalysisDependentAssemblyPaths>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Game Warden Tests\GameStateTests.cs" />
     <Compile Include="Game Warden Tests\Moves\BasicConcreteMovesTests.cs" />
     <Compile Include="Game Warden Tests\Moves\BasicMovesTests.cs" />
     <Compile Include="Game Warden Tests\MetaTests.cs" />
-    <Compile Include="GameStateTest.cs" />
+    <Compile Include="Game Warden Tests\GameStateTest.cs" />
+    <Compile Include="Game Warden Tests\GameTests.cs" />
+    <Compile Include="Game Warden Tests\PieceTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Game Warden Tests\PositionTests.cs" />
   </ItemGroup>
@@ -74,9 +75,6 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Chess Warden Tests\" />
-  </ItemGroup>
-  <ItemGroup>
-    <Shadow Include="Test References\Game Warden.accessor" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

@@ -126,7 +126,7 @@ namespace GameWarden.Chess
         }
     }
 
-    public class EnPassantConcrete : IConcreteMove
+    public class EnPassantConcrete : BaseConcreteMove
     {
         private readonly Position From;
         private readonly Position To;
@@ -148,17 +148,25 @@ namespace GameWarden.Chess
             throw new ArgumentException();
         }
 
-        public void Apply(IGameState state)
+        public override void Apply(IGameState state)
         {
-            CapturedPiece = state[EnemyPawn((ChessState)state)];    // !!!
-            state.RemovePiece(CapturedPiece.Pos);
-            state.MovePiece(From, To);
+            if (state is ChessState)
+            {
+                CapturedPiece = state[EnemyPawn(state as ChessState)];
+                RemovePiece(CapturedPiece.Pos, state);
+                MovePiece(From, To, state);    
+            }
+            else
+            {
+                throw new ArgumentException();    
+            }
+            
         }
 
-        public void Rollback(IGameState state)
+        public override void Rollback(IGameState state)
         {
-            state.MovePieceN(From, To);
-            state.RemovePieceN(CapturedPiece);
+            RollbackMovePiece(From, To, state);
+            RollbackRemovePiece(CapturedPiece, state);
         }
     }
 }

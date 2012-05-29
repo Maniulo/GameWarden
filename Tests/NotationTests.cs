@@ -132,7 +132,7 @@ namespace GameWarden.Tests
             ChessGame game = new PGNParser().Parse(pgn, new AlgebraicNotation());
             Assert.AreEqual("Some Event", game.Info["Event"]);
             for (int i = 0; i < 4; ++i)
-                Assert.AreEqual(moves[i], ((ChessMove)game.Moves().ToList()[i]).Desc);
+                Assert.AreEqual(moves[i], ((ChessMove)game.Moves.ToList()[i]).Desc);
         }
 
         [TestMethod]

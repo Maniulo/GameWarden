@@ -44,7 +44,6 @@
     <Compile Include="ChessMove.cs" />
     <Compile Include="ChessPiece.cs" />
     <Compile Include="ChessPieceFactory.cs" />
-    <Compile Include="ChessPlayer.cs" />
     <Compile Include="ChessState.cs" />
     <Compile Include="Moves\Promotion.cs" />
     <Compile Include="Notations\ChessPiecePresentations.cs" />

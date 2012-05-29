@@ -18,6 +18,55 @@ namespace GameWarden.Chess
         public PieceTypes PromotionTo;
         private Position SavedEnPassant;
 
+        public ChessMove(String desc)
+        {
+            Desc = desc;
+        }
+
+        public void Apply(IGameState state)
+        {
+            if (state is ChessState)
+            {
+                var cs = state as ChessState;
+
+                if (Move == null)
+                    Move = Solve(cs);
+
+                if (Move == null)
+                    throw new Exception(String.Format("Move \"{0}\" cannot be solved.", Desc));
+
+                SavedEnPassant = cs.EnPassant;
+                if (!(Move is EnPassantConcrete))
+                    cs.EnPassant = null;
+
+                if (Player.Order == 2)
+                    ++cs.FullMoves;
+                cs.SwitchPlayers();
+
+                Move.Apply(state);
+            }
+            else
+            {
+                throw new ArgumentException();
+            }
+        }
+        public void Rollback(IGameState state)
+        {
+            if (state is ChessState)
+            {
+                var cs = state as ChessState;
+                Move.Rollback(state);
+                cs.SwitchPlayers();
+                cs.EnPassant = SavedEnPassant;
+                if (Player.Order == 2)
+                    --cs.FullMoves;
+            }
+            else
+            {
+                throw new ArgumentException();
+            }
+        }
+
         protected virtual IConcreteMove Solve(ChessState state)
         {
             if (CastlingKingside)
@@ -57,59 +106,9 @@ namespace GameWarden.Chess
             return null;
         }
 
-        public ChessMove(String desc)
-        {
-            Desc = desc;
-        }
-
         public override string ToString()
         {
             return Desc;
-        }
-
-        public void Apply(IGameState state)
-        {
-            if (state is ChessState)
-            {
-                var cs = state as ChessState;
-
-                if (Move == null)
-                    Move = Solve(cs);
-
-                if (Move == null)
-                    throw new Exception(String.Format("Move \"{0}\" cannot be solved.", Desc));
-
-                SavedEnPassant = cs.EnPassant;
-                if (!(Move is EnPassantConcrete))
-                    cs.EnPassant = null;
-
-                if (Player.Order == 2)
-                    ++cs.FullMoves;
-                cs.SwitchPlayers();
-
-                Move.Apply(state);
-            }
-            else
-            {
-                throw new ArgumentException();
-            }
-        }
-
-        public void Rollback(IGameState state)
-        {
-            if (state is ChessState)
-            {
-                var cs = state as ChessState;
-                Move.Rollback(state);
-                cs.SwitchPlayers();
-                cs.EnPassant = SavedEnPassant;
-                if (Player.Order == 2)
-                    --cs.FullMoves;
-            }
-            else
-            {
-                throw new ArgumentException();
-            }
         }
     }
 }

@@ -17,6 +17,11 @@ namespace GameWarden.Chess
             return PossibleMoves.Any(m => m.CanApply(Pos, to, state) || m is Promotion && ((Promotion)m).CanApply(Pos, to, state, promotionTo));
         }
 
+        public virtual Boolean CanAttack(Position to, IGameState state)
+        {
+            return PossibleMoves.Any(m => m.IsCapture && m.CanApply(Pos, to, state));
+        }
+
         public IConcreteMove GetPossibleMove(Position to, IGameState state, PieceTypes promotionTo)
         {
             try

@@ -20,8 +20,8 @@ namespace GameWarden.Chess
         {
             Info = metainfo;
 
-            Players.Add(new ChessPlayer(1));
-            Players.Add(new ChessPlayer(2));
+            Players.Add(new Player(1));
+            Players.Add(new Player(2));
 
             State = new FENParser().Parse(
                 (Info["FEN"] == null) || (Info["FEN"].Equals("")) ? FENParser.DefaultFEN : Info["FEN"],
@@ -32,8 +32,5 @@ namespace GameWarden.Chess
         {
             return Info["Event"] + ": " + Info["White"] + " vs. " + Info["Black"];// +" on " + Info["Date"] + " (" + Info["Result"] + ")";
         }
-
-        public new static int DimX { get { return 8; } }
-        public new static int DimY { get { return 8; } }
     }
 }

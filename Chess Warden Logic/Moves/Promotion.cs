@@ -64,7 +64,7 @@ namespace GameWarden.Chess
             PromoteFrom = p.Type;
             BaseMove.Apply(state);
             p.Type = PromoteTo;
-            p.ResetPossibleMoves();
+            p.PossibleMoves.Clear();
             ChessPieceFactory.AddMoves(p);
         }
 
@@ -73,7 +73,7 @@ namespace GameWarden.Chess
             BaseMove.Rollback(state);
             var p = state[From] as ChessPiece;
             p.Type = PromoteFrom;
-            p.ResetPossibleMoves();
+            p.PossibleMoves.Clear();
             ChessPieceFactory.AddMoves(p);
         }
     }

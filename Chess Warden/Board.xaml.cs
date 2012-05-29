@@ -148,7 +148,6 @@ namespace GameWarden.Chess
         public Board()
         {
             InitializeComponent();
-            BringCanvasToFront();
         }
         private void InitializeGrid()
         {
@@ -182,13 +181,9 @@ namespace GameWarden.Chess
                         Grid.SetRow(cell, DimY - rank - 1);
                         CreateContextMenu(cell);
                     }
+
+                theGrid.Children.Add(theCanvas);
             }
-        }
-        private void BringCanvasToFront()
-        {
-            var canvas = theGrid.Children[0];
-            theGrid.Children.RemoveAt(0);
-            theGrid.Children.Add(canvas);
         }
         
         // Context menu

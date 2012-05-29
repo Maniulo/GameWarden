@@ -17,7 +17,6 @@ namespace GameWarden
                     throw new Exception("Attempt to get file value from partially initialized position.");
                 }
             }
-            set { _File = value; }
         }
         public int Rank
         {
@@ -32,7 +31,6 @@ namespace GameWarden
                     throw new Exception("Attempt to get rank value from partially initialized position.");
                 }
             }
-            set { _Rank = value; }
         }
 
         protected int? _File;
@@ -111,12 +109,6 @@ namespace GameWarden
             {
                 throw new ArgumentNullException("Rank of a position is undefined.", new Exception());
             }
-        }
-
-        public Position(Position copy)
-        {
-            _File = copy._File;
-            _Rank = copy._Rank;
         }
 
         public override string ToString()

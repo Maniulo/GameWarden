@@ -126,7 +126,7 @@ namespace GameWarden.Chess.Notations
             var movetext = new StringBuilder();
             var moveCount = 1;
 
-            foreach (var m in game.Moves())
+            foreach (var m in game.Moves)
             {
                 if (moveCount % 2 == 1)
                     movetext.Append((moveCount+1)/2 + ". ");

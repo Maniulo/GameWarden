@@ -55,7 +55,7 @@ namespace UnitTesting
         {
             var m = new MockTemplate(null);
             var s = new GameState(5, 5);
-            s.PlacePiece(new Position(5, 5), new Piece());
+            s[new Position(5, 5)]  = new Piece();
             Assert.IsTrue(m.CanApply(new Position(3, 3), new Position(5, 5), s));
             Assert.IsTrue(m.CanApply(new Position(3, 3), new Position(4, 4), s));
         }
@@ -65,7 +65,7 @@ namespace UnitTesting
         {
             var m = new MockTemplate(null, true);
             var s = new GameState(5, 5);
-            s.PlacePiece(new Position(5,5), new Piece());
+            s[new Position(5, 5)] = new Piece();
             Assert.IsTrue(m.CanApply(new Position(3, 3), new Position(5, 5), s));
             Assert.IsFalse(m.CanApply(new Position(3, 3), new Position(4, 4), s));
         }
@@ -75,7 +75,7 @@ namespace UnitTesting
         {
             var m = new MockTemplate(null, false);
             var s = new GameState(5, 5);
-            s.PlacePiece(new Position(5, 5), new Piece());
+            s[new Position(5, 5)] = new Piece();
             Assert.IsFalse(m.CanApply(new Position(3, 3), new Position(5, 5), s));
             Assert.IsTrue(m.CanApply(new Position(3, 3), new Position(4, 4), s));
         }
@@ -85,7 +85,7 @@ namespace UnitTesting
         {
             var m = new MockTemplate(null, null, true);
             var s = new GameState(5, 5);
-            s.PlacePiece(new Position(3, 4), new Piece());
+            s[new Position(3, 4)] = new Piece();
             Assert.IsFalse(m.CanApply(new Position(3, 3), new Position(3, 5), s));
         }
 
@@ -94,7 +94,7 @@ namespace UnitTesting
         {
             var m = new MockTemplate(null, null, false);
             var s = new GameState(5, 5);
-            s.PlacePiece(new Position(3, 4), new Piece());
+            s[new Position(3, 4)] = new Piece();
             Assert.IsTrue(m.CanApply(new Position(3, 3), new Position(3, 5), s));
             Assert.IsTrue(m.CanApply(new Position(3, 3), new Position(5, 3), s));
         }
@@ -112,7 +112,7 @@ namespace UnitTesting
         {
             var m = new VerticalMoveTemplate();
             var s = new GameState(3, 3);
-            s.PlacePiece(new Position(1, 2), new Piece());
+            s[new Position(1, 2)] = new Piece();
             Assert.IsFalse(m.CanApply(new Position(1, 1), new Position(1, 3), s));
         }
 
@@ -153,7 +153,7 @@ namespace UnitTesting
         {
             var m = new HorizontalMoveTemplate();
             var s = new GameState(3, 3);
-            s.PlacePiece(new Position(2, 1), new Piece());
+            s[new Position(2, 1)] = new Piece();
             Assert.IsFalse(m.CanApply(new Position(1, 1), new Position(3, 1), s));
         }
         
@@ -218,7 +218,7 @@ namespace UnitTesting
         {
             var m = new DiagonalMoveTemplate();
             var s = new GameState(3, 3);
-            s.PlacePiece(new Position(2, 2), new Piece());
+            s[new Position(2, 2)] = new Piece();
             Assert.IsFalse(m.CanApply(new Position(1, 1), new Position(3, 3), s));
         }
 

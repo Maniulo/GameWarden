@@ -23,7 +23,7 @@ namespace GameWarden.Chess.Notations
         public ChessState Parse(String fenRecord, List<Player> players = null)
         {
             if (players == null)
-                players = new List<Player> { new ChessPlayer(1), new ChessPlayer(2) };
+                players = new List<Player> { new Player(1), new Player(2) };
 
             if (RxFEN.IsMatch(fenRecord))
             {
@@ -55,7 +55,7 @@ namespace GameWarden.Chess.Notations
         public ChessState ParseBoard(String s, List<Player> players = null)
         {
             if (players == null)
-                players = new List<Player> { new ChessPlayer(1), new ChessPlayer(2) };
+                players = new List<Player> { new Player(1), new Player(2) };
 
             var gs = new ChessState();
             int file = 1, rank = 8;
@@ -63,7 +63,9 @@ namespace GameWarden.Chess.Notations
             {
                 IPiece p = ChessPieceFactory.CreatePiece(ch, Presentation, players);
 
-                gs.PlacePiece(new Position(file, rank), p);
+                var pos = new Position(file, rank);
+                gs[pos] = p;
+                p.Move(pos);
 
                 if (++file > 8)
                 {

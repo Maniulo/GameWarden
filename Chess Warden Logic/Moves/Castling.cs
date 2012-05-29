@@ -2,7 +2,7 @@ using System;
 
 namespace GameWarden.Chess
 {
-    public class CastlingConcrete : IConcreteMove
+    public class CastlingConcrete : BaseConcreteMove
     {
         private readonly Position RookFrom;
         private readonly Position RookTo;
@@ -19,7 +19,7 @@ namespace GameWarden.Chess
             RookTo = rookTo;
         }
 
-        public void Apply(IGameState state)
+        public override void Apply(IGameState state)
         {
             var s = state as ChessState;
 
@@ -36,16 +36,16 @@ namespace GameWarden.Chess
                     break;
             }
             
-            state.MovePiece(From, To);
-            state.MovePiece(RookFrom, RookTo);
+            MovePiece(From, To, state);
+            MovePiece(RookFrom, RookTo, state);
         }
-        
-        public void Rollback(IGameState state)
+
+        public override void Rollback(IGameState state)
         {
             var s = state as ChessState;
             s.Castling = Castling;
-            state.MovePieceN(From, To);
-            state.MovePieceN(RookFrom, RookTo);
+            RollbackMovePiece(From, To, state);
+            RollbackMovePiece(RookFrom, RookTo, state);
         }
     }
 
@@ -76,7 +76,7 @@ namespace GameWarden.Chess
             var king = cState[from] as ChessPiece;
 
             if (rook.Type == PieceTypes.Rook && to.File == KingToFile)
-                if (king.Path.Count == 1 && rook.Path.Count == 1 && !cState.IsKingOpen(state[from].Player))
+                if (king.PathLength == 1 && rook.PathLength == 1 && !cState.IsKingOpen(state[from].Player))
                     if (base.CanApply(from, to, state))
                     {
                         Boolean result = true;

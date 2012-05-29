@@ -17,6 +17,37 @@ namespace GameWarden
         void Rollback(IGameState state);
     }
 
+    public abstract class BaseConcreteMove : IConcreteMove
+    {
+        protected void MovePiece(Position from, Position to, IGameState state)
+        {
+            state[to] = state[@from];
+            state[to].Move(to);
+            state.NewEmptyPiece(from);
+        }
+
+        protected void RollbackMovePiece(Position from, Position to, IGameState state)
+        {
+            state[from] = state[to];
+            state[from].Unmove();
+            state.NewEmptyPiece(to);
+        }
+
+        protected void RemovePiece(Position from, IGameState state)
+        {
+            state.NewEmptyPiece(from);
+        }
+
+        protected void RollbackRemovePiece(IPiece p, IGameState state)
+        {
+            state[p.Pos] = p;
+        }
+
+        public abstract void Apply(IGameState state);
+
+        public abstract void Rollback(IGameState state);
+    }
+
     public abstract class TemplateMove : ITemplateMove
     {
         protected bool? Capture;
@@ -75,7 +106,7 @@ namespace GameWarden
         }
     }
 
-    public class ConcreteMove : IConcreteMove
+    public class ConcreteMove : BaseConcreteMove
     {
         private readonly Position From;
         private readonly Position To;
@@ -89,18 +120,16 @@ namespace GameWarden
             Capture = capture;
         }
 
-        public virtual void Apply(IGameState state)
+        public override void Apply(IGameState state)
         {
-            if (Capture)
-                CapturedPiece = state[To];
-            state.MovePiece(From, To);
+            CapturedPiece = state[To];
+            MovePiece(From, To, state);
         }
 
-        public virtual void Rollback(IGameState state)
+        public override void Rollback(IGameState state)
         {
-            state.MovePieceN(From, To);
-            if (Capture)
-                state.RemovePieceN(CapturedPiece);
+            RollbackMovePiece(From, To, state);
+            RollbackRemovePiece(CapturedPiece, state);
         }
     }
 }

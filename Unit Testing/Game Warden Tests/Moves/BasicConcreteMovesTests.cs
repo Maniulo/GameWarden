@@ -13,7 +13,7 @@ namespace UnitTesting
             var s = new GameState(5, 5);
             var from = new Position(1, 1);
             var to = new Position(2, 2);
-            s.PlacePiece(from, new Piece());
+            s[from] = new Piece();
             var movingPiece = s[from];
             var m = new ConcreteMove(from, to, false);
 
@@ -30,9 +30,9 @@ namespace UnitTesting
             var s = new GameState(5, 5);
             var from = new Position(1, 1);
             var to = new Position(2, 2);
-            s.PlacePiece(from, new Piece());
+            s[from] = new Piece();
             var movingPiece = s[from];
-            s.PlacePiece(to, new Piece());
+            s[to] = new Piece();
             var m = new ConcreteMove(from, to, true);
             
             m.Apply(s);
@@ -46,7 +46,8 @@ namespace UnitTesting
             var s = new GameState(5, 5);
             var from = new Position(1, 1);
             var to = new Position(2, 2);
-            s.PlacePiece(from, new Piece());
+            s[from] = new Piece();
+            s[from].Move(from);
             var movingPiece = s[from];
             var m = new ConcreteMove(from, to, false);
 
@@ -63,7 +64,8 @@ namespace UnitTesting
             var s = new GameState(5, 5);
             var from = new Position(1, 1);
             var to = new Position(2, 2);
-            s.PlacePiece(from, new Piece());
+            s[from] = new Piece();
+            s[from].Move(from);
             var movingPiece = s[from];
             var capturedPiece = s[to];
             var m = new ConcreteMove(from, to, true);
@@ -98,7 +100,7 @@ namespace UnitTesting
             var s = new GameState(5, 5);
             var from = new Position(1, 1);
             var to = new Position(2, 2);
-            s.PlacePiece(from, new Piece());
+            s[from] = new Piece();
             var movingPiece = s[from];
             var m = new MockTemplate().Concretize(from, to);
 
