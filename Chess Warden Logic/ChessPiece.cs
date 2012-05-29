@@ -7,52 +7,34 @@ namespace GameWarden.Chess
     {
         public PieceTypes Type;
 
-        public ChessPiece()
+        public ChessPiece() { }
+        public ChessPiece(ChessPiece copy) : base(copy)
         {
-            
-        }
-
-        public Boolean CanMove(Position to, IGameState state, PieceTypes promotionTo)
-        {
-            return PossibleMoves.Any(m => m.CanApply(Pos, to, state) || m is Promotion && ((Promotion)m).CanApply(Pos, to, state, promotionTo));
+            Type = copy.Type;
         }
 
         public virtual Boolean CanAttack(Position to, IGameState state)
         {
             return PossibleMoves.Any(m => m.IsCapture && m.CanApply(Pos, to, state));
         }
-
         public IConcreteMove GetPossibleMove(Position to, IGameState state, PieceTypes promotionTo)
         {
-            try
+            foreach (ITemplateMove m in PossibleMoves)
             {
-                foreach (ITemplateMove m in PossibleMoves)
+                if (m is Promotion)
                 {
-                    if (m is Promotion)
-                    {
-                        var p = m as Promotion;
-                        if (p.CanApply(Pos, to, state, promotionTo))
-                            return p.Concretize(Pos, to, promotionTo);
-                    }
-                    else
-                    {
-                        if (m.CanApply(Pos, to, state))
-                            return m.Concretize(Pos, to);
-                    }
+                    var p = m as Promotion;
+                    if (p.CanApply(Pos, to, state, promotionTo))
+                        return p.Concretize(Pos, to, promotionTo);
                 }
-
-                throw new Exception("No possible move found.");
+                else
+                {
+                    if (m.CanApply(Pos, to, state))
+                        return m.Concretize(Pos, to);
+                }
             }
-            catch
-            {
-                throw new Exception("No possible move found.");
-            }
-        }
 
-        public ChessPiece(ChessPiece copy)
-            :base(copy)
-        {
-            Type = copy.Type;
+            return null;
         }
     }
 }

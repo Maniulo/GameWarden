@@ -36,12 +36,12 @@ namespace GameWarden.Chess
 
     public class PawnConcreteMove : ConcreteMove
     {
-        private Position From;
-        private Position To;
-        private bool IsEnPassant;
+        private readonly Position From;
+        private readonly Position To;
+        private readonly bool IsEnPassant;
         private Position EnPassantOld;
 
-        public PawnConcreteMove(Position @from, Position to) : base(@from, to, false)
+        public PawnConcreteMove(Position @from, Position to) : base(from, to)
         {
             From = from;
             To = to;

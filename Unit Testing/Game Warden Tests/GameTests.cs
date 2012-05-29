@@ -21,7 +21,7 @@ namespace UnitTesting
             var g    = new MockGame();
             var from = new Position(1, 1);
             var to   = new Position(2, 2);
-            var m    = new ConcreteMove(from, to, true);
+            var m    = new ConcreteMove(from, to);
 
             g.AddMove(m);
 
@@ -45,7 +45,7 @@ namespace UnitTesting
             var from = new Position(1, 1);
             var to = new Position(2, 2);
             var p  = new Piece();
-            var m = new ConcreteMove(from, to, true);
+            var m = new ConcreteMove(from, to);
             g.State[from] = p;
             p.Move(from);
             g.AddMove(m);
@@ -64,7 +64,7 @@ namespace UnitTesting
             var from = new Position(1, 1);
             var to = new Position(2, 2);
             var p = new Piece();
-            var m = new ConcreteMove(from, to, true);
+            var m = new ConcreteMove(from, to);
             g.State[from] = p;
             p.Move(from);
             g.AddMove(m);

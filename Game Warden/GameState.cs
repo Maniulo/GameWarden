@@ -1,9 +1,10 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 
 namespace GameWarden
 {
-    public interface IGameState : IEnumerable<IPiece>
+    public interface IGameState : IEnumerable
     {
         IPiece this[Position index] { get; set; }
         void NewEmptyPiece(Position pos);
@@ -78,7 +79,8 @@ namespace GameWarden
                 for (var file = 0; file < DimY; ++file)
                     yield return Board[file, rank];
         }
-        System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()
+        
+        IEnumerator IEnumerable.GetEnumerator()
         {
             return GetEnumerator();
         }

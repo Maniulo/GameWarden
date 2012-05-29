@@ -82,13 +82,15 @@ namespace GameWarden.Chess
             }
 
             foreach (ChessPiece p in state)
-                if (!p.IsEmpty)
-                    if (p.Type == PieceType &&
-                        p.Player == Player &&
-                        From.Equals(p.Pos) &&
-                        p.CanMove(To, state, PromotionTo))
+                if (!p.IsEmpty &&
+                    p.Type == PieceType &&
+                    p.Player == Player &&
+                    From.Equals(p.Pos))
+                {
+                    var mv = p.GetPossibleMove(To, state, PromotionTo);
+
+                    if (mv != null)
                     {
-                        var mv = p.GetPossibleMove(To, state, PromotionTo);
 
                         mv.Apply(state);
                         if (!state.IsKingOpen(Player))
@@ -102,6 +104,7 @@ namespace GameWarden.Chess
                             mv.Rollback(state);
                         }
                     }
+                }
 
             return null;
         }

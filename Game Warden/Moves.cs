@@ -102,7 +102,7 @@ namespace GameWarden
 
         public virtual IConcreteMove Concretize(Position from, Position to)
         {
-            return new ConcreteMove(from, to, IsCapture);
+            return new ConcreteMove(from, to);
         }
     }
 
@@ -110,14 +110,12 @@ namespace GameWarden
     {
         private readonly Position From;
         private readonly Position To;
-        private readonly Boolean Capture;
         private IPiece CapturedPiece;
 
-        public ConcreteMove(Position from, Position to, Boolean capture)
+        public ConcreteMove(Position from, Position to)
         {
             From = from;
             To = to;
-            Capture = capture;
         }
 
         public override void Apply(IGameState state)
