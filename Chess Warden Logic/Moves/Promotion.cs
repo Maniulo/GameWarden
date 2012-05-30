@@ -4,7 +4,7 @@ using System.Linq;
 
 namespace GameWarden.Chess
 {
-    class Promotion : ITemplateMove
+    public class Promotion : ITemplateMove
     {
         private readonly ITemplateMove BaseMove;
         private List<PieceTypes> CanPromoteToList;
@@ -20,9 +20,10 @@ namespace GameWarden.Chess
             get { return BaseMove.IsCapture; }
         }
 
+        [Obsolete]
         public bool CanApply(Position from, Position to, IGameState state)
         {
-            return false;
+            return CanApply(from, to, state, ((ChessPiece)state[from]).Type);
         }
 
         public bool CanApply(Position from, Position to, IGameState state, PieceTypes promoteTo)
@@ -33,9 +34,10 @@ namespace GameWarden.Chess
             return false;
         }
 
+        [Obsolete]
         public IConcreteMove Concretize(Position from, Position to)
         {
-            throw new Exception("Wait what"); // !!!
+            throw new Exception("Promotion type is not defined.");
         }
 
         public IConcreteMove Concretize(Position from, Position to, PieceTypes promoteTo)

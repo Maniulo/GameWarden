@@ -85,6 +85,8 @@ namespace GameWarden.Chess
             }
         }
 
+        public Brush LineColour { get; set; }
+
         public static readonly DependencyProperty StateProperty = DependencyProperty.Register(
             "State", typeof(GameState), typeof(Board), new FrameworkPropertyMetadata(OnStateChanged, CoerceValueCallback));
         private static object CoerceValueCallback(DependencyObject d, object e)
@@ -115,7 +117,7 @@ namespace GameWarden.Chess
         }
         private void DrawLine(IEnumerable<Cell> cells)
         {
-            var myLine = new Polyline { Stroke = Brushes.Coral };
+            var myLine = new Polyline { Stroke = LineColour };
 
             foreach (Cell c in cells)
                 myLine.Points.Add(GetCellCenter(c));
@@ -243,7 +245,7 @@ namespace GameWarden.Chess
             set
             {
                 piece = value;
-                Content = Presentation.GetPresentation(piece); //!!!
+                Content = Presentation.GetPresentation(piece);
             }
         }
 

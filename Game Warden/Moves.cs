@@ -63,7 +63,7 @@ namespace GameWarden
 
         protected List<Position> Path = new List<Position>();
 
-        public TemplateMove(int? maxLength = null, bool? capture = null, Boolean pathCheck = true)
+        protected TemplateMove(int? maxLength = null, bool? capture = null, Boolean pathCheck = true)
         {
             Capture = capture;
             PathCheck = pathCheck;

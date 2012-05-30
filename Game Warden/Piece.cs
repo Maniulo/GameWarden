@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 
 namespace GameWarden
 {
@@ -18,7 +17,7 @@ namespace GameWarden
 
     public class Piece : IPiece
     {
-        private Stack<Position> path;
+        private readonly Stack<Position> path;
         public IEnumerable<Position> Path { get { return path; } }
         public int PathLength { get { return path.Count; } }
         public List<ITemplateMove> 

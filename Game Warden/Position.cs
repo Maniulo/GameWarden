@@ -14,7 +14,7 @@ namespace GameWarden
                 }
                 else
                 {
-                    throw new Exception("Attempt to get file value from partially initialized position.");
+                    throw new ArgumentNullException("", "Attempt to get file value from partially initialized position.");
                 }
             }
         }
@@ -28,13 +28,13 @@ namespace GameWarden
                 }
                 else
                 {
-                    throw new Exception("Attempt to get rank value from partially initialized position.");
+                    throw new ArgumentNullException("", "Attempt to get rank value from partially initialized position.");
                 }
             }
         }
 
-        protected int? _File;
-        protected int? _Rank;
+        protected readonly int? _File;
+        protected readonly int? _Rank;
 
         private const int FileCharACode = 'a';
         private const int FileCharZCode = 'z';
@@ -83,7 +83,7 @@ namespace GameWarden
         }
         public static int GetRank(Char c)
         {
-            int r = (int)Char.GetNumericValue(c);
+            var r = (int)Char.GetNumericValue(c);
             if (r != -1) return r;
             throw new ArgumentOutOfRangeException();
         }
@@ -127,7 +127,7 @@ namespace GameWarden
         {
             if (ReferenceEquals(null, other)) return false;
             if (ReferenceEquals(this, other)) return true;
-            return (_File == other._File || other._File == null || _File == null) && (_Rank == other._Rank || other._Rank == null || _Rank == null); ;
+            return (_File == other._File || other._File == null || _File == null) && (_Rank == other._Rank || other._Rank == null || _Rank == null);
         }
         public override int GetHashCode()
         {

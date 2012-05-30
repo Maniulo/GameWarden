@@ -1,11 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.ComponentModel;
-using System.Configuration;
-using System.Data.Entity;
-using System.Data.SqlClient;
-using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Reflection;
@@ -16,9 +10,6 @@ using Microsoft.Windows.Controls.Ribbon;
 
 namespace GameWarden.Chess
 {
-    /// <summary>
-    /// Interaction logic for Window.xaml
-    /// </summary>
     public partial class Window
     {
         private readonly ChessEngineConnector ChessEngine = new ChessEngineConnector();
@@ -53,6 +44,13 @@ namespace GameWarden.Chess
         {
             ChessEngine.FindBestMove(TheGame.State);
             RefreshStatistics();
+        }
+
+        private void ResetStats()
+        {
+            ChessEngine.Recheck = true;
+            WhiteBest.Content = "?";
+            BlackBest.Content = "?";
         }
 
         private void RefreshStatistics()

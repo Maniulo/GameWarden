@@ -15,12 +15,12 @@ namespace GameWarden.Chess.Notations
             @"(?<FullMove>" +
             @"(?<Number>\d+)\. ?(?<Move1>[^ {}\.]*)" +
             @"((?: \{(?<Comment1>[^\}]*)\} \k<Number>\.\.\.)?" +
-            @" (?<Move2>[^ {}]*))?" +
+            @" ?(?<Move2>[^ {}]*))?" +
             @"(?: \{(?<Comment2>[^\}]*)\})?" +
             @") ?"
             );
 
-        Meta ParseTags(IEnumerator<String> lines)
+        private Meta ParseTags(IEnumerator<String> lines)
         {
             var metainfo = new Meta();
             while (lines.MoveNext())
@@ -38,29 +38,39 @@ namespace GameWarden.Chess.Notations
 
             return metainfo;
         }
-        
-        public KeyValuePair<string, string> ParseTag(String line)
+
+        private KeyValuePair<string, string> ParseTag(String line)
         {
             if (RxTag.IsMatch(line))
             {
                 var m = RxTag.Match(line);
                 return new KeyValuePair<String, String>(m.Groups["Tag"].Value, m.Groups["Value"].Value);
             }
-            else
-            {
-                throw new ArgumentException(String.Format("\"{0}\" is not a valid tag string.", line));
-            }
+
+            throw new ArgumentException(String.Format("\"{0}\" is not a valid tag string.", line));
         }
 
         protected static String ParseMovetext(IEnumerator<String> lines)
         {
             var movetext = new StringBuilder();
 
-            while (lines.MoveNext())
-                movetext.Append(lines.Current + " ");
-            movetext.Remove(movetext.Length - 1, 1);
+            try {
+                // remove empty lines
+                while (lines.Current.Trim() == "")
+                    lines.MoveNext();
 
-            return movetext.ToString();
+                do
+                {
+                    movetext.Append(lines.Current + " ");
+                } while (lines.MoveNext());
+
+                // remove trailing space
+                movetext.Remove(movetext.Length - 1, 1);
+
+                return movetext.ToString();
+            } catch { }
+
+            return "";
         }
 
         public ChessGame Parse(IEnumerable<String> pgn)
@@ -73,44 +83,46 @@ namespace GameWarden.Chess.Notations
             var lines = pgn.GetEnumerator();
             var metainfo = ParseTags(lines);
             var movetext = ParseMovetext(lines);
-
             var game = new ChessGame(metainfo);
+
             foreach (ChessMove cm in ParseMoves(movetext, moveNotation, game.Players))
                 game.AddMove(cm);
             
             return game;
         }
 
-        public IEnumerable<ChessMove> ParseMoves(String movetext, IEnumerable<Player> players = null)
+        public IEnumerable<ChessMove> ParseMoves(String movetext, List<Player> players = null)
         {
             return ParseMoves(movetext, new AlgebraicNotation(), players);
         }
 
-        public IEnumerable<ChessMove> ParseMoves(String movetext, IChessMoveNotation moveNotation, IEnumerable<Player> players = null)
+        public IEnumerable<ChessMove> ParseMoves(String movetext, IChessMoveNotation moveNotation, List<Player> players = null)
         {
             if (players == null)
-                players = new List<Player>() { new Player(1), new Player(2) };
-            
-            var playersList = players.ToList();
+                players = new List<Player> { new Player(1), new Player(2) };
 
             foreach (Match m in RxFullMove.Matches(movetext))
             {
                 ChessMove move;
 
-                if (m.Groups["Move1"].Captures.Count > 0 && m.Groups["Move1"].Value != "")
-                {
-                    move = moveNotation.Parse(m.Groups["Move1"].Value);
-                    move.Player = playersList[0];
-                    yield return move;
-                }
+                move = TryGetMove(moveNotation, m.Groups["Move1"], players[0]);
+                if (move != null) yield return move;
 
-                if (m.Groups["Move2"].Captures.Count > 0 && m.Groups["Move2"].Value != "")
-                {
-                    move = moveNotation.Parse(m.Groups["Move2"].Value);
-                    move.Player = playersList[1];
-                    yield return move;
-                }
+                move = TryGetMove(moveNotation, m.Groups["Move2"], players[1]);
+                if (move != null) yield return move;
             }
+        }
+
+        private static ChessMove TryGetMove(IChessMoveNotation moveNotation, Group g, Player p)
+        {
+            if (g.Captures.Count > 0 && g.Value != "")
+            {
+                ChessMove move = moveNotation.Parse(g.Value);
+                move.Player = p;
+                return move;
+            }
+
+            return null;
         }
 
         public List<String> Generate(ChessGame game)

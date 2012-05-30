@@ -10,8 +10,8 @@ namespace GameWarden.Chess.Notations
 
     public class AlgebraicNotation : IChessMoveNotation
     {
-        public Regex RxMove;
-        readonly IChessPieceTypePresentation Presentation;
+        private readonly Regex RxMove;
+        private readonly IChessPieceTypePresentation Presentation;
 
         public AlgebraicNotation(IChessPieceTypePresentation presentation)
         {
@@ -39,62 +39,70 @@ namespace GameWarden.Chess.Notations
             RxMove = new Regex(rxMoveString);
         }
 
-        /// <summary>
-        /// Creates Standard Algebraic Notation parser.
-        /// </summary>
         public AlgebraicNotation()
             : this(new EnglishPresentation()) { }
 
         public ChessMove Parse(String anRecord)
         {
             var mv = RxMove.Match(anRecord);
+
             if (mv.Success)
             {
                 var m = new ChessMove(mv.Groups["Move"].Value);
 
-                var castlingKingside = mv.Groups["Kingside"].Success;
-                var castlingQueenside = mv.Groups["Queenside"].Success;
-                var promotion = mv.Groups["Promotion"].Success;
+                ParsePromotion(m, mv);
 
-                m.IsPromotion = promotion;
-                if (promotion)
-                    m.PromotionTo = Presentation.GetPieceType(mv.Groups["Promotion"].Value);
-
-                if (castlingKingside || castlingQueenside)
-                {
-                    m.PieceType = PieceTypes.King;
-                    m.CastlingKingside = castlingKingside;
-                    m.CastlingQueenside = castlingQueenside;
-                }
+                if (mv.Groups["Kingside"].Success || mv.Groups["Queenside"].Success)
+                    ParseCastling(m, mv);
                 else
-                {
-                    if (mv.Groups["Piece"].Success)
-                        m.PieceType = Presentation.GetPieceType(mv.Groups["Piece"].Value[0]);
-                    else
-                        m.PieceType = Presentation.GetPieceType(null);
-
-                    m.To = new Position(mv.Groups["ToFile"].Value + mv.Groups["ToRank"].Value);
-                    m.From = new Position();
-
-                    int? file = null;
-                    int? rank = null;
-
-                    if (mv.Groups["FromFile"].Success)
-                        file = Position.GetFile(mv.Groups["FromFile"].Value[0]);
-
-                    if (mv.Groups["FromRank"].Success)
-                        rank = Position.GetRank(mv.Groups["FromRank"].Value[0]);
-
-                    m.From = new Position(file, rank);
-                }
+                    ParseRegular(m, mv);
 
                 return m;
             }
-            else
-            {
-                throw new ArgumentException(String.Format("\"{0}\" is not a valid AN string.", anRecord));
-            }
 
+            throw new ArgumentException(String.Format("\"{0}\" is not a valid AN string.", anRecord));
+        }
+        
+        private void ParsePromotion(ChessMove m, Match mv)
+        {
+            var promotion = mv.Groups["Promotion"].Success;
+
+            m.IsPromotion = promotion;
+            if (promotion)
+                m.PromotionTo = Presentation.GetPieceType(mv.Groups["Promotion"].Value);
+        }
+
+        private void ParseCastling(ChessMove m, Match mv)
+        {
+            m.PieceType = PieceTypes.King;
+            m.CastlingKingside = mv.Groups["Kingside"].Success;
+            m.CastlingQueenside = mv.Groups["Queenside"].Success;
+        }
+
+        private void ParseRegular(ChessMove m, Match mv)
+        {
+            if (mv.Groups["Piece"].Success)
+                m.PieceType = Presentation.GetPieceType(mv.Groups["Piece"].Value[0]);
+            else
+                m.PieceType = Presentation.GetPieceType(null);
+
+            m.To = new Position(mv.Groups["ToFile"].Value + mv.Groups["ToRank"].Value);
+
+            m.From = ParseFromPosition(mv);
+        }
+
+        private Position ParseFromPosition(Match mv)
+        {
+            int? file = null;
+            int? rank = null;
+
+            if (mv.Groups["FromFile"].Success)
+                file = Position.GetFile(mv.Groups["FromFile"].Value[0]);
+
+            if (mv.Groups["FromRank"].Success)
+                rank = Position.GetRank(mv.Groups["FromRank"].Value[0]);
+
+            return new Position(file, rank);
         }
     }
 }

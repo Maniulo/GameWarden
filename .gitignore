@@ -1,0 +1,12 @@
+
+/Chess Keeper Src
+/_ReSharper.Codename Game Warden
+/TestResults
+/Docs
+*.dll
+*.lnk
+*.txt
+*.pdb
+*.exe
+/*/obj
+/*/bin

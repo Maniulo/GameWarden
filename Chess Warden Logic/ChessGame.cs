@@ -1,5 +1,4 @@
-﻿using System;
-using GameWarden.Chess.Notations;
+﻿using GameWarden.Chess.Notations;
 
 namespace GameWarden.Chess
 {
@@ -10,12 +9,7 @@ namespace GameWarden.Chess
         {
             
         }
-
-        public ChessGame(ChessGame o)
-        {
-            throw new NotImplementedException();
-        }
-
+        
         public ChessGame(Meta metainfo)
         {
             Info = metainfo;
@@ -25,12 +19,13 @@ namespace GameWarden.Chess
 
             State = new FENParser().Parse(
                 (Info["FEN"] == null) || (Info["FEN"].Equals("")) ? FENParser.DefaultFEN : Info["FEN"],
-                 Players); // !!! We probably should delete this after testing
+                 Players);
         }
 
         public override string ToString()
         {
-            return Info["Event"] + ": " + Info["White"] + " vs. " + Info["Black"];// +" on " + Info["Date"] + " (" + Info["Result"] + ")";
+            return Info["White"] + " vs. " + Info["Black"] + 
+                (Info["Event"] != "" && Info["Event"] != "?" ? " on " + Info["Event"] : "");
         }
     }
 }

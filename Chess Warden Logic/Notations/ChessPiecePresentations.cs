@@ -53,23 +53,23 @@ namespace GameWarden.Chess.Notations
                 ch = ((String)c)[0];
 
             if (c is char)
-                ch = (char)c;
+                ch = Char.ToUpper((char)c);
 
-                switch (ch)
-                {
-                    case 'N':
-                        return PieceTypes.Knight;
-                    case 'B':
-                        return PieceTypes.Bishop;
-                    case 'R':
-                        return PieceTypes.Rook;
-                    case 'Q':
-                        return PieceTypes.Queen;
-                    case 'K':
-                        return PieceTypes.King;
-                }
+            switch (ch)
+            {
+                case 'N':
+                    return PieceTypes.Knight;
+                case 'B':
+                    return PieceTypes.Bishop;
+                case 'R':
+                    return PieceTypes.Rook;
+                case 'Q':
+                    return PieceTypes.Queen;
+                case 'K':
+                    return PieceTypes.King;
+            }
 
-                throw new ArgumentException();
+            throw new ArgumentException();
         }
 
         public override string ToString()
@@ -110,7 +110,17 @@ namespace GameWarden.Chess.Notations
         }
         virtual public PieceTypes GetPieceType(Object c)
         {
-            char? ch = Char.ToUpper(((char?)c).Value);
+            char ch = ' ';
+            
+            if (c is String)
+                ch = ((String)c)[0];
+
+            if (c is char?)
+                ch = Char.ToUpper(((char?)c).Value);
+
+            if (c is char)
+                ch = Char.ToUpper((char)c);
+            
             return ch == 'P' ? PieceTypes.Pawn : Template.GetPieceType(ch);
         }
         virtual public int GetPlayer(Object o)
@@ -126,58 +136,56 @@ namespace GameWarden.Chess.Notations
 
     public class FigurinePresentation : IChessPresentation
     {
-        private Char GetWhitePieceSymbol(IPiece p)
+        private Char GetWhitePieceSymbol(ChessPiece p)
         {
-            var piece = p as ChessPiece;
+            switch (p.Type)
+            {
+                case PieceTypes.Pawn:
+                    return '♙';
+                case PieceTypes.Knight:
+                    return '♘';
+                case PieceTypes.Bishop:
+                    return '♗';
+                case PieceTypes.Rook:
+                    return '♖';
+                case PieceTypes.Queen:
+                    return '♕';
+                case PieceTypes.King:
+                    return '♔';
+            }
 
-            if (piece != null)
-                switch (piece.Type)
-                {
-                    case PieceTypes.Pawn:
-                        return '♙';
-                    case PieceTypes.Knight:
-                        return '♘';
-                    case PieceTypes.Bishop:
-                        return '♗';
-                    case PieceTypes.Rook:
-                        return '♖';
-                    case PieceTypes.Queen:
-                        return '♕';
-                    case PieceTypes.King:
-                        return '♔';
-                }
-
-            throw new Exception();
+            throw new ArgumentException();
         }
-        private Char GetBlackPieceSymbol(IPiece p)
+        private Char GetBlackPieceSymbol(ChessPiece p)
         {
-            var piece = p as ChessPiece;
+            switch (p.Type)
+            {
+                case PieceTypes.Pawn:
+                    return '♟';
+                case PieceTypes.Knight:
+                    return '♞';
+                case PieceTypes.Bishop:
+                    return '♝';
+                case PieceTypes.Rook:
+                    return '♜';
+                case PieceTypes.Queen:
+                    return '♛';
+                case PieceTypes.King:
+                    return '♚';
+            }
 
-            if (piece != null)
-                switch (piece.Type)
-                {
-                    case PieceTypes.Pawn:
-                        return '♟';
-                    case PieceTypes.Knight:
-                        return '♞';
-                    case PieceTypes.Bishop:
-                        return '♝';
-                    case PieceTypes.Rook:
-                        return '♜';
-                    case PieceTypes.Queen:
-                        return '♛';
-                    case PieceTypes.King:
-                        return '♚';
-                }
-
-            throw new Exception();
+            throw new ArgumentException();
         }
         virtual public Object GetPresentation(IPiece p)
         {
             if (p.IsEmpty)
                 return null;
 
-            return p.Player.Order == 1 ? GetWhitePieceSymbol(p) : GetBlackPieceSymbol(p);
+            var piece = p as ChessPiece;
+            if (piece != null)
+                return piece.Player.Order == 1 ? GetWhitePieceSymbol(piece) : GetBlackPieceSymbol(piece);
+
+            throw new ArgumentException();
         }
 
         virtual public bool IsEmpty(Object c)
@@ -212,23 +220,26 @@ namespace GameWarden.Chess.Notations
         }
         virtual public int GetPlayer(Object o)
         {
-            switch ((Char?)o)
+            try
             {
-                case '♙':
-                case '♘':
-                case '♗':
-                case '♖':
-                case '♕':
-                case '♔': 
-                    return 1;
-                case '♟':
-                case '♞':
-                case '♝':
-                case '♜':
-                case '♛':
-                case '♚':
-                    return 2;
-            }
+                switch ((Char?) o)
+                {
+                    case '♙':
+                    case '♘':
+                    case '♗':
+                    case '♖':
+                    case '♕':
+                    case '♔':
+                        return 1;
+                    case '♟':
+                    case '♞':
+                    case '♝':
+                    case '♜':
+                    case '♛':
+                    case '♚':
+                        return 2;
+                }
+            } catch { }
 
             throw new ArgumentException();
         }

@@ -2,9 +2,9 @@ using System;
 
 namespace GameWarden.Chess
 {
-    public class PawnMove : VerticalMoveTemplate
+    public class PawnMoveTemplate : VerticalMoveTemplate
     {
-        public PawnMove()
+        public PawnMoveTemplate()
             : base(2, false) { }
 
         public override bool CanApply(Position @from, Position to, IGameState state)
@@ -73,9 +73,9 @@ namespace GameWarden.Chess
         }
     }
 
-    public class PawnCapture : TemplateMove
+    public class PawnCaptureTemplate : TemplateMove
     {
-        public PawnCapture()
+        public PawnCaptureTemplate()
             : base(1, true)
         {
 
@@ -98,7 +98,7 @@ namespace GameWarden.Chess
         }
     }
 
-    public class EnPassant : ITemplateMove
+    public class EnPassantTemplate : ITemplateMove
     {
         public bool IsCapture
         {

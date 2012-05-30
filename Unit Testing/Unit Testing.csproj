@@ -50,8 +50,20 @@
     </CodeAnalysisDependentAssemblyPaths>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Chess Warden Tests\ChessMoveTests.cs" />
+    <Compile Include="Chess Warden Tests\Moves\CastlingTests.cs" />
+    <Compile Include="Chess Warden Tests\Moves\KnightTests.cs" />
+    <Compile Include="Chess Warden Tests\Moves\PawnTests.cs" />
+    <Compile Include="Chess Warden Tests\Moves\PromotionTests.cs" />
+    <Compile Include="Chess Warden Tests\Parsers\AlgebraicNotationTests.cs" />
     <Compile Include="Chess Warden Tests\ChessPieceTests.cs" />
     <Compile Include="Chess Warden Tests\ChessStateTests.cs" />
+    <Compile Include="Chess Warden Tests\ChessGameTests.cs" />
+    <Compile Include="Chess Warden Tests\Parsers\EnglishFENPresentationTests.cs" />
+    <Compile Include="Chess Warden Tests\Parsers\FENParserTests.cs" />
+    <Compile Include="Chess Warden Tests\Parsers\EnglishPresentationTests.cs" />
+    <Compile Include="Chess Warden Tests\Parsers\FigurinePresentationTests.cs" />
+    <Compile Include="Chess Warden Tests\Parsers\PGNParserTests.cs" />
     <Compile Include="Game Warden Tests\Moves\BasicConcreteMovesTests.cs" />
     <Compile Include="Game Warden Tests\Moves\BasicMovesTests.cs" />
     <Compile Include="Game Warden Tests\MetaTests.cs" />

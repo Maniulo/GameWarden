@@ -25,11 +25,10 @@ namespace GameWarden.Chess
     /// </summary>
     public partial class Window
     {
-        private List<RibbonToggleButton> PieceButtons = new List<RibbonToggleButton>();
+        private readonly List<RibbonToggleButton> PieceButtons = new List<RibbonToggleButton>();
 
-        private ChessPiece placedPiece;
+        private ChessPiece PlacedPiece;
         private readonly FigurinePresentation Figures = new FigurinePresentation();
-
 
         private void InitializePieceButtons()
         {
@@ -48,7 +47,7 @@ namespace GameWarden.Chess
 
             foreach (var btn in PieceButtons)
             {
-                btn.FontSize = 18;
+                btn.FontSize = 15;
                 btn.Height = 30;
                 btn.Width = 30;
                 btn.Padding = new Thickness(0, 0, 0, 0);
@@ -65,8 +64,8 @@ namespace GameWarden.Chess
         void PlacePiece(object sender, MouseButtonEventArgs e)
         {
             var c = sender as Cell;
-            if (e.ChangedButton == MouseButton.Left && placedPiece != null)
-                TheGame.PlacePiece(new Position(c.X + 1, c.Y + 1), new ChessPiece(placedPiece)); // !!!
+            if (e.ChangedButton == MouseButton.Left && PlacedPiece != null)
+                TheGame.PlacePiece(new Position(c.X + 1, c.Y + 1), new ChessPiece(PlacedPiece));
 
             theBoard.Refresh();
         }
@@ -79,7 +78,7 @@ namespace GameWarden.Chess
             if (sender is RibbonToggleButton)
             {
                 var o = sender as RibbonToggleButton;
-                placedPiece = (ChessPiece)o.Content;
+                PlacedPiece = (ChessPiece)o.Content;
             }
 
             Cursor = Cursors.Hand;
@@ -87,9 +86,13 @@ namespace GameWarden.Chess
 
         void UncheckButton(object sender, RoutedEventArgs e)
         {
-            foreach (var btn in PieceButtons)
-                btn.IsChecked = false;
-            placedPiece = null;
+            if (sender is RibbonToggleButton)
+            {
+                var o = sender as RibbonToggleButton;
+                if (PlacedPiece == o.Content)
+                    PlacedPiece = null;
+            }
+            
             Cursor = Cursors.Arrow;
         }
     }

@@ -7,7 +7,7 @@ namespace GameWarden.Chess.Notations
 {
     public class FENParser
     {
-        public const String DefaultFEN = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1"; // !!!
+        public const String DefaultFEN = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
 
         // static due to optimization
         private static readonly IChessPresentation Presentation = new EnglishFENPresentation();
@@ -20,84 +20,67 @@ namespace GameWarden.Chess.Notations
             RxFEN = new Regex(rxFENString, RegexOptions.None);
         }
 
+        // Parsing
         public ChessState Parse(String fenRecord, List<Player> players = null)
         {
-            if (players == null)
-                players = new List<Player> { new Player(1), new Player(2) };
+            if (players == null) players = GetMockPlayers();
 
-            if (RxFEN.IsMatch(fenRecord))
+            Match m = RxFEN.Match(fenRecord);
+            if (m.Success)
             {
-                Match m = RxFEN.Match(fenRecord);
-
                 var gs = ParseBoard(m.Groups["Board"].Value, players);
-                
+
                 gs.Player = m.Groups["Player"].Value[0];
-                
                 gs.Castling.KingsideWhite = m.Groups["K"].Success;
                 gs.Castling.QueensideWhite = m.Groups["Q"].Success;
                 gs.Castling.KingsideBlack = m.Groups["k"].Success;
                 gs.Castling.QueensideBlack = m.Groups["q"].Success;
-
                 if (m.Groups["EnPassant"].Value != "-")
                     gs.EnPassant = m.Groups["EnPassant"].Value;
-
                 gs.HalfMoves = Int32.Parse(m.Groups["HalfMoves"].Value);
                 gs.FullMoves = Int32.Parse(m.Groups["FullMoves"].Value);
 
                 return gs;
             }
-            else
-            {
-                throw new ArgumentException(String.Format("\"{0}\" is not a valid FEN string.", fenRecord));
-            }
-        }
 
+            throw new ArgumentException(String.Format("\"{0}\" is not a valid FEN string.", fenRecord));
+        }
         public ChessState ParseBoard(String s, List<Player> players = null)
         {
-            if (players == null)
-                players = new List<Player> { new Player(1), new Player(2) };
-
+            if (players == null) players = GetMockPlayers();
             var gs = new ChessState();
-            int file = 1, rank = 8;
-            foreach (Char? ch in GetBoardChars(s))
-            {
-                IPiece p = ChessPieceFactory.CreatePiece(ch, Presentation, players);
 
+            int file = 1, rank = 8;
+            foreach (Char? ch in GetBoardLetters(s))
+            {
+                var p = ChessPieceFactory.CreatePiece(ch, Presentation, players);
                 var pos = new Position(file, rank);
                 gs[pos] = p;
                 p.Move(pos);
 
-                if (++file > 8)
-                {
-                    --rank;
-                    file = 1;
-                }
+                if (++file > 8) { --rank; file = 1; }
             }
 
             return gs;
         }
-
-        private IEnumerable<Char?> GetBoardChars(String boardString)
+        private IEnumerable<Char?> GetBoardLetters(String boardString)
         {
             foreach (Char c in boardString)
-            {
                 if (Char.IsDigit(c))
                 {
-                    int emptySpaces = Int32.Parse(c.ToString());
+                    var emptySpaces = Char.GetNumericValue(c);
                     while (emptySpaces-- > 0)
                         yield return null;
                 }
-                else if (c == '/')
-                {
-                    continue;
-                }
-                else
-                {
+                else if (c != '/')
                     yield return c;
-                }
-            }            
+        }
+        private static List<Player> GetMockPlayers()
+        {
+            return new List<Player> { new Player(1), new Player(2) };
         }
 
+        // Generation
         public static String Generate(ChessState gameState)
         {
             return String.Format("{0} {1} {2} {3} {4} {5}",
@@ -110,7 +93,6 @@ namespace GameWarden.Chess.Notations
                                  gameState.HalfMoves,
                                  gameState.FullMoves);
         }
-
         public static String GenerateBoard(ChessState gameState)
         {
             var result = new StringBuilder();
@@ -118,14 +100,14 @@ namespace GameWarden.Chess.Notations
             int emptySpaces = 0;
             int line = 0;
 
-            foreach (IPiece p in gameState)
+            foreach (ChessPiece p in gameState)
             {
                 if (p.IsEmpty)
                     ++emptySpaces;
                 else
                 {
                     AddEmptySpaces(result, ref emptySpaces);
-                    result.Append(Presentation.GetPresentation((ChessPiece)p).ToString());
+                    result.Append(Presentation.GetPresentation(p));
                 }
 
                 if (++line == 8)
@@ -140,7 +122,6 @@ namespace GameWarden.Chess.Notations
 
             return result.ToString();
         }
-
         private static void AddEmptySpaces(StringBuilder result, ref int emptySpaces)
         {
             if (emptySpaces > 0)

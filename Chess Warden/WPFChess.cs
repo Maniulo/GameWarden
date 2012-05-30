@@ -65,7 +65,7 @@ namespace GameWarden.Chess
         public void PlacePiece(Position pos, IPiece p)
         {
             State[pos] = p;
-            p.Move(pos); // !!!!!!
+            p.Move(pos);
             OnPropertyChanged("State");
             OnPropertyChanged("FEN");
         }

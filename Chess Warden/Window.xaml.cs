@@ -5,9 +5,6 @@ using System.Windows.Data;
 
 namespace GameWarden.Chess
 {
-    /// <summary>
-    /// Interaction logic for Window.xaml
-    /// </summary>
     public partial class Window
     {
         private readonly ChessEntities DB = new ChessEntities();
@@ -20,24 +17,29 @@ namespace GameWarden.Chess
             InitializeEngine();
             InitializeFilters();
             InitializePieceButtons();
+            ResetStats();
         }
 
         private void ResetGUI()
         {
             WhiteBest.Content = "?";
             BlackBest.Content = "?";
-            UncheckButton(this, null);
+            foreach (var btn in PieceButtons)
+                btn.IsChecked = false;
         }
 
         private void MovesScrollBarValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
         {
             int Amount = (int)e.NewValue - (int)e.OldValue;
+
             if (Amount > 0)
                 for (; Amount > 0; --Amount )
                     TheGame.MakeMove();
             else
                 for (; Amount < 0; ++Amount)
                     TheGame.UndoMove();
+
+            ResetStats();
 
             theBoard.Refresh();
         }

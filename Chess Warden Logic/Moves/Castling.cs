@@ -2,16 +2,16 @@ using System;
 
 namespace GameWarden.Chess
 {
-    public class CastlingConcrete : BaseConcreteMove
+    public class Castling : BaseConcreteMove
     {
         private readonly Position RookFrom;
         private readonly Position RookTo;
         private readonly Position From;
         private readonly Position To;
 
-        private CastlingPossibility Castling;
+        private CastlingPossibility _Castling;
 
-        public CastlingConcrete(Position from, Position to, Position rookFrom, Position rookTo)
+        public Castling(Position from, Position to, Position rookFrom, Position rookTo)
         {
             From = from;
             To = to;
@@ -23,7 +23,7 @@ namespace GameWarden.Chess
         {
             var s = state as ChessState;
 
-            Castling = s.Castling;
+            _Castling = s.Castling;
             switch(state[From].Player.Order)
             {
                 case 1:
@@ -43,13 +43,13 @@ namespace GameWarden.Chess
         public override void Rollback(IGameState state)
         {
             var s = state as ChessState;
-            s.Castling = Castling;
+            s.Castling = _Castling;
             RollbackMovePiece(From, To, state);
             RollbackMovePiece(RookFrom, RookTo, state);
         }
     }
 
-    public class Castling : HorizontalMoveTemplate
+    public class CastlingTemplate : HorizontalMoveTemplate
     {
         public enum CastlingType
         {
@@ -63,7 +63,7 @@ namespace GameWarden.Chess
         private int RookFromFile { get { return CType == CastlingType.Kingside ? 8 : 1; } }
         private int RookToFile { get { return CType == CastlingType.Kingside ? 6 : 4; } }
 
-        public Castling(CastlingType type)
+        public CastlingTemplate(CastlingType type)
             : base(null, false, true)
         {
             CType = type;
@@ -71,38 +71,43 @@ namespace GameWarden.Chess
 
         public override bool CanApply(Position from, Position to, IGameState state)
         {
-            var cState = state as ChessState;   // !!!
+            var cState = state as ChessState;
             var rook = cState[new Position(RookFromFile, from.Rank)] as ChessPiece;
             var king = cState[from] as ChessPiece;
 
-            if (rook.Type == PieceTypes.Rook && to.File == KingToFile)
-                if (king.PathLength == 1 && rook.PathLength == 1 && !cState.IsKingOpen(state[from].Player))
-                    if (base.CanApply(from, to, state))
-                    {
-                        Boolean result = true;
-                        switch (CType)
-                        {
-                            case CastlingType.Kingside:
-                                for (int kingPathFile = from.File; kingPathFile <= to.File; ++kingPathFile)
-                                    result &= !cState.IsUnderAttack(new Position(kingPathFile, from.Rank), state[from].Player);
-                                break;
-                            case CastlingType.Queenside:
-                                for (int kingPathFile = from.File; kingPathFile >= to.File; --kingPathFile)
-                                    result &= !cState.IsUnderAttack(new Position(kingPathFile, from.Rank),
-                                                                                 state[from].Player);
-                                break;
-                        }
-                        
+            return  rook.Type == PieceTypes.Rook &&
+                    rook.Player == king.Player &&
+                    rook.PathLength == 1 &&
+                    king.PathLength == 1 &&
+                    to.File == KingToFile &&
+                    !cState.IsKingOpen(state[from].Player) &&
+                    base.CanApply(from, to, state) &&
+                    new HorizontalMoveTemplate(null, false).CanApply(new Position(RookFromFile, from.Rank), new Position(RookToFile, to.Rank), state) &&
+                    IsKingsPathFree(from, to, cState);
+        }
 
-                        return result;
-                    }
+        private Boolean IsKingsPathFree(Position from, Position to, ChessState cState)
+        {
+            Boolean result = true;
 
-            return false;
+            switch (CType)
+            {
+                case CastlingType.Kingside:
+                    for (int kingPathFile = from.File + 1; kingPathFile <= to.File; ++kingPathFile)
+                        result &= !cState.IsUnderAttack(new Position(kingPathFile, from.Rank), cState[from].Player);
+                    break;
+                case CastlingType.Queenside:
+                    for (int kingPathFile = from.File - 1; kingPathFile >= to.File; --kingPathFile)
+                        result &= !cState.IsUnderAttack(new Position(kingPathFile, from.Rank), cState[from].Player);
+                    break;
+            }
+
+            return result;
         }
 
         public override IConcreteMove Concretize(Position from, Position to)
         {
-            return new CastlingConcrete(from, to, new Position(RookFromFile, from.Rank), new Position(RookToFile, to.Rank));
+            return new Castling(from, to, new Position(RookFromFile, from.Rank), new Position(RookToFile, to.Rank));
         }
     }
 }

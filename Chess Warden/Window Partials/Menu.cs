@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Configuration;
 using System.Linq;
 using System.Windows;
 using Microsoft.Win32;
@@ -42,7 +43,7 @@ namespace GameWarden.Chess
 
             if (filename != null)
             {
-                var worker = new DBLoader(GamesCollection, DB);
+                var worker = new DBLoader(GamesCollection, DB, ConfigurationManager.ConnectionStrings["ChessDB"].ConnectionString);
                 worker.RunWorkerAsync(filename);
                 worker.RunWorkerCompleted += PGNImported;
             }

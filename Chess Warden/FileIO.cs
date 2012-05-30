@@ -11,21 +11,10 @@ namespace GameWarden.Chess
         private readonly String Filepath;
         private readonly String ErrorFilepath;
 
-        public FileIO(String filepath, String errors = @"\err.log")
+        public FileIO(String filepath, String errors = @"err.log")
         {
             Filepath = filepath;
             ErrorFilepath = errors;
-        }
-
-        private static void RemoveTrailingEmptyLines(List<String> lines)
-        {
-            while (lines.Any() && lines[0].Equals(""))
-                lines.RemoveAt(0);
-
-            while (lines.Any() && lines[lines.Count-1].Equals(""))
-                lines.RemoveAt(lines.Count-1);
-
-            lines.Add("");
         }
 
         public int Count()
@@ -42,6 +31,17 @@ namespace GameWarden.Chess
             // +1 for a case if there is no ending empty line
             return (emptyLines + 1) / 2;
         }
+        private static void RemoveTrailingEmptyLines(List<String> lines)
+        {
+            while (lines.Any() && lines[0].Equals(""))
+                lines.RemoveAt(0);
+
+            while (lines.Any() && lines[lines.Count - 1].Equals(""))
+                lines.RemoveAt(lines.Count - 1);
+
+            lines.Add("");
+        }
+
 
         public IEnumerable<ChessGame> ImportPGN()
         {
@@ -58,19 +58,24 @@ namespace GameWarden.Chess
                 }
                 catch (Exception)
                 {
-                    if (ErrorFilepath != null)
-                    {
-                        var writer = new StreamWriter(ErrorFilepath, true);
-                        foreach (var s in game) writer.WriteLine(s);
-                        writer.Close();
-                    }
+                    WriterToLog(game);
                 }
 
                 if (result != null)
                     yield return result;
             }
         }
-
+        private void WriterToLog(IEnumerable<String> lines)
+        {
+            if (ErrorFilepath != null)
+            {
+                var writer = new StreamWriter(ErrorFilepath, true);
+                foreach (var s in lines) writer.WriteLine(s);
+                writer.WriteLine();
+                writer.WriteLine();
+                writer.Close();
+            }
+        }
         private List<String> ReadFile()
         {
             var reader = new StreamReader(Filepath);
@@ -83,7 +88,6 @@ namespace GameWarden.Chess
 
             return lines;
         }
-
         private static IEnumerable<List<String>> SeparateGames(List<String> lines)
         {
             var result = new List<String>();
@@ -125,7 +129,6 @@ namespace GameWarden.Chess
             
             writer.Close();
         }
-
         private static void ExportSinglePGN(ChessGame game, TextWriter writer)
         {
             var pgn = new PGNParser();

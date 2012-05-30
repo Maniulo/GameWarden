@@ -1,22 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.ComponentModel;
-using System.Configuration;
-using System.Data.Entity;
-using System.Data.SqlClient;
-using System.Globalization;
-using System.IO;
 using System.Linq;
-using System.Reflection;
-using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
-using System.Windows.Input;
-using GameWarden.Chess.Notations;
-using Microsoft.Samples.EntityDataReader;
-using Microsoft.Win32;
-using Microsoft.Windows.Controls.Ribbon;
 
 namespace GameWarden.Chess
 {

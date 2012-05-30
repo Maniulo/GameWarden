@@ -1,28 +1,23 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
-using System.Linq;
-using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading;
-using System.Windows;
 using GameWarden.Chess.Notations;
-using Microsoft.Windows.Controls.Ribbon;
 
 namespace GameWarden.Chess
 {
     class ChessEngineConnector : INotifyPropertyChanged
     {
-        private int depth = 5;
+        private int _Depth = 5;
         public int Depth
         {
-            get { return depth; }
+            get { return _Depth; }
             set
             {
                 if (value > 0)
                 {
-                    depth = value;
+                    _Depth = value;
                 }
                 else
                 {
@@ -31,17 +26,17 @@ namespace GameWarden.Chess
             }
         }
 
-        private ChessMove bestMove = null;
+        private ChessMove _BestMove = null;
         public ChessMove BestMove
         {
-            get { return bestMove; }
+            get { return _BestMove; }
         }
 
-        private String enginePath;
+        private String _Path;
         public String Path
         {
-            get { return enginePath; }
-            set { enginePath = value; OnPropertyChanged("State"); }
+            get { return _Path; }
+            set { _Path = value; OnPropertyChanged("State"); }
         }
 
         public String State
@@ -60,83 +55,102 @@ namespace GameWarden.Chess
                 return BestMove.ToString();
             }
         }
+        private ChessState GameState;
 
-        public Boolean recheck = false;
+        public Boolean _Recheck = false;
         public Boolean Recheck
         {
-            get { return recheck; }
+            get { return _Recheck; }
             set
             {
-                recheck = value;
+                _Recheck = value;
                 OnPropertyChanged("State");
             }
         }
-        
+
         private readonly IChessMoveNotation Parser = new AlgebraicNotation();
         private readonly Regex RxBestMove = new Regex("bestmove (?<Move>.*) ponder");
+
+        private Thread Worker;
+        public ChessEngineConnector()
+        {
+            Worker = new Thread(StartProcess);
+        }
+        public ChessMove FindBestMove(ChessState state)
+        {
+            _BestMove = null;
+            Recheck = false;
+
+            if (P != null && !P.HasExited)
+                P.Kill();
+
+            while (Worker.IsAlive)
+                Worker.Abort();
+
+            Worker = new Thread(StartProcess);
+            Worker.Start();
+            GameState = state;
+
+            return null;
+        }
 
         private Process P;
         private void StartProcess()
         {
-
-
-            var StartInfo = new ProcessStartInfo
+            var startInfo = new ProcessStartInfo
                                 {
-                                    FileName = enginePath,
+                                    FileName = _Path,
                                     RedirectStandardInput = true,
                                     RedirectStandardOutput = true,
                                     UseShellExecute = false,
                                     CreateNoWindow = true
                                 };
 
-            P = Process.Start(StartInfo);
+            P = Process.Start(startInfo);
 
-            P.StandardInput.WriteLine("ucinewgame");
-
-            if (st != null)
-                P.StandardInput.WriteLine("position fen " + FENParser.Generate(st));
-
-            P.StandardInput.WriteLine("go depth " + depth);
-
-            string s;
-            while ((s = P.StandardOutput.ReadLine()) != null)
-                if (RxBestMove.Match(s).Groups["Move"].Success)
-                {
-                    P.Kill();
-                    bestMove = Parser.Parse(RxBestMove.Match(s).Groups["Move"].Value);
-                    OnPropertyChanged("BestMove");
-                    OnPropertyChanged("State");
-                }
-        }
-
-        private Thread Worker;
-
-        public ChessEngineConnector()
-        {
-             Worker = new Thread(StartProcess);
-        }
-
-        private ChessState st;
-        public ChessMove FindBestMove(ChessState state)
-        {
-            bestMove = null;
-            Recheck = false;
-            
-            if (P != null && !P.HasExited)
+            try
+            {
+                StartNewGame(P);
+                SetPosition(P, GameState);
+                Go(P, _Depth);
+                _BestMove = GetBest(P);
                 P.Kill();
-        
-            while (Worker.IsAlive)
-                Worker.Abort();
 
-            Worker = new Thread(StartProcess);
-            Worker.Start();
-            st = state;
+                OnPropertyChanged("BestMove");
+                OnPropertyChanged("State");
+            }
+            catch (Exception)
+            {
+                throw new Exception("Chess engine connection problems.");
+            }
+            
+        }
 
-            return null;
-	    }
+        private void StartNewGame(Process engine)
+        {
+            engine.StandardInput.WriteLine("ucinewgame");
+        }
+        private void SetPosition(Process engine, ChessState gameState)
+        {
+            if (gameState != null)
+                engine.StandardInput.WriteLine("position fen " + FENParser.Generate(gameState));
+        }
+        private void Go(Process engine, int depth)
+        {
+            engine.StandardInput.WriteLine("go depth " + depth);
+        }
+        private ChessMove GetBest(Process engine)
+        {
+            string s;
+
+            while ((s = engine.StandardOutput.ReadLine()) != null)
+                if (RxBestMove.Match(s).Groups["Move"].Success)
+                    return Parser.Parse(RxBestMove.Match(s).Groups["Move"].Value);
+
+            throw new Exception();
+        }
 
         public event PropertyChangedEventHandler PropertyChanged;
-
         private void OnPropertyChanged(string info)
         {
             PropertyChangedEventHandler handler = PropertyChanged;

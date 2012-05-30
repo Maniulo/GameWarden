@@ -21,11 +21,11 @@ namespace GameWarden.Chess
             switch (p.Type)
             {
                 case PieceTypes.Pawn:
-                    p.PossibleMoves.Add(new Promotion(new PawnMove(), new[] { PieceTypes.Knight, PieceTypes.Bishop, PieceTypes.Rook, PieceTypes.Queen }));
-                    p.PossibleMoves.Add(new Promotion(new PawnCapture(), new[] { PieceTypes.Knight, PieceTypes.Bishop, PieceTypes.Rook, PieceTypes.Queen }));
-                    p.PossibleMoves.Add(new PawnMove());
-                    p.PossibleMoves.Add(new PawnCapture());
-                    p.PossibleMoves.Add(new EnPassant());
+                    p.PossibleMoves.Add(new Promotion(new PawnMoveTemplate(), new[] { PieceTypes.Knight, PieceTypes.Bishop, PieceTypes.Rook, PieceTypes.Queen }));
+                    p.PossibleMoves.Add(new Promotion(new PawnCaptureTemplate(), new[] { PieceTypes.Knight, PieceTypes.Bishop, PieceTypes.Rook, PieceTypes.Queen }));
+                    p.PossibleMoves.Add(new PawnMoveTemplate());
+                    p.PossibleMoves.Add(new PawnCaptureTemplate());
+                    p.PossibleMoves.Add(new EnPassantTemplate());
                     break;
                 case PieceTypes.Knight:
                     p.PossibleMoves.Add(new KnightMoveTemplate());
@@ -46,8 +46,8 @@ namespace GameWarden.Chess
                     p.PossibleMoves.Add(new HorizontalMoveTemplate(1));
                     p.PossibleMoves.Add(new VerticalMoveTemplate(1));
                     p.PossibleMoves.Add(new DiagonalMoveTemplate(1));
-                    p.PossibleMoves.Add(new Castling(Castling.CastlingType.Kingside));
-                    p.PossibleMoves.Add(new Castling(Castling.CastlingType.Queenside));
+                    p.PossibleMoves.Add(new CastlingTemplate(CastlingTemplate.CastlingType.Kingside));
+                    p.PossibleMoves.Add(new CastlingTemplate(CastlingTemplate.CastlingType.Queenside));
                     break;
             }
         }
