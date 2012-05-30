@@ -1,0 +1,30 @@
+USE [CHESSDB]
+GO
+
+/****** Object:  Table [dbo].[GameStates]    Script Date: 05/30/2012 19:26:16 ******/
+SET ANSI_NULLS ON
+GO
+
+SET QUOTED_IDENTIFIER ON
+GO
+
+CREATE TABLE [dbo].[GameStates](
+	[Game] [int] NOT NULL,
+	[Num] [int] NOT NULL,
+	[FEN] [nchar](150) NULL,
+ CONSTRAINT [PK_GameStates] PRIMARY KEY CLUSTERED 
+(
+	[Game] ASC,
+	[Num] ASC
+)WITH (PAD_INDEX  = OFF, STATISTICS_NORECOMPUTE  = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS  = ON, ALLOW_PAGE_LOCKS  = ON) ON [PRIMARY]
+) ON [PRIMARY]
+
+GO
+
+ALTER TABLE [dbo].[GameStates]  WITH NOCHECK ADD  CONSTRAINT [FK] FOREIGN KEY([Game])
+REFERENCES [dbo].[Games] ([ID])
+GO
+
+ALTER TABLE [dbo].[GameStates] CHECK CONSTRAINT [FK]
+GO
+
