@@ -58,7 +58,7 @@
                 </ribbon:RibbonGroup>
                 <ribbon:RibbonGroup x:Name="Statistics" 
                                     Header="Statistics" LargeImageSource="Resourses/statistics.png">
-                    <ribbon:RibbonButton LargeImageSource="Resourses/statistics.png" SmallImageSource="Resourses/statistics.png" Label="Calculate" Click="RefreshBest"/>
+                    <ribbon:RibbonButton LargeImageSource="Resourses/statistics.png" SmallImageSource="Resourses/statistics.png" Label="Calculate" Click="RefreshBest" Name="Calculate"/>
                     <Grid>
                         <Grid.RowDefinitions>
                           <RowDefinition />

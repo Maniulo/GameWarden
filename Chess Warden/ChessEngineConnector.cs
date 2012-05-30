@@ -39,10 +39,15 @@ namespace GameWarden.Chess
             set { _Path = value; OnPropertyChanged("State"); }
         }
 
+        private Boolean Error = false;
+
         public String State
         {
             get
             {
+                if (Error)
+                    return "N/A";
+
                 if (Path == null)
                     return "N/A";
 
@@ -50,7 +55,7 @@ namespace GameWarden.Chess
                     return "???";
 
                 if (BestMove == null)
-                    return "---";
+                    return "...";
 
                 return BestMove.ToString();
             }
@@ -80,6 +85,7 @@ namespace GameWarden.Chess
         {
             _BestMove = null;
             Recheck = false;
+            Error = false;
 
             if (P != null && !P.HasExited)
                 P.Kill();
@@ -121,9 +127,12 @@ namespace GameWarden.Chess
             }
             catch (Exception)
             {
-                throw new Exception("Chess engine connection problems.");
+                Recheck = true;
+                _BestMove = null;
+                Error = true;
+                OnPropertyChanged("BestMove");
+                OnPropertyChanged("State");
             }
-            
         }
 
         private void StartNewGame(Process engine)

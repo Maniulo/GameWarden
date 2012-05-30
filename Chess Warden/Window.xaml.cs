@@ -7,17 +7,56 @@ namespace GameWarden.Chess
 {
     public partial class Window
     {
-        private readonly ChessEntities DB = new ChessEntities();
+        private ChessEntities DB;
         private readonly VisualChess TheGame = new VisualChess();
         private GameCollection GamesCollection;
         
         public Window()
         {
             InitializeComponent();
-            InitializeEngine();
-            InitializeFilters();
-            InitializePieceButtons();
-            ResetStats();
+            try
+            {
+                DisableControlsGameNotLoaded();
+                InitializeDB();
+                InitializeEngine();
+                InitializeFilters();
+                InitializePieceButtons();
+                ResetStats();
+            }
+            catch (Exception)
+            {
+                Message.IsOpen = true;
+                MessageText.Text = "Database connection error.";
+                DisableControls();
+            }
+            
+        }
+
+        private void DisableControls()
+        {
+            ResultsList.IsEnabled = false;
+            SearchTab.IsEnabled = false;
+            DisableControlsGameNotLoaded();
+            OpenPGNBtn.IsEnabled = false;
+        }
+
+        private void DisableControlsGameNotLoaded()
+        {
+            movesScrollBar.IsEnabled = false;
+            Calculate.IsEnabled = false;
+            SavePGNBtn.IsEnabled = false;
+        }
+
+        private void EnableControlsGameIsLoaded()
+        {
+            movesScrollBar.IsEnabled = true;
+            Calculate.IsEnabled = true;
+            SavePGNBtn.IsEnabled = true;
+        }
+
+        private void InitializeDB()
+        {
+            DB = new ChessEntities();
         }
 
         private void ResetGUI()
@@ -84,6 +123,7 @@ namespace GameWarden.Chess
         {
             if (e.AddedItems.Count != 0)
             {
+                EnableControlsGameIsLoaded();
                 TheGame.Game = ((DBGame)ResultsList.SelectedItem).Game;
                 SetBindings(TheGame);
                 Ribbon.SelectedItem = HomeTab;
