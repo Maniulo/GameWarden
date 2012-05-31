@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace GameWarden.Chess
 {
@@ -81,6 +82,7 @@ namespace GameWarden.Chess
                 To = new Position(3, Player.Order == 1 ? 1 : 8);
             }
 
+            var possibleMoves = new List<IConcreteMove>();
             foreach (ChessPiece p in state)
                 if (!p.IsEmpty &&
                     p.Type == PieceType &&
@@ -91,20 +93,17 @@ namespace GameWarden.Chess
 
                     if (mv != null)
                     {
-
+                        possibleMoves.Add(mv);
                         mv.Apply(state);
                         if (!state.IsKingOpen(Player))
-                        {
-                            mv.Rollback(state);
                             From = p.Pos;
-                            return mv;
-                        }
-                        else
-                        {
-                            mv.Rollback(state);
-                        }
+
+                        mv.Rollback(state);
                     }
                 }
+
+            if (possibleMoves.Count > 1)
+                throw new Exception("Ambiguous move.");
 
             return null;
         }

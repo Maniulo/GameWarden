@@ -11,7 +11,7 @@ namespace GameWarden.Chess
         private readonly String Filepath;
         private readonly String ErrorFilepath;
 
-        public FileIO(String filepath, String errors = @"err.log")
+        public FileIO(String filepath, String errors)
         {
             Filepath = filepath;
             ErrorFilepath = errors;
@@ -48,33 +48,30 @@ namespace GameWarden.Chess
             var pgnParser = new PGNParser();
             var lines = ReadFile();
             var pgnGames = SeparateGames(lines);
-            ChessGame result = null;
 
             foreach (var game in pgnGames)
             {
+                ChessGame result = null;
                 try
                 {
                     result = pgnParser.Parse(game);
                 }
                 catch (Exception)
                 {
-                    WriterToLog(game);
+                    WriterToLog(game, ErrorFilepath);
                 }
 
                 if (result != null)
                     yield return result;
             }
         }
-        private void WriterToLog(IEnumerable<String> lines)
+        public void WriterToLog(IEnumerable<String> lines, String errorFilepath)
         {
-            if (ErrorFilepath != null)
-            {
-                var writer = new StreamWriter(ErrorFilepath, true);
-                foreach (var s in lines) writer.WriteLine(s);
-                writer.WriteLine();
-                writer.WriteLine();
-                writer.Close();
-            }
+            var writer = new StreamWriter(ErrorFilepath, true);
+            foreach (var s in lines) writer.WriteLine(s);
+            writer.WriteLine();
+            writer.WriteLine();
+            writer.Close();
         }
         private List<String> ReadFile()
         {

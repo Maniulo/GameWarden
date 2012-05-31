@@ -67,7 +67,10 @@ namespace GameWarden.Chess.Notations
                 // remove trailing space
                 movetext.Remove(movetext.Length - 1, 1);
 
-                return movetext.ToString();
+                if (movetext[movetext.Length - 1] == '*')
+                    movetext.Remove(movetext.Length - 1, 1);
+
+                return movetext.ToString().TrimEnd(new char[] {'*', '1', '0', '-', ' '});
             } catch { }
 
             return "";

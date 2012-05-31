@@ -33,7 +33,7 @@ namespace GameWarden.Tests
         [TestMethod]
         public void ImportCountTest()
         {
-            var f = new FileIO(Filepath);
+            var f = new FileIO(Filepath, "err.log");
             IEnumerable<ChessGame> gs = f.ImportPGN();
             Assert.AreEqual(2, gs.Count());
         }
@@ -41,14 +41,14 @@ namespace GameWarden.Tests
         [TestMethod]
         public void ImportCountFuncTest()
         {
-            var f = new FileIO(Filepath);
+            var f = new FileIO(Filepath, "err.log");
             Assert.AreEqual(2, f.Count());
         }
 
         [TestMethod]
         public void ImportTest()
         {
-            var f = new FileIO(Filepath);
+            var f = new FileIO(Filepath, "err.log");
             IEnumerable<ChessGame> gs = f.ImportPGN();
             String[] pgn = new PGNParser().Generate(gs.ElementAt(0)).ToArray();
             CollectionAssert.AreEqual(FirstGamePGN, pgn);

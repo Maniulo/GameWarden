@@ -4,6 +4,7 @@ using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Data.SqlClient;
 using System.Linq;
+using GameWarden.Chess.Notations;
 using Microsoft.Samples.EntityDataReader;
 
 namespace GameWarden.Chess
@@ -22,6 +23,8 @@ namespace GameWarden.Chess
         private int Total;
         private int Done;
 
+        private String ErrorFilepath = "err.log";
+
         public DBLoader(ObservableCollection<DBGame> games, ChessEntities db, String connectionString)
         {
             DB = db;
@@ -39,16 +42,26 @@ namespace GameWarden.Chess
         private void Import(object sender, DoWorkEventArgs e)
         {
             var filename = (String)e.Argument;
-            var io = new FileIO(filename);
+            var io = new FileIO(filename, ErrorFilepath);
             Total = io.Count();
 
             foreach (ChessGame g in io.ImportPGN())
             {
-                var dbGame = new DBGame(g) { ID = LastID };
+                try
+                {
+                    var dbGame = new DBGame(g) { ID = LastID };
+                    var tmpGameStates = GenerateStates(dbGame, LastID);
 
-                GenerateAndAddStates(dbGame);
-                AddGame(dbGame);
-                ReportProgress(Done, dbGame);
+                    GamesToInsert.Add(dbGame);
+                    GameStatesToInsert.AddRange(tmpGameStates);
+                    ++LastID;
+                    ++Done;
+                    ReportProgress(Done, dbGame);
+                }
+                catch (Exception)
+                {
+                    io.WriterToLog(new PGNParser().Generate(g), ErrorFilepath);
+                }
 
                 if (Done % GamesToLoad == 0)
                     SaveChanges();
@@ -62,23 +75,20 @@ namespace GameWarden.Chess
         {
             Games.Add((DBGame)e.UserState);
         }
-        private void GenerateAndAddStates(DBGame dbGame)
+        private List<DBGameState> GenerateStates(DBGame dbGame, int id)
         {
+            var result = new List<DBGameState>();
             var num = 1;
             do
             {
-                var gs = new DBGameState { FEN = ((ChessState)dbGame.Game.State).ToStringShort(), Games = dbGame, Num = num++, Game = LastID };
+                var gs = new DBGameState { FEN = ((ChessState)dbGame.Game.State).ToStringShort(), Games = dbGame, Num = num++, Game = id };
                 dbGame.GameStates.Add(gs);
-                GameStatesToInsert.Add(gs);
+                result.Add(gs);
             } while (dbGame.Game.MakeMove());
 
             while (dbGame.Game.UndoMove()) { }
-        }
-        private void AddGame(DBGame dbGame)
-        {
-            GamesToInsert.Add(dbGame);
-            ++LastID;
-            ++Done;
+
+            return result;
         }
         private void SaveChanges()
         {

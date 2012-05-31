@@ -76,7 +76,7 @@ namespace GameWarden.Chess
             var items = ResultsList.SelectedItems.Cast<DBGame>();
 
             if (filename != null)
-                new FileIO(filename).ExportPGN(items.Select(c => c.Game));
+                new FileIO(filename, "err.log").ExportPGN(items.Select(c => c.Game));
         }
     }
 }
