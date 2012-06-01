@@ -78,7 +78,8 @@ namespace GameWarden.Chess
                 From = new Position(5, Player.Order == 1 ? 1 : 8);
                 To = new Position(3, Player.Order == 1 ? 1 : 8);
             }
-
+            
+            Position from = null;
             var possibleMoves = new List<IConcreteMove>();
             foreach (ChessPiece p in state)
                 if (!p.IsEmpty &&
@@ -90,10 +91,12 @@ namespace GameWarden.Chess
 
                     if (mv != null)
                     {
-                        possibleMoves.Add(mv);
                         mv.Apply(state);
                         if (!state.IsKingOpen(Player))
-                            From = p.Pos;
+                        {
+                            from = p.Pos;
+                            possibleMoves.Add(mv);
+                        }
 
                         mv.Rollback(state);
                     }
@@ -105,6 +108,7 @@ namespace GameWarden.Chess
             } 
             else
             {
+                From = from;
                 return possibleMoves[0];
             }
         }
