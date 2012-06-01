@@ -2,12 +2,12 @@
 
 namespace GameWarden.Chess.Notations
 {
-    public interface IChessPieceTypePresentation : IPiecePresentation
+    public interface IChessPieceTypePresentation
     {
         PieceTypes GetPieceType(Object c);
     }
 
-    public interface IChessPiecePlayerPresentation : IPiecePresentation
+    public interface IChessPiecePlayerPresentation
     {
         int GetPlayer(Object c);
     }

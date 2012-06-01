@@ -33,9 +33,6 @@ namespace GameWarden.Chess
                 if (Move == null)
                     Move = Solve(cs);
 
-                if (Move == null)
-                    throw new Exception(String.Format("Move \"{0}\" cannot be solved.", Desc));
-
                 SavedEnPassant = cs.EnPassant;
                 if (!(Move is EnPassantConcrete))
                     cs.EnPassant = null;
@@ -102,10 +99,14 @@ namespace GameWarden.Chess
                     }
                 }
 
-            if (possibleMoves.Count > 1)
+            if (possibleMoves.Count != 1)
+            {
                 throw new Exception("Ambiguous move.");
-
-            return null;
+            } 
+            else
+            {
+                return possibleMoves[0];
+            }
         }
 
         public override string ToString()
