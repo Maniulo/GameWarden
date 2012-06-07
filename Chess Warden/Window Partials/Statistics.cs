@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
 using System.Linq;
@@ -20,8 +21,16 @@ namespace GameWarden.Chess
                 Assembly.GetEntryAssembly().Location.Substring(0, Assembly.GetEntryAssembly().Location.LastIndexOf('\\')) +
                 Properties.Settings.Default.EnginesPath;
 
-            var engines = Directory.GetFiles(path, "*.exe")
-                                    .Select(s => new Engine(s)).ToList();
+            var engines = new List<Engine>();
+            try
+            {
+                engines = Directory.GetFiles(path, "*.exe")
+                    .Select(s => new Engine(s)).ToList();
+            }
+            catch
+            {
+                Directory.CreateDirectory("Engines");
+            }
 
             engines.Add(new Engine("zzz", "Browse..."));
 

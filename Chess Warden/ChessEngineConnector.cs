@@ -87,6 +87,12 @@ namespace GameWarden.Chess
             Recheck = false;
             Error = false;
 
+            if (_Path == null)
+            {
+                Error = true;
+                return null;
+            }
+
             if (P != null && !P.HasExited)
                 P.Kill();
 
